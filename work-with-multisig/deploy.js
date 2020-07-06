@@ -37,7 +37,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
         const futureAddress = (await tonClient.contracts.createDeployMessage({
             package: multisigContractPackage,
             constructorParams: {
-                owners: ["0x" + keyPair.public],//Multisig owner public key
+                owners: [`0x${keyPair.public}`],//Multisig owner public key
                 reqConfirms: 0,  //Multisig required confirms
             },
             keyPair: keyPair,
