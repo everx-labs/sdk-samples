@@ -22,7 +22,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 (async () => {
     try {
         const tonClient = await TONClient.create({
-            servers: ['http://net.ton.dev'],
+            servers: ['net.ton.dev'],
             messageExpirationTimeout: 30000,
             retriesCount: 3,
         });
@@ -68,7 +68,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
         await tonClient.contracts.deploy({
             package: multisigContractPackage,
             constructorParams: {
-                owners: ["0x" + keyPair.public],
+                owners: [`0x${keyPair.public}`],
                 reqConfirms: 0,
             },
             keyPair: keyPair,

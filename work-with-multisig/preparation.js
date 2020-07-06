@@ -26,7 +26,7 @@ const multisigContractPackage = {
     try {
         const tonClient = await TONClient.create({
             // You can connect to localhost if you use TON OS SE
-            servers: ['http://net.ton.dev'],
+            servers: ['net.ton.dev'],
         });
         // Generate seed phrase. It is used to generate or re-generate keys. Keep it secret.
         const seedPhrase = await tonClient.crypto.mnemonicFromRandom({ dictionary: SEED_PHRASE_DICTIONARY_ENGLISH, wordCount: SEED_PHRASE_WORD_COUNT });
@@ -58,7 +58,7 @@ const multisigContractPackage = {
                 // We are going to use a single key.
                 // You can use any number of keys and custodians.
                 // See https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli/t/242ea8
-                owners: ["0x" + keyPair.public],
+                owners: [`0x${keyPair.public}`],
                 // Number of custodians to require for confirm transaction.
                 // We use 0 for simplicity. Consider using 2+ for sufficient security.
                 reqConfirms: 0,

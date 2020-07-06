@@ -17,7 +17,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 (async () => {
     try {
         const tonClient = await TONClient.create({
-            servers: ['http://net.ton.dev'],
+            servers: ['net.ton.dev'],
             messageExpirationTimeout: 30000,
             retriesCount: 3,
         });
@@ -32,7 +32,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         const address = (await tonClient.contracts.createDeployMessage({
             package: multisigContractPackage,
             constructorParams: {
-                owners: ["0x" + keyPair.public],//Multisig owner public key
+                owners: [`0x${keyPair.public}`],//Multisig owner public key
                 reqConfirms: 0,  //Multisig required confirms
             },
             keyPair: keyPair,
