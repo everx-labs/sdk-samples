@@ -16,6 +16,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
 (async () => {
     try {
+        //See https://docs.ton.dev/86757ecb2/p/069155-ton-os-se/b/09fbbd
         const tonClient = await TONClient.create({
             servers: ['net.ton.dev'],
             messageExpirationTimeout: 30000,
@@ -59,8 +60,6 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
         console.log('Сustodians list:', response.output.custodians);
 
-
-        // See https://docs.ton.dev/86757ecb2/p/35a3f3-field-descriptions
         const transaction = {
             dest: destinationAddress,
             value: 100_000_000,
@@ -99,6 +98,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         console.log(sentTransactionInfo.transaction.out_msgs);
 
         //Print the list of all transactions of this account
+        //See https://docs.ton.dev/86757ecb2/p/772196-collection-query-methods/t/24ab01
         const transactionsCount = (await tonClient.queries.transactions.aggregate({
             filter: {
                 account_addr: { eq: address }

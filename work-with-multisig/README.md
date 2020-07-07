@@ -1,9 +1,9 @@
 # Work with multisig example
 
-In this example you will learn to use [ton-client-node-js](https://docs.ton.dev/86757ecb2/p/61b5eb-nodejs)
+In this example you will learn how to use [ton-client-node-js](https://docs.ton.dev/86757ecb2/p/61b5eb-nodejs)
 SDK with [multisig contract](https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli).
 
-In order to do it, you need sequentially:
+In order to do it, perform these steps:
 
 1. Make preparations.
 2. Deploy contract.
@@ -13,7 +13,7 @@ Below we describe each of the steps in more detail.
 
 ## Make preparations
 
-You can find source code in `preparation.js`. In order to run it, use:
+You can find the source code in `preparation.js`. In order to run it, use:
 
 ```sh
 node preparation.js
@@ -29,18 +29,18 @@ In this step:
 
 ## Deploy contract
 
-You can find source code in `deploy.js`. In order to run it, use:
+You can find the source code in `deploy.js`. In order to run it, use:
                                          
 ```sh
 node deploy.js
 ```
 
-In this step we use key pair to deploy the contract. Before running this step you need to ensure you have
+In this step we use the key pair to deploy the contract. Before performing this step you need to ensure you have
 at least 0.5 tokens on your wallet address.
 
 ## Use deployed contract
 
-You can find source code in `work-with-multisig.js`. In order to run it, use:
+You can find the source code in `work-with-multisig.js`. In order to run it, use:
                                                      
 ```sh
 node work-with-multisig.js

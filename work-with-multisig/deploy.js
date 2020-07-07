@@ -21,10 +21,12 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 
 (async () => {
     try {
+        //See https://docs.ton.dev/86757ecb2/p/069155-ton-os-se/b/09fbbd
         const tonClient = await TONClient.create({
             servers: ['net.ton.dev'],
-            messageExpirationTimeout: 30000,
-            retriesCount: 3,
+            //See https://docs.ton.dev/86757ecb2/p/88321a-reliable-message-delivery
+            messageExpirationTimeout: 30000, //timeout value in ms after the message count as expired
+            retriesCount: 3,  //the number of retries attempts
         });
 
         if (!fs.existsSync(keyPairFile)) {
@@ -43,6 +45,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
             keyPair: keyPair,
         })).address;
 
+        //query account type, balance and code to analyse if it is possible to deploy the contract
         const accountData = await tonClient.queries.accounts.query({
                 // See https://docs.ton.dev/86757ecb2/p/772196-collection-query-methods for syntax
                 id: { eq: futureAddress }
@@ -65,6 +68,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
             process.exit(1);
         }
 
+       //Deploy multisig contract with 1 custodian having keyPair.public key and requiring 0 confirmations.
         await tonClient.contracts.deploy({
             package: multisigContractPackage,
             constructorParams: {

@@ -24,6 +24,7 @@ const multisigContractPackage = {
 
 (async () => {
     try {
+        //See https://docs.ton.dev/86757ecb2/p/069155-ton-os-se/b/09fbbd
         const tonClient = await TONClient.create({
             // You can connect to localhost if you use TON OS SE
             servers: ['net.ton.dev'],
