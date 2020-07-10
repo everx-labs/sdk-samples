@@ -102,3 +102,6 @@ dist
 
 # TernJS port file
 .tern-port
+/work-with-multisig/keyPair.json
+/work-with-multisig/seedPhrase.json
+/work-with-multisig/package-lock.json

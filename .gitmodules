@@ -1,0 +1,3 @@
+[submodule "ton-labs-contracts"]
+	path = ton-labs-contracts
+	url = git@github.com:tonlabs/ton-labs-contracts.git
