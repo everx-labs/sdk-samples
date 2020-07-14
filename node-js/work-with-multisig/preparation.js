@@ -17,9 +17,9 @@ const keyPairFile = path.join(__dirname, 'keyPair.json');
 
 const multisigContractPackage = {
     // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
-    abi: require('../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
+    abi: require('../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
     // Compiled smart contract file
-    imageBase64: fs.readFileSync('../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc').toString('base64'),
+    imageBase64: fs.readFileSync('../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc').toString('base64'),
 };
 
 (async () => {
