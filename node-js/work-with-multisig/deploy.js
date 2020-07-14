@@ -4,8 +4,8 @@ const path = require('path');
 const keyPairFile = path.join(__dirname, 'keyPair.json');
 
 const multisigContractPackage = {
-    abi: require('../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
-    imageBase64: fs.readFileSync('../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc').toString('base64'),
+    abi: require('../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
+    imageBase64: fs.readFileSync('../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc').toString('base64'),
 };
 
 // Account is active when contract is deployed.

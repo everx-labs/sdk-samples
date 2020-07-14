@@ -7,8 +7,8 @@ const keyPairFile = path.join(__dirname, 'keyPair.json');
 const destinationAddress = '0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a6312490415';
 
 const multisigContractPackage = {
-    abi: require('../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
-    imageBase64: fs.readFileSync('../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc').toString('base64'),
+    abi: require('../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
+    imageBase64: fs.readFileSync('../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc').toString('base64'),
 };
 
 const ACCOUNT_TYPE_UNINITIALIZED = 0;
