@@ -5,7 +5,7 @@ In this example we use [ton-client-node-js](https://github.com/tonlabs/ton-clien
 ## Prerequisite
 
 * Node.js >= [12.x installed](https://nodejs.org)
-* [Docker](https://docs.docker.com/desktop/#download-and-install)
+* [Docker](if you want to use local blockchain TON OS SE) (https://docs.docker.com/desktop/#download-and-install)
 
 
 ## Preparation
