@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "preparation" : "node preparation.js",
-    "deploy" : "node deploy.js",
-    "work-with-multisig" : "node work-with-multisig.js"
+    "preparation": "node preparation.js",
+    "deploy": "node deploy.js",
+    "work-with-multisig": "node work-with-multisig.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ton-client-node-js": "^0.24.0"
+    "ton-client-node-js": "git://github.com/tonlabs/ton-client-node-js.git#0.25.0-tmp"
   }
 }
