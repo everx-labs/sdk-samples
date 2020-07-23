@@ -16,11 +16,11 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
 (async () => {
     try {
-        //You can also connect to NodeSE https://docs.ton.dev/86757ecb2/p/069155-ton-os-se/b/09fbbd
-        //Read more about message expiration and retries here https://docs.ton.dev/86757ecb2/p/88321a-reliable-message-delivery
+        // You can also connect to local blockchain TON OS SE https://docs.ton.dev/86757ecb2/p/069155-ton-os-se/b/09fbbd
+        // Read more about message expiration and retries here https://docs.ton.dev/86757ecb2/p/88321a-reliable-message-delivery
         const tonClient = await TONClient.create({
             servers: ['net.ton.dev'],
-            messageExpirationTimeout: 30000,
+            messageExpirationTimeout: 60000,
             retriesCount: 3,
         });
 
@@ -31,6 +31,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
         const keyPair = JSON.parse(fs.readFileSync(keyPairFile, 'utf8'));
 
+        // Here we create deployMessage simply to get account address and check its balance
         const address = (await tonClient.contracts.createDeployMessage({
             package: multisigContractPackage,
             constructorParams: {
@@ -40,6 +41,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
             keyPair: keyPair,
         })).address;
 
+        // Check account balance
         const accountData = await tonClient.queries.accounts.query({
                 id: { eq: address }
             },
@@ -50,6 +52,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
             process.exit(1);
         }
 
+        // Print the custodians of the wallet
         // See https://docs.ton.dev/86757ecb2/p/598b5c-runlocal-method
         const response = await tonClient.contracts.runLocal({
             address: address,
@@ -61,14 +64,43 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
         console.log('Сustodians list:', response.output.custodians);
 
+        // Prepare input parameter for 'submitTransaction' method of multisig wallet
         const transaction = {
             dest: destinationAddress,
             value: 100_000_000,
-            bounce: false,
+            bounce: false, 
             allBalance: false,
             payload: ''
         };
 
+       // Run 'submitTransaction' method of multisig wallet       
+       // Pattern 1. 
+       // 3-steps-pattern: createRunMessage → sendMessage → waitForRunTransaction
+
+       // Create run message 
+       const runMessage = await tonClient.contracts.createRunMessage({
+            address: address,
+            abi: multisigContractPackage.abi,
+            functionName: 'submitTransaction',
+            input: transaction,
+            keyPair: keyPair
+       })
+
+       // Now we send the run message and get the message processing state to proceed.
+       const messageProcessingState = await tonClient.contracts.sendMessage(runMessage.message);
+
+       // Wait for the result transaction. 
+       // In case of network  problems waitForRunTransaction will return an error with updated messageProcessingState, 
+       // which you can use again to resolve waiting later
+       const result = await tonClient.contracts.waitForRunTransaction(runMessage, messageProcessingState);
+       console.log(`Tokens were sent. Transaction id is ${result.transaction.id}`); 
+       console.log(`Run fees are  ${JSON.stringify(result.fees, null, 2)}`);
+
+
+       // Pattern 2. 
+       // This is an easy to implement pattern to deploy, but we do not recommend to use it because of 
+       // network inconsistency and application crash probability. For more reliable approach - use the Pattern 1
+       /*
         const sentTransactionInfo = await tonClient.contracts.run({
             address: address,
             abi: multisigContractPackage.abi,
@@ -76,7 +108,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
             input: transaction,
             keyPair: keyPair
         });
-
+        */
         // See https://docs.ton.dev/86757ecb2/p/35a3f3-field-descriptions
         console.log("Transaction info:")
 

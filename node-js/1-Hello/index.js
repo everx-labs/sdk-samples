@@ -56,7 +56,7 @@ async function main(client) {
 
     console.log(`Future address of the contract will be: ${futureAddress}`);
 
-    // Requesting contract deployment funds form a local NodeSE giver
+    // Requesting contract deployment funds form a local TON OS SE giver
     // not suitable for other networks
     await get_grams_from_giver(client, futureAddress);
     console.log(`Grams were transfered from giver to ${futureAddress}`);
