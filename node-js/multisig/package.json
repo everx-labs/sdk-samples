@@ -11,6 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ton-client-node-js": "git://github.com/tonlabs/ton-client-node-js.git#0.25.0-tmp"
+    "ton-client-node-js": "^0.25.0"
   }
 }
