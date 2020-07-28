@@ -1,4 +1,5 @@
 pragma solidity >= 0.6.0;
+pragma AbiHeader expire;
 
 contract HelloTON {
     // State variable storing the time of calling constructor or touch function
