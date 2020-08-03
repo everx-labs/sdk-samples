@@ -25,7 +25,7 @@ Now create the starting files in the root directory of the project:
 
 Here, the `src` file contains our source code for further webpack usage, and `dist` contains files that are directly served to the browser.
 
-Next, you'll need to create  `dist/index.html` in your directory. It will act as the browser entry point:
+Next, create `dist/index.html` in your directory. It will act as the browser entry point:
 
 ```html
 <!doctype html>
@@ -45,6 +45,28 @@ Use npm to install `ton-client-web-js` package:
 
 ```
 npm install ton-client-web-js
+```
+
+To copy `tonclient.wasm` from `node_modules\ton-client-web-js` use `copy-webpack-plugin` in `webpack.config.js`.
+
+Install copy-webpack-plugin
+```
+npm install copy-webpack-plugin --save-dev
+```
+Next, create `webpack.config.js` in your directory 
+```js
+const CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+  mode: 'development',
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        { from: './node_modules/ton-client-web-js/tonclient.wasm' }
+      ],
+    }),
+  ],
+};
 ```
 
 Finally, add the code below to `src/index.js`:
@@ -93,13 +115,13 @@ npx webpack
 To check if it works we'll need a simple HTTP server:
 
 ```
-npm install -g http-server
+npm install light-server
 ```
 
 Now you can run your app:
 
 ```
-npx http-server dist
+npx light-server -s dist
 ```
 
 Doing so will show you the links to the app within the browser.
