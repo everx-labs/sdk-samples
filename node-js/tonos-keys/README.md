@@ -1,4 +1,4 @@
-# NodeJS SDK Hello example
+# NodeJS SDK tonos-keys example
 
 In this example we use [ton-client-node-js](https://github.com/tonlabs/ton-client-node-js) to generate tonon-compatible (compatible with Surf and tonos-cli) key pair from a seed phrase.
 
