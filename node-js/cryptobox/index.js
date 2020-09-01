@@ -49,18 +49,6 @@ async function get_grams_from_giver(client, account) {
 }
 
 
-const dummyEncryptionBox = {
-    getPublicKey() {
-        return Promise.resolve('');
-    },
-    encrypt(message, outputEncoding) {
-        return Promise.resolve(encodeOutput(decodeMessage(message), outputEncoding));
-    },
-    decrypt(message, outputEncoding) {
-        return Promise.resolve(encodeOutput(decodeMessage(message), outputEncoding));
-    },
-};
-
 const dummySigningBox = {
     async getPublicKey(){
         const client = await TONClient.create({
