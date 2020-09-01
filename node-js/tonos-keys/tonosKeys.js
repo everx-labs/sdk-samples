@@ -12,9 +12,12 @@ const HD_PATH = "m/44'/396'/0'/0/0";
 
 
     try {
-        const tonClient = await TONClient.create({servers: ['localhost']});
+        const tonClient = await TONClient.create({
+            servers: ['localhost'],
+            log_verbose: true
+        });
 
-        // Generate a seed phrase. 
+        // Generate a seed phrase from random. 
         const seedPhrase = await tonClient.crypto.mnemonicFromRandom({ dictionary: SEED_PHRASE_DICTIONARY_ENGLISH, wordCount: SEED_PHRASE_WORD_COUNT });
         console.log(`Seed phrase "${seedPhrase}"`);
 
@@ -54,9 +57,13 @@ const HD_PATH = "m/44'/396'/0'/0/0";
         }
         console.log(`\n2 method. Tonos-compatible key pair:`);
         console.log(tonosKeyPair2);
+
+        const simpleKeys = await tonClient.crypto.ed25519Keypair();
+        console.log(`ed25519 key pair not from mnemonic:`);
+        console.log(simpleKeys);
     }
     catch(error) {
-        console.error();
+        console.error(error);
     }
 
 })();
