@@ -1,3 +1,5 @@
+// This 
+
 const { TONClient } = require('ton-client-node-js');
 // ABI and imageBase64 of a binary Hello contract
 const HelloContract = require('./HelloContract.js');
