@@ -100,7 +100,7 @@ async function main(client) {
     const futureAddress = (await client.contracts.createDeployMessage({
         package: HelloContract.package,
         constructorParams: {},
-        dummySigningBox
+        signingBox: dummySigningBox
     })).address;
 
     console.log(`Future address of the contract will be: ${futureAddress}`);
@@ -114,7 +114,7 @@ async function main(client) {
     const helloAddress = (await client.contracts.deploy({
         package: HelloContract.package,
         constructorParams: {},
-        keyPair,
+        signingBox: dummySigningBox,
     })).address;
 
     console.log(`Hello contract was deployed at address: ${helloAddress}`);
