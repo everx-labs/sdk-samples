@@ -1,4 +1,4 @@
-# NodeJS SDK Hello example
+# NodeJS SDK cryptobox example
 
 In this example we demonstrate how to use signingBox interface to deploy solidity 
 contract `Hello.sol` to [TONOS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview) (local blockchain) 
