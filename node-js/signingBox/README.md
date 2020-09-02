@@ -1,4 +1,4 @@
-# NodeJS SDK cryptobox example
+# NodeJS SDK signingBox example
 
 In this example we demonstrate how to eliminate passing your keys to the library
 by using `signingBox` interface.
@@ -49,4 +49,13 @@ Install packages and run:
 ```sh
 npm install
 node index.js
+```
+Result:
+```
+Hello localhost TON!
+Future address of the contract will be: 0:6a77bd82590eeef139d2ef149df31947759b32b3cc25da39d562b12d03ecd4a2
+Grams were transfered from giver to 0:6a77bd82590eeef139d2ef149df31947759b32b3cc25da39d562b12d03ecd4a2
+Hello contract was deployed at address: 0:6a77bd82590eeef139d2ef149df31947759b32b3cc25da39d562b12d03ecd4a2
+Сontract run transaction with output null ,  0ceec8b242992ac33a5bb861aa025f9e4c3be821f703827b86bdd37589ffbe8d
+Contract reacted to your sayHello { value0: '0x5f4fe6c8' }
 ```
