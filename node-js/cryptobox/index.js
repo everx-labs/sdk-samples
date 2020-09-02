@@ -48,59 +48,45 @@ async function get_grams_from_giver(client, account) {
     });
 }
 
+class dummySigningBox {
 
-const dummySigningBox = {
+    constructor(client) {
+        this.client = client;
+    }
+
     async getPublicKey(){
-        const client = await TONClient.create({
-            servers: ['http://localhost'],
-        });
-        let keyPair = await client.crypto.mnemonicDeriveSignKeys({
+
+        let keyPair = await this.client.crypto.mnemonicDeriveSignKeys({
             dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
             wordCount: SEED_PHRASE_WORD_COUNT,
             phrase: seedPhrase,
             path: HD_PATH
         });
         return keyPair.public;
-    },
-
-    async getKeyPair(){
-        const client = await TONClient.create({
-            servers: ['http://localhost'],
-        });
-        let keyPair = await client.crypto.mnemonicDeriveSignKeys({
-            dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
-            wordCount: SEED_PHRASE_WORD_COUNT,
-            phrase: seedPhrase,
-            path: HD_PATH
-        });
-        return keyPair;
-    },
+    }
     
     async sign(message, outputEncoding){
-        const client = await TONClient.create({
-            servers: ['http://localhost'],
-        });
-        const keys = await client.crypto.mnemonicDeriveSignKeys({
+        const keys = await this.client.crypto.mnemonicDeriveSignKeys({
             dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
             wordCount: SEED_PHRASE_WORD_COUNT,
             phrase: seedPhrase,
             path: HD_PATH
         });
         
-        return client.crypto.naclSignDetached(message, `${keys.secret}${keys.public}`, outputEncoding);
+        return this.client.crypto.naclSignDetached(message, `${keys.secret}${keys.public}`, outputEncoding);
     }
 }
 
 
 async function main(client) {
 
-    const keyPair = await dummySigningBox.getKeyPair();
+    const signingBox = new dummySigningBox(client);
 
     // Receiving future Hello contract address
     const futureAddress = (await client.contracts.createDeployMessage({
         package: HelloContract.package,
         constructorParams: {},
-        signingBox: dummySigningBox
+        signingBox
     })).address;
 
     console.log(`Future address of the contract will be: ${futureAddress}`);
@@ -114,7 +100,7 @@ async function main(client) {
     const helloAddress = (await client.contracts.deploy({
         package: HelloContract.package,
         constructorParams: {},
-        signingBox: dummySigningBox,
+        signingBox,
     })).address;
 
     console.log(`Hello contract was deployed at address: ${helloAddress}`);
