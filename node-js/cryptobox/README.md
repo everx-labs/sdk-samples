@@ -1,9 +1,10 @@
 # NodeJS SDK cryptobox example
 
-In this example we demonstrate how to eliminate passing you keys to the library
+In this example we demonstrate how to eliminate passing your keys to the library
 by using `signingBox` interface.
+
 We deploy solidity contract `Hello.sol` to [TONOS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview) (local blockchain) 
-and interact with it passing `signingBox` instead of a key pair.
+and interact with it using `signingBox` instead of a key pair.
 
 Notice `dummySigningBox` class that implements the required interface.
 ```
@@ -25,7 +26,7 @@ export type TONInputMessage = {
 
 ```
 
-In your projects you can write your own class that implement this interface
+In your projects you can write your own class that implements this interface
 and eliminate passing your keys inside the library. 
 
 ## Prerequisite
