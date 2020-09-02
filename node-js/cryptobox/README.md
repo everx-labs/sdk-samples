@@ -1,8 +1,9 @@
 # NodeJS SDK cryptobox example
 
-In this example we demonstrate how to use signingBox interface to deploy solidity 
-contract `Hello.sol` to [TONOS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview) (local blockchain) 
-and interact with it.
+In this example we demonstrate how to eliminate passing you keys to the library
+by using `signingBox` interface.
+We deploy solidity contract `Hello.sol` to [TONOS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview) (local blockchain) 
+and interact with it passing `signingBox` instead of a key pair.
 
 Notice `dummySigningBox` class that implements the required interface.
 ```
