@@ -52,8 +52,9 @@ const multisigContractPackage = {
 
         // Generate future address of the contract. It is unique and the same
         // per key pair and contract to be deployed.
-        const futureAddress = (await tonClient.contracts.createDeployMessage({
-            package: multisigContractPackage,
+        const futureAddress = (await tonClient.contracts.getDeployData({
+            abi: multisigContractPackage.abi,
+            imageBase64: multisigContractPackage.imageBase64,
             constructorParams: {
                 // Multisig owners public key.
                 // We are going to use a single key.
@@ -64,8 +65,10 @@ const multisigContractPackage = {
                 // We use 0 for simplicity. Consider using 2+ for sufficient security.
                 reqConfirms: 0,
             },
-            keyPair: keyPair,
+            publicKeyHex: keyPair.public,
+            workchainId: 0,
         })).address;
+
 
         console.log(`Here is the future address of your contract ${futureAddress}. Please save the keys. You will need them later to work with your multisig wallet.`);
 

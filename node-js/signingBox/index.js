@@ -85,10 +85,12 @@ async function main(client) {
     const signingBox = new dummySigningBox(client);
 
     // Receiving future Hello contract address
-    const futureAddress = (await client.contracts.createDeployMessage({
-        package: HelloContract.package,
-        constructorParams: {},
-        signingBox
+    const pubKey = await signingBox.getPublicKey();
+    const futureAddress = (await client.contracts.getDeployData({
+        abi: HelloContract.package.abi,
+        imageBase64: HelloContract.package.imageBase64,
+        publicKeyHex: pubKey,
+        workchainId: 0,
     })).address;
 
     console.log(`Future address of the contract will be: ${futureAddress}`);
