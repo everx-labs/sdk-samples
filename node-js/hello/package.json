@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ton-client-node-js": "^0.25.0"
+    "ton-client-node-js": "^0.26.0"
   }
 }

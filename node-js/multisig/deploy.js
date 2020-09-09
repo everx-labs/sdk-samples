@@ -23,7 +23,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
     try {
         // See https://docs.ton.dev/86757ecb2/p/069155-ton-os-se/b/09fbbd
         const tonClient = await TONClient.create({
-            servers: ['net.ton.dev'],
+            servers: ['http://localhost'],
             //See https://docs.ton.dev/86757ecb2/p/88321a-reliable-message-delivery
             messageExpirationTimeout: 60000, //timeout value in ms after the message becomes expired
             retriesCount: 3,  //the number of retries attempts            

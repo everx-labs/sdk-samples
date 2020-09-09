@@ -1,5 +1,10 @@
-// This script can only be used on local blockchain TON OS SE
+// This sponsors your multisig wallet before deploy.
+// It can only be used on local blockchain TON OS SE, because it uses pre-deployed nodeSE giver
 // Read more about TON OS SE here https://docs.ton.dev/86757ecb2/p/2771b0-overview
+//
+// To sponsor your multisig wallet before deploy on any other network, transfer funds from other wallet 
+// via Surf or tonos-cli for instance
+
 const { TONClient } = require('ton-client-node-js');
 
 // address of TON OS SE giver
@@ -26,6 +31,9 @@ const giverAbi = {
     data: [],
 };
 
+// enter your wallet address that you got at the preparation.js step here:
+const multisigAddress = "0:fefbfd88b07e1d5b4027e7d346beb758d4454c73f2310275920131665034073e";
+
 // Requesting 1000000000 local test tokens from Node SE giver
 async function get_grams_from_giver(client, account) {
     // console.log(account);
@@ -43,12 +51,8 @@ async function get_grams_from_giver(client, account) {
 }
 
 async function main(client) {
-    // Requesting contract deployment funds form a local NodeSE giver
-    // not suitable for other networks
-    const futureAddress = "0:a975e73ef87b4a6192896bed9a3555eda304c8b734c89d546a98e492c66a5677";
-
-    await get_grams_from_giver(client, futureAddress);
-    console.log(`Grams were transfered from giver to ${futureAddress}`);
+    await get_grams_from_giver(client, multisigAddress);
+    console.log(`Grams were transfered from giver to ${multisigAddress}`);
 
 };
 

@@ -47,11 +47,12 @@ async function main(client) {
     // Generating public and secret key pairs
     const helloKeys = await client.crypto.ed25519Keypair();
 
-    // Receiving future Hello contract address
-    const futureAddress = (await client.contracts.createDeployMessage({
-        package: HelloContract.package,
-        constructorParams: {},
-        keyPair: helloKeys,
+    // Future Hello contract address
+    const futureAddress = (await client.contracts.getDeployData({
+        abi: HelloContract.package.abi,
+        imageBase64: HelloContract.package.imageBase64,
+        publicKeyHex: helloKeys.public,
+        workchainId: 0,
     })).address;
 
     console.log(`Future address of the contract will be: ${futureAddress}`);

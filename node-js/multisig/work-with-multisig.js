@@ -4,7 +4,7 @@ const path = require('path');
 const keyPairFile = path.join(__dirname, 'keyPair.json');
 
 // Address to send tokens to
-const destinationAddress = '0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a6312490415';
+const recipient = '0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a6312490415';
 
 const multisigContractPackage = {
     abi: require('../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
@@ -19,7 +19,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         // You can also connect to local blockchain TON OS SE https://docs.ton.dev/86757ecb2/p/069155-ton-os-se/b/09fbbd
         // Read more about message expiration and retries here https://docs.ton.dev/86757ecb2/p/88321a-reliable-message-delivery
         const tonClient = await TONClient.create({
-            servers: ['net.ton.dev'],
+            servers: ['http://localhost'],
             messageExpirationTimeout: 60000,
             retriesCount: 3,
         });
@@ -32,7 +32,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         const keyPair = JSON.parse(fs.readFileSync(keyPairFile, 'utf8'));
 
         // Here we create deployMessage simply to get account address and check its balance
-        const address = (await tonClient.contracts.createDeployMessage({
+        const address1 = (await tonClient.contracts.createDeployMessage({
             package: multisigContractPackage,
             constructorParams: {
                 owners: [`0x${keyPair.public}`],//Multisig owner public key
@@ -41,21 +41,32 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
             keyPair: keyPair,
         })).address;
 
+        const multisigAddress = (await tonClient.contracts.getDeployData({
+            abi: multisigContractPackage.abi,
+            imageBase64: multisigContractPackage.imageBase64,
+            constructorParams: {
+                owners: [`0x${keyPair.public}`], //Multisig owner public key
+                reqConfirms: 0, //Multisig required confirms
+            },
+            publicKeyHex: keyPair.public,
+            workchainId: 0,
+        })).address;
+
         // Check account balance
         const accountData = await tonClient.queries.accounts.query({
-                id: { eq: address }
+                id: { eq: multisigAddress }
             },
             'acc_type balance code');
 
         if (accountData.length === 0) {
-            console.log(`You need to transfer at least 0.5 tokens and use deploy.js to deploy the contract.`);
+            console.log(`You need to transfer at least 0.5 tokens to and use deploy.js to deploy the contract.`);
             process.exit(1);
         }
 
         // Print the custodians of the wallet
         // See https://docs.ton.dev/86757ecb2/p/598b5c-runlocal-method
         const response = await tonClient.contracts.runLocal({
-            address: address,
+            address: multisigAddress,
             abi: multisigContractPackage.abi,
             functionName: 'getCustodians',
             input: {},
@@ -66,7 +77,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
         // Prepare input parameter for 'submitTransaction' method of multisig wallet
         const transaction = {
-            dest: destinationAddress,
+            dest: recipient,
             value: 100_000_000,
             bounce: false, 
             allBalance: false,
@@ -79,7 +90,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
        // Create run message 
        const runMessage = await tonClient.contracts.createRunMessage({
-            address: address,
+            address: multisigAddress,
             abi: multisigContractPackage.abi,
             functionName: 'submitTransaction',
             input: transaction,
@@ -92,9 +103,9 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
        // Wait for the result transaction. 
        // In case of network  problems waitForRunTransaction will return an error with updated messageProcessingState, 
        // which you can use again to resolve waiting later
-       const result = await tonClient.contracts.waitForRunTransaction(runMessage, messageProcessingState);
-       console.log(`Tokens were sent. Transaction id is ${result.transaction.id}`); 
-       console.log(`Run fees are  ${JSON.stringify(result.fees, null, 2)}`);
+       const sentTransactionInfo = await tonClient.contracts.waitForRunTransaction(runMessage, messageProcessingState);
+       console.log(`Tokens were sent. Transaction id is ${sentTransactionInfo.transaction.id}`); 
+       console.log(`Run fees are  ${JSON.stringify(sentTransactionInfo.fees, null, 2)}`);
 
 
        // Pattern 2. 
@@ -102,7 +113,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
        // network inconsistency and application crash probability. For more reliable approach - use the Pattern 1
        /*
         const sentTransactionInfo = await tonClient.contracts.run({
-            address: address,
+            address: multisigAddress,
             abi: multisigContractPackage.abi,
             functionName: 'submitTransaction',
             input: transaction,
@@ -119,7 +130,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         console.log(sentTransactionInfo.transaction.block_id);
 
         console.log("Account address:")
-        console.log(destinationAddress);
+        console.log(multisigAddress);
 
         console.log("Logical time:")
         console.log(sentTransactionInfo.transaction.lt);
@@ -134,7 +145,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         //Read more about aggregation methods here: https://docs.ton.dev/86757ecb2/p/772196-collection-query-methods/t/24ab01
         const transactionsCount = (await tonClient.queries.transactions.aggregate({
             filter: {
-                account_addr: { eq: address }
+                account_addr: { eq: multisigAddress }
             },
             fields: [{
                 field: 'id',
@@ -149,7 +160,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         for (let i = 0; i < (transactionsCount / 10); i++) {
             let result = await tonClient.queries.transactions.query({
                 filter: {
-                    account_addr: { eq: address },
+                    account_addr: { eq: multisigAddress },
                     lt: { gt: logicalTime }
                 },
                 orderBy: [{
@@ -172,14 +183,14 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         // Convert address to different types
         console.log("Multisig address in HEX:")
         let convertedAddress = (await tonClient.contracts.convertAddress({
-            address: address,
+            address: multisigAddress,
             convertTo: 'Hex',
         })).address;
         console.log(convertedAddress);
 
         console.log("Multisig non-bounce address in Base64:")
         convertedAddress = (await tonClient.contracts.convertAddress({
-            address: address,
+            address: multisigAddress,
             convertTo: 'Base64',
             base64Params: {
                 test: false,
@@ -191,7 +202,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
         console.log("Multisig bounce address in Base64:")
         convertedAddress = (await tonClient.contracts.convertAddress({
-            address: address,
+            address: multisigAddress,
             convertTo: 'Base64',
             base64Params: {
                 test: false,
