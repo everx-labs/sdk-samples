@@ -58,24 +58,22 @@ class dummySigningBox {
 
     async getPublicKey(){
 
-        let keyPair = await this.client.crypto.mnemonicDeriveSignKeys({
-            dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
-            wordCount: SEED_PHRASE_WORD_COUNT,
-            phrase: seedPhrase,
-            path: HD_PATH
-        });
-        return keyPair.public;
-    }
+        if (!this.publicKey) {
+            this.keys  = await this.client.crypto.mnemonicDeriveSignKeys({
+                    dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
+                    wordCount: SEED_PHRASE_WORD_COUNT,
+                    phrase: seedPhrase,
+                    path: HD_PATH
+            });
+            this.publicKey = this.keys.public;
+        }
+
+        return this.publicKey;
+    };
     
     async sign(message, outputEncoding){
-        const keys = await this.client.crypto.mnemonicDeriveSignKeys({
-            dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
-            wordCount: SEED_PHRASE_WORD_COUNT,
-            phrase: seedPhrase,
-            path: HD_PATH
-        });
         
-        return this.client.crypto.naclSignDetached(message, `${keys.secret}${keys.public}`, outputEncoding);
+        return this.client.crypto.naclSignDetached(message, `${this.keys.secret}${this.keys.public}`, outputEncoding);
     }
 }
 
