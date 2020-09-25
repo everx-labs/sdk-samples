@@ -1,9 +1,3 @@
-<p align="center">
-    <a href="docs.ton.dev" target="_blank">
-        <img src="https://s3.eu-central-1.amazonaws.com/ton.binaries-ws/logo.png" width="400" alt="Tonlabs SDK" />
-    </a>
-</p>
-
 # TON Labs SDK Samples
 In this repository you will find examples of using SDK to work with TON blockchain:
 
