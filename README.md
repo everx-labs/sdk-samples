@@ -2,7 +2,7 @@
 In this repository you will find examples of using SDK to work with TON blockchain:
 
 - [Examples in Node-js](https://github.com/tonlabs/sdk-samples/tree/master/node-js)
-- [Examples in WASM](https://github.com/tonlabs/sdk-samples/tree/master/web)
+- [Examples in Web](https://github.com/tonlabs/sdk-samples/tree/master/web)
 
 
 For additional guidelines, check out:
