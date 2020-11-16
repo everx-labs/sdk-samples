@@ -1,4 +1,4 @@
-# NodeJS SDK Subscribtion example
+# NodeJS SDK Subscription example
 
 In this example we use [ton-client-node-js](https://github.com/tonlabs/ton-client-node-js) to subscribe for different actions for contract on [TONOS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview) (local blockchain).
 
