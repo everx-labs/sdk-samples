@@ -17,7 +17,7 @@ In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js)
 docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 tonlabs/local-node
 ```
 
-Install packages & run:
+## Install packages & run:
 
 ```sh
 npm install
