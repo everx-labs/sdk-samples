@@ -5,18 +5,19 @@ In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js)
 ## Prerequisite
 
 * Node.js >= [12.x installed](https://nodejs.org)
-* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain TON OS SE)
+* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain TON OS SE) daemon running
+
 
 
 ## Preparation
 
-* [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/206d7d-introduction) 
+* [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/2771b0-overview) 
 
 ```sh
-tondev start
+docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 tonlabs/local-node
 ```
 
-Install packages:
+Install packages & run:
 
 ```sh
 npm install
