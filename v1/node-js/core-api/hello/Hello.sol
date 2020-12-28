@@ -2,7 +2,7 @@ pragma solidity >= 0.6.0;
 pragma AbiHeader expire;
 
 contract HelloTON {
-    // State variable storing the time of calling constructor or touch function
+    // State variable storing the time of `constructor` call or `touch` function call
     uint timestamp;
     // Modifier that allows public function to accept all external calls.
     modifier alwaysAccept {
