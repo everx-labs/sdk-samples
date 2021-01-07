@@ -1,6 +1,6 @@
 const { TONClient } = require('ton-client-node-js');
 // ABI and imageBase64 of a binary Hello contract
-const HelloContract = require('./HelloContract.js');
+const contractPackage = require('./HelloContract.js');
 
 // address of giver on NodeSE
 const giverAddress = '0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94';
@@ -49,8 +49,8 @@ async function main(client) {
 
     // Future Hello contract address
     const futureAddress = (await client.contracts.getDeployData({
-        abi: HelloContract.package.abi,
-        imageBase64: HelloContract.package.imageBase64,
+        abi: contractPackage.abi,
+        imageBase64: contractPackage.imageBase64,
         publicKeyHex: helloKeys.public,
         workchainId: 0,
     })).address;
@@ -64,7 +64,7 @@ async function main(client) {
 
     // Contract deployment
     const helloAddress = (await client.contracts.deploy({
-        package: HelloContract.package,
+        package: contractPackage,
         constructorParams: {},
         keyPair: helloKeys,
     })).address;
@@ -73,7 +73,7 @@ async function main(client) {
 
     let response = await client.contracts.run({
         address: helloAddress,
-        abi: HelloContract.package.abi,
+        abi: contractPackage.abi,
         functionName: 'touch',
         input: {},
         keyPair: null, // there is no pubkey key check in the contract so we can leave it empty. Dangerous to lost all account balance because  
@@ -83,7 +83,7 @@ async function main(client) {
 
     response = await client.contracts.runLocal({
         address: helloAddress,
-        abi: HelloContract.package.abi,
+        abi: contractPackage.abi,
         functionName: 'sayHello',
         input: {},
         keyPair: null, 

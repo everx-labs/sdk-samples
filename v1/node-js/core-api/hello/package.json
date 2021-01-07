@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tonclient/core": "^1.3.3",
-    "@tonclient/lib-node": "^1.3.3"
+    "@tonclient/core": "^1",
+    "@tonclient/lib-node": "^1"
   }
 }
