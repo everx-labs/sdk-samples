@@ -1,7 +1,7 @@
 const { TonClient } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
 // ABI and imageBase64 of a binary Hello contract
-const HelloContract = require('./HelloContract.js');
+const contractPackage = require('./HelloContract.js');
 
 // Address of giver on NodeSE
 const giverAddress = '0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94';
@@ -53,7 +53,7 @@ async function main(client) {
     // See more info about ABI type here https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#abi
     const abi = {
         type: 'Contract',
-        value: HelloContract.package.abi
+        value: contractPackage.abi
     }
     // Generate an ed25519 key pair
     const helloKeys = await client.crypto.generate_random_sign_keys();
@@ -63,7 +63,7 @@ async function main(client) {
     const deployOptions = {
         abi,
         deploy_set: {
-            tvc: HelloContract.package.imageBase64,
+            tvc: contractPackage.tvcInBase64,
             initial_data: {}
         },
         call_set: {
