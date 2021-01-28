@@ -17,9 +17,14 @@ In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js)
 docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 tonlabs/local-node
 ```
 
+Note: if you have running Node SE already with port mapping other than 80, than you have to
+change Node SE address in index.js line 9.
+
 ## Install packages & run:
 
 ```sh
 npm install
-node index.js
+npm run web
 ```
+
+Then open in browser address: http://localhost:4000
