@@ -1,0 +1,37 @@
+{
+	"name": "tonclient-web-hello",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Hello Web – WebPack TON Client example",
+	"scripts": {
+		"npm install": "npm install",
+		"web": "webpack-dev-server -d --config webpack.config.js --progress --colors --host 127.0.0.1",
+		"web:bundle": "webpack -p --config webpack.config.js --progress --colors --display-error-details"
+	},
+	"keywords": [
+		"TON",
+		"Client",
+		"FreeTON",
+		"TONOS",
+		"SDK"
+	],
+	"author": "TON DEV SOLUTIONS LTD.",
+	"license": "SEE LICENSE IN LICENSE",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/tonlabs/ton-client-web-js.git"
+	},
+	"homepage": "https://docs.ton.dev/",
+	"dependencies": {
+		"@tonclient/core": "^1.5.3",
+		"@tonclient/lib-web": "^1.5.3"
+	},
+	"devDependencies": {
+		"assert": "^2.0.0",
+		"copy-webpack-plugin": "^6.2.1",
+		"webpack": "5.1.3",
+		"webpack-cli": "3.3.12",
+		"webpack-dev-server": "3.11.0"
+	},
+	"main": "index.js"
+}
