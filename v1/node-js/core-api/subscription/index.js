@@ -13,7 +13,7 @@ const multisigContractPackage = {
 
 // Address of giver on TON OS SE, https://docs.ton.dev/86757ecb2/p/00f9a3-ton-os-se-giver
 const giverAddress = '0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94';
-// Giver ABI on TON OS SE
+// Giver ABI on TON OS SE (Startup Edition)
 const giverAbi = {
     'ABI version': 1,
     functions: [
@@ -60,7 +60,7 @@ async function get_grams_from_giver(account) {
 
 
 /**
- * Generate public and secret key pairs.
+ * Generate public and secret key pair.
  */
 async function generateWalletKeys() {
     return await client.crypto.generate_random_sign_keys();
@@ -68,7 +68,6 @@ async function generateWalletKeys() {
 
 async function deployContract(walletKeys) {
     // We create a deploy message to calculate the future address of the contract
-    // and to send it with 'sendMessage' later - if we use Pattern 1 for deploy (see below).
 
     const deployOptions = {
         abi: {
@@ -84,7 +83,7 @@ async function deployContract(walletKeys) {
             input: {
                 owners: [`0x${walletKeys.public}`], // Multisig owner public key.
                 reqConfirms: 0,  // Multisig required confirmations zero means that
-                // no additional confirmation is neede to send a transaction.
+                // no additional confirmation is needed to send a transaction.
             }
         },
         signer: {
@@ -100,6 +99,8 @@ async function deployContract(walletKeys) {
     // Not suitable for other networks.
     await get_grams_from_giver(address);
     console.log(`Grams were transferred from giver to ${address}`);
+
+    // Deploy of the contract with message processing
     await client.processing.process_message({
         send_events: false,
         message_encode_params: deployOptions
@@ -166,7 +167,7 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
         const wallet2keys = await generateWalletKeys();
         const wallet2Address = await deployContract(wallet2keys);
 
-        // Queries balance from collection with account ID equals second wallet address. 
+        // Query balance from accounts collection with account ID equal to the second wallet address. 
         result = (await client.net.query_collection({
             collection: 'accounts',
             filter: { id: { eq: wallet2Address } },
@@ -177,8 +178,8 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
 
         await new Promise(resolve => setTimeout(resolve, 1_000));
 
-        // Subscribe to accounts collection with account ID equals second wallet address.
-        // Returns account balance when accounts collection will change.
+        // Subscribe to accounts collection filtered by account ID equal to the second wallet address.
+        // Returns account balance when account with the specified ID is updated.
         const subscriptionAccountHandle = (await client.net.subscribe_collection({
             collection: 'accounts',
             filter: { id: { eq: wallet2Address } },
@@ -188,8 +189,8 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
             console.log();
         })).handle;
 
-        // Subscribe to transactions collection with account ID equals second wallet address.
-        // Returns transaction ID when transaction is received with such ID.
+        // Subscribe to transactions collection filtered by account ID equal to the second wallet address.
+        // Returns transaction ID when there is a new transaction for this account
         const subscriptionTransactionHandle = (await client.net.subscribe_collection({
             collection: 'transactions',
             filter: { account_addr: { eq: wallet2Address } },
@@ -198,7 +199,9 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
             console.log('>>> Transaction subscription triggered', d);
         })).handle;
 
-
+        // Subscribe to messages collection filtered by src address equal to the first wallet address
+        // and dst address equal to the second wallet address.
+        // Returns message ID when there is a new message fulfilling this filter.
         const subscriptionMessageHandle = (await client.net.subscribe_collection({
             collection: 'messages',
             filter: {
@@ -219,7 +222,7 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
         // Cancels a subscription specified by its handle. https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#unsubscribe
         await client.net.unsubscribe({ handle: subscriptionAccountHandle });
         await client.net.unsubscribe({ handle: subscriptionTransactionHandle });
-        await client.net.unsubscribe({ handle: subscriptionMessageHandle });
+    //    await client.net.unsubscribe({ handle: subscriptionMessageHandle });
 
 
 
