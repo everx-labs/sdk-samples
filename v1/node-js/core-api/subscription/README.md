@@ -1,7 +1,7 @@
 # NodeJS SDK Subscription example
 
-In this example we use [ton-client-node-js](https://github.com/tonlabs/ton-client-node-js) and a multisig wallet contract
-to send tokens from one wallet to another. You will learn how to subscribe to changes in account's transactions and messages.
+In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js) and a multisig wallet contract
+to send tokens from one wallet to another. You will learn how to subscribe to the new transactions and messages of an account.
 
 In the example we use [TONOS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview), local blockchain.
 
@@ -23,5 +23,5 @@ Install packages:
 
 ```sh
 npm install
-node index.jss
+node index.js
 ```
