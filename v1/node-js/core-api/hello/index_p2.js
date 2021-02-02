@@ -1,5 +1,6 @@
 // This sample shows how to deploy and run contracts in 3 steps:
 // using `encode_message`, `send_message` and `wait_for_transaction` functions.
+// Also it demonstrates how to catch intermediate events during message processing and log them
 
 const { TonClient } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
