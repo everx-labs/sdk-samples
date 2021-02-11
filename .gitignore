@@ -78,3 +78,4 @@ typings/
 /node-js/work-with-multisig/keyPair.json
 /node-js/work-with-multisig/seedPhrase.json
 /.idea/
+v1/node-js/core-api/transfer-with-comment/keys.json
