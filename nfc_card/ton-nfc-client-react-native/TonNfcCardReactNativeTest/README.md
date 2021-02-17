@@ -15,7 +15,7 @@ This is React native exemplary application demonstrating work with NFC cards. It
 * cocoapods
 * Xcode
 
-The detailed inforation about enviroment setup you may find [here](https://reactnative.dev/docs/environment-setup)
+The detailed information about enviroment setup you may find [here](https://reactnative.dev/docs/environment-setup)
 
 ## Quick start
 
