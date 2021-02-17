@@ -1,0 +1,21 @@
+{
+  "name": "sdk-subscription",
+  "version": "1.0.0",
+  "description": "How to use SDK subscription",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "FreeTON",
+    "TON",
+    "SDK",
+    "subscription"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tonclient/core": "^1",
+    "@tonclient/lib-node": "^1"
+  }
+}
