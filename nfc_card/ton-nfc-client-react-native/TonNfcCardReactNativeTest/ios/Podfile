@@ -1,0 +1,40 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+platform :ios, '11.0'
+
+target 'TonNfcCardReactNativeTest' do
+  config = use_native_modules!
+
+  use_react_native!(:path => config["reactNativePath"])
+  
+  pod 'TonNfcClientSwift'
+
+  # pod 'react-native-new-ton-nfc-card-lib', :path => '../../react-native-new-ton-nfc-card-lib'
+  
+
+  pod 'ton-nfc-client', :path => '../node_modules/ton-nfc-client'
+
+  target 'TonNfcCardReactNativeTestTests' do
+    inherit! :complete
+    # Pods for testing
+  end
+
+  # Enables Flipper.
+  #
+  # Note that if you have use_frameworks! enabled, Flipper will not work and
+  # you should disable these next few lines.
+  use_flipper!
+  post_install do |installer|
+    flipper_post_install(installer)
+  end
+end
+
+target 'TonNfcCardReactNativeTest-tvOS' do
+  # Pods for TonNfcCardReactNativeTest-tvOS
+
+  target 'TonNfcCardReactNativeTest-tvOSTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+end
