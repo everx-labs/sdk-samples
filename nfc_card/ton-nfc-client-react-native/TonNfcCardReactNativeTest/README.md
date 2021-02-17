@@ -16,3 +16,11 @@ This is React native exemplary application demonstrating work with NFC cards. It
 * Xcode
 
 The detailed inforation about enviroment setup you may find [here](https://reactnative.dev/docs/environment-setup)
+
+## Quick start
+
+```sh
+npm install
+npx react-native run-android (run-ios)
+```
+_Note:_ you can not use simulator to run, only device. 
