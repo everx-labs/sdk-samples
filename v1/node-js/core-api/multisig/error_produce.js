@@ -1,9 +1,10 @@
-
+// this example produces error intentionally
 const { TonClient } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
 const fs = require('fs');
 const path = require('path');
 const keyPairFile = path.join(__dirname, 'keyPair.json');
+const keyPairFile2 = path.join(__dirname, 'keyPair2.json');
 
 // Account is active when contract is deployed.
 const ACCOUNT_TYPE_ACTIVE = 1;
@@ -24,14 +25,14 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
     try {
         TonClient.useBinaryLibrary(libNode);
         const tonClient = new TonClient({
-            network: {
-                //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
-                server_address: 'net.ton.dev',
-                message_retries_count: 3,
-                message_processing_timeout: 60000,
-                network_retries_count: 2,
-                reconnect_timeout: 3
-            }
+            network: { 
+               // server_address:'net.ton.dev',
+                endpoints: ['net.ton.dev'],
+                message_retries_count: 0, // default = 5
+            },
+            abi:{
+                message_expiration_timeout: 30000, // default = 40000
+            }        
         });
 
         if (!fs.existsSync(keyPairFile)) {
@@ -142,6 +143,10 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         };
 
         // Run 'submitTransaction' method of multisig wallet       
+
+        //use wrong key pair
+        const keyPair2 = JSON.parse(fs.readFileSync(keyPairFile2, 'utf8'));
+
         // Create run message 
 
         console.log("Call `submitTransaction` function");
@@ -160,7 +165,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
                 signer: {
                     type: 'Keys',
-                    keys: keyPair
+                    keys: keyPair2
                 }
             }
         }
@@ -220,7 +225,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
         process.exit(0);
     } catch (error) {
-        console.error(error);
+        console.error(JSON.stringify(error, null,2));
         process.exit(1);
     }
 })();

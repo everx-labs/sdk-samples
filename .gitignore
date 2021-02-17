@@ -79,3 +79,5 @@ typings/
 /node-js/work-with-multisig/seedPhrase.json
 /.idea/
 package-lock.json
+v1/node-js/core-api/transfer-with-comment/keys.json
+
