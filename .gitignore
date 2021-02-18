@@ -40,7 +40,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
-package-lock.json
+
 
 # TypeScript v1 declaration files
 typings/
@@ -78,4 +78,6 @@ typings/
 /node-js/work-with-multisig/keyPair.json
 /node-js/work-with-multisig/seedPhrase.json
 /.idea/
+package-lock.json
 v1/node-js/core-api/transfer-with-comment/keys.json
+

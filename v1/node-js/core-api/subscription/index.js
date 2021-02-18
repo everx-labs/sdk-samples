@@ -2,19 +2,18 @@ const { TonClient } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
 const fs = require('fs');
 const path = require('path');
-const { cpuUsage } = require("process");
 let client;
 
 const multisigContractPackage = {
     // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
     abi: require('../../../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
-    // Compiled smart contract file
+    // Compiled smart contract file.
     tvcInBase64: fs.readFileSync('../../../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc').toString('base64'),
 };
 
-// address of giver on NodeSE
+// Address of giver on TON OS SE, https://docs.ton.dev/86757ecb2/p/00f9a3-ton-os-se-giver
 const giverAddress = '0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94';
-// giver ABI on NodeSE
+// Giver ABI on TON OS SE (Startup Edition)
 const giverAbi = {
     'ABI version': 1,
     functions: [
@@ -36,7 +35,7 @@ const giverAbi = {
     data: [],
 };
 
-// Requesting 1000000000 local test tokens from Node SE giver
+// Requesting local test tokens from TON OS SE giver.
 async function get_grams_from_giver(account) {
     const params = {
         send_events: false,
@@ -61,7 +60,7 @@ async function get_grams_from_giver(account) {
 
 
 /**
- * Generate public and secret key pairs
+ * Generate public and secret key pair.
  */
 async function generateWalletKeys() {
     return await client.crypto.generate_random_sign_keys();
@@ -69,7 +68,6 @@ async function generateWalletKeys() {
 
 async function deployContract(walletKeys) {
     // We create a deploy message to calculate the future address of the contract
-    // and to send it with 'sendMessage' later - if we use Pattern 1 for deploy (see below)
 
     const deployOptions = {
         abi: {
@@ -83,8 +81,9 @@ async function deployContract(walletKeys) {
         call_set: {
             function_name: 'constructor',
             input: {
-                owners: [`0x${walletKeys.public}`], //Multisig owner public key
-                reqConfirms: 0,  //Multisig required confirms}
+                owners: [`0x${walletKeys.public}`], // Multisig owner public key.
+                reqConfirms: 0,  // Multisig required confirmations zero means that
+                // no additional confirmation is needed to send a transaction.
             }
         },
         signer: {
@@ -95,10 +94,13 @@ async function deployContract(walletKeys) {
 
     const { address } = await client.abi.encode_message(deployOptions);
     console.log(`Future address of the wallet contract will be: ${address}`);
-    // Requesting contract deployment funds form a local TON OS SE giver
-    // not suitable for other networks
+
+    // Requesting contract deployment funds form a local TON OS SE giver.
+    // Not suitable for other networks.
     await get_grams_from_giver(address);
     console.log(`Grams were transferred from giver to ${address}`);
+
+    // Deploy of the contract with message processing
     await client.processing.process_message({
         send_events: false,
         message_encode_params: deployOptions
@@ -134,31 +136,22 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
             }
         }
     }
-    let response = await client.processing.process_message(params);
-    //console.log(`Сontract run 'sendTransaction' function with transaction  ${response.transaction.id}`);
+    await client.processing.process_message(params);
 }
-
-async function subscribeCollection(
-    params,
-    responseHandler,
-) {
-    return client.net.subscribe_collection(params, responseHandler);
-};
-
 
 (async () => {
     try {
         TonClient.useBinaryLibrary(libNode);
         client = new TonClient({
             network: {
-                // Local node URL 
+                // Local node URL.
                 server_address: "http://localhost"
             }
         });
         const wallet1keys = await generateWalletKeys();
         const wallet1Address = await deployContract(wallet1keys);
 
-
+        // Query data from accounts collection https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
         let result = (await client.net.query_collection({
             collection: 'accounts',
             filter: {
@@ -169,19 +162,24 @@ async function subscribeCollection(
             result: 'balance'
         })).result;
 
-        console.log(`Account 1 balance ${parseInt(result[0].balance)}`)
+        console.log(`Account 1 balance is ${parseInt(result[0].balance)}`)
 
         const wallet2keys = await generateWalletKeys();
         const wallet2Address = await deployContract(wallet2keys);
+
+        // Query balance from accounts collection with account ID equal to the second wallet address. 
         result = (await client.net.query_collection({
             collection: 'accounts',
             filter: { id: { eq: wallet2Address } },
             result: 'balance'
         })).result;
-        console.log(`Account 2 balance ${parseInt(result[0].balance)}`);
+        console.log(`Account 2 balance is ${parseInt(result[0].balance)}`);
+
 
         await new Promise(resolve => setTimeout(resolve, 1_000));
 
+        // Subscribe to accounts collection filtered by account ID equal to the second wallet address.
+        // Returns account balance when account with the specified ID is updated.
         const subscriptionAccountHandle = (await client.net.subscribe_collection({
             collection: 'accounts',
             filter: { id: { eq: wallet2Address } },
@@ -191,7 +189,8 @@ async function subscribeCollection(
             console.log();
         })).handle;
 
-
+        // Subscribe to transactions collection filtered by account ID equal to the second wallet address.
+        // Returns transaction ID when there is a new transaction for this account
         const subscriptionTransactionHandle = (await client.net.subscribe_collection({
             collection: 'transactions',
             filter: { account_addr: { eq: wallet2Address } },
@@ -200,7 +199,9 @@ async function subscribeCollection(
             console.log('>>> Transaction subscription triggered', d);
         })).handle;
 
-
+        // Subscribe to messages collection filtered by src address equal to the first wallet address
+        // and dst address equal to the second wallet address.
+        // Returns message ID when there is a new message fulfilling this filter.
         const subscriptionMessageHandle = (await client.net.subscribe_collection({
             collection: 'messages',
             filter: {
@@ -213,19 +214,30 @@ async function subscribeCollection(
         })).handle;
 
 
-        console.log(`\nSend money from ${wallet1Address} to ${wallet2Address}`);
+        console.log(`\Sending money from ${wallet1Address} to ${wallet2Address} and waiting for completion events.`);
+
+
         await sendMoney(wallet1keys, wallet1Address, wallet2Address, 5_000_000_000);
 
-
+        // Cancels a subscription specified by its handle. https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#unsubscribe
         await client.net.unsubscribe({ handle: subscriptionAccountHandle });
         await client.net.unsubscribe({ handle: subscriptionTransactionHandle });
-        await client.net.unsubscribe({ handle: subscriptionMessageHandle });
+    //    await client.net.unsubscribe({ handle: subscriptionMessageHandle });
 
 
-        const { block_id } = await client.net.find_last_shard_block({
+
+        // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#find_last_shard_block
+        // Returns ID of the latest block in a wallet 1 address account shard.
+        const block_id1 = (await client.net.find_last_shard_block({
             address: wallet1Address
-        });
-        console.log(`Last Shard Block id ${block_id}`);
+        })).block_id;
+        console.log(`Last Shard Block id ${block_id1} in shard of ${wallet1Address}`);
+
+        // Returns ID of the latest block in a wallet 2 address account shard.
+        const block_id2 = (await client.net.find_last_shard_block({
+            address: wallet2Address
+        })).block_id;
+        console.log(`Last Shard Block id ${block_id2} in shard of ${wallet2Address}`);
 
 
         await new Promise(resolve => setTimeout(resolve, 1_000));
@@ -240,15 +252,14 @@ async function subscribeCollection(
             result: 'balance'
         })).result;
 
-        console.log(`Account 1 balance ${parseInt(result[0].balance)}`)
+        console.log(`Account 1 balance is ${parseInt(result[0].balance)}`)
 
         result = (await client.net.query_collection({
             collection: 'accounts',
             filter: { id: { eq: wallet2Address } },
             result: 'balance'
         })).result;
-        console.log(`Account 2 balance ${parseInt(result[0].balance)}`);
-
+        console.log(`Account 2 balance is ${parseInt(result[0].balance)}`);
 
         process.exit(0);
     } catch (error) {
