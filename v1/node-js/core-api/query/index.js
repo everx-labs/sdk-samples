@@ -179,7 +179,7 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
 
         console.log(`Account 1 balance is ${parseInt(result[0].balance)}\n`);
 
-        // You can do multiple queries in a single fetch request with the help of batch query.
+        // You can do multiple queries in a single fetch request with the help of `batch_query`.
         // In the following query we get balance of both wallets at the same time.
         // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#batch_query
         console.log(">>batch_query sample");
@@ -208,9 +208,8 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
         console.log("Balance of wallet 1 is " + batchQueryResult[0][0].balance);
         console.log("Balance of wallet 2 is " + batchQueryResult[1][0].balance + '\n');
 
-        // If you need to wait till a certain value appears in the net, you can use the following code.
-        // There we wait for a transaction from wallet 1 to wallet 2. Until it appears in the net,
-        // the program awaits.
+        // If you need to wait till a certain value appears in the networl, you can use the following code.
+        // Here we wait until a transaction from wallet 1 to wallet 2 appears.
         // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#wait_for_collection
         console.log(">>wait_for_collection sample");
 
@@ -233,7 +232,7 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
         console.log("Got message with ID = " + result.id + '\n');
 
         // If you need to do an aggregation for a certain collection you can use aggregate_collection
-        // as in example below. Please note that in a real network the query may take time because
+        // as in the example below. Please note that in a real network the query may take time because
         // of the amount of data.
         // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#aggregate_collection
         console.log(">> aggregation_functions example");
@@ -268,7 +267,7 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
         console.log("Number of accounts: " + aggregationFunctionsResults[4] + '\n');
 
 
-        // To get ID of the last block in a specified account shard for a wallet 1 we use the following code.
+        // To get ID of the last block in a specified account shard for a wallet 1 use the following code.
         // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#find_last_shard_block
         console.log(">> find_last_shard_block example");
         const block_id1 = (await client.net.find_last_shard_block({
