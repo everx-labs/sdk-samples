@@ -1,0 +1,75 @@
+{
+    "address": "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13",
+    "was_active": true,
+    "balance": 673440234312564900,
+    "keyPair": {
+        "secret": "6e9ca582df77a86da93c0668d7f6fbb010459156b434d3059005ef396c825f59",
+        "public": "95c06aa743d1f9000dd64b75498f106af4b7e7444234d7de67ea26988f6181df"
+    },
+    "package": {
+        "abi": {
+            "ABI version": 2,
+            "header": ["time", "expire"],
+            "functions": [
+                {
+                    "name": "upgrade",
+                    "inputs": [
+                        {
+                            "name": "newcode",
+                            "type": "cell"
+                        }
+                    ],
+                    "outputs": []
+                },
+                {
+                    "name": "sendTransaction",
+                    "inputs": [
+                        {
+                            "name": "dest",
+                            "type": "address"
+                        },
+                        {
+                            "name": "value",
+                            "type": "uint128"
+                        },
+                        {
+                            "name": "bounce",
+                            "type": "bool"
+                        }
+                    ],
+                    "outputs": []
+                },
+                {
+                    "name": "getMessages",
+                    "inputs": [],
+                    "outputs": [
+                        {
+                            "components": [
+                                {
+                                    "name": "hash",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "name": "expireAt",
+                                    "type": "uint64"
+                                }
+                            ],
+                            "name": "messages",
+                            "type": "tuple[]"
+                        }
+                    ]
+                },
+                {
+                    "name": "constructor",
+                    "inputs": [],
+                    "outputs": []
+                }
+            ],
+            "data": [],
+            "events": []
+        },
+        "imageBase64": "te6ccgECGgEAA9sAAgE0BgEBAcACAgPPIAUDAQHeBAAD0CAAQdgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAIm/wD0pCAiwAGS9KDhiu1TWDD0oQkHAQr0pCD0oQgAAAIBIAwKAfz/fyHtRNAg10nCAZ/T/9MA9AX4an/4Yfhm+GKOG/QFbfhqcAGAQPQO8r3XC//4YnD4Y3D4Zn/4YeLTAAGOEoECANcYIPkBWPhCIPhl+RDyqN4j+EL4RSBukjBw3rry4GUh0z/THzQx+CMhAb7yuSH5ACD4SoEBAPQOIJEx3rMLAE7y4Gb4ACH4SiIBVQHIyz9ZgQEA9EP4aiMEXwTTHwHwAfhHbpLyPN4CASASDQIBWBEOAQm46Jj8UA8B/vhBbo4S7UTQ0//TAPQF+Gp/+GH4Zvhi3tFwbW8C+EqBAQD0hpUB1ws/f5NwcHDikSCONyMjI28CbyLIIs8L/yHPCz8xMQFvIiGkA1mAIPRDbwI0IvhKgQEA9HyVAdcLP3+TcHBw4gI1MzHoXwPIghB3RMfighCAAAAAsc8LHyEQAKJvIgLLH/QAyIJYYAAAAAAAAAAAAAAAAM8LZoEDmCLPMQG5lnHPQCHPF5Vxz0EhzeIgyXH7AFswwP+OEvhCyMv/+EbPCwD4SgH0AMntVN5/+GcAxbkWq+f/CC3Rxt2omgQa6ThAM/p/+mAegL8NT/8MPwzfDFHDfoCtvw1OADAIHoHeV7rhf/8MTh8Mbh8Mz/8MPFvfCNJeRnJuPwzcXwAaPwhZGX//CNnhYB8JQD6AGT2qj/8M8AIBIBUTAde7Fe+TX4QW6OEu1E0NP/0wD0Bfhqf/hh+Gb4Yt76QNcNf5XU0dDTf9/XDACV1NHQ0gDf0SIiInPIcc8LASLPCgBzz0AkzxYj+gKAac9Acs9AIMki+wBfBfhKgQEA9IaVAdcLP3+TcHBw4pEggUAJKOLfgjIgG7n/hKIwEhAYEBAPRbMDH4at4i+EqBAQD0fJUB1ws/f5NwcHDiAjUzMehfA18D+ELIy//4Rs8LAPhKAfQAye1Uf/hnAgEgFxYAx7jkYYdfCC3Rwl2omhp/+mAegL8NT/8MPwzfDFvamj8IXwikDdJGDhvXXlwMvwAfCFkZf/8I2eFgHwlAPoAZPaqfAeQfYIQaHaPdqn4ARh8IWRl//wjZ4WAfCUA+gBk9qo//DPACAtoZGAAtr4QsjL//hGzwsA+EoB9ADJ7VT4D/IAgAdacCHHAJ0i0HPXIdcLAMABkJDi4CHXDR+S8jzhUxHAAJDgwQMighD////9vLGS8jzgAfAB+EdukvI83o"
+    },
+    "encryptionPublicKey": "209a6fd3aef0dc9c4a060352a2a0471ebd310cafe5251a16d06476a70580405f",
+    "new_balance": null
+}
