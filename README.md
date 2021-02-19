@@ -16,7 +16,7 @@ In this repository you will find examples of using official SDKs.
 
 To get a deeper understanding dive into our [SDK guides](https://docs.ton.dev/86757ecb2/p/783f9d-about-sdk) where you can find extensive explanations and descriptions of each step of DApp development on Free TON.
 
-# Folder structure
+# Repository structure
 
 `v1` folder contains examples working on the currently developed Javascript (Typescript) SDK with major version 1. We encorage you to use it in your projects.
 
