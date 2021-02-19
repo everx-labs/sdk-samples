@@ -1,6 +1,8 @@
-# Work with TON Labs NFC security card example
+# React Native sample project demonstrating how to work with TON Labs NFC security card
 
-This is React native exemplary application demonstrating work with NFC cards. It uses  [ton-nfc-client](https://github.com/tonlabs/ton-nfc-client) to handle NFC stuff. You may run both for Android smatphones and iPhones.
+This is a React Native exemplary application demonstrating how to work with NFC cards. 
+
+It uses  [ton-nfc-client](https://github.com/tonlabs/ton-nfc-client) to handle NFC stuff. You may run both on Android smartphones and iPhones.
 
 ## Prerequisite
 
@@ -15,7 +17,7 @@ This is React native exemplary application demonstrating work with NFC cards. It
 * cocoapods
 * Xcode
 
-The detailed information about enviroment setup you may find [here](https://reactnative.dev/docs/environment-setup)
+The detailed information about enviroment setup can be found [here](https://reactnative.dev/docs/environment-setup)
 
 ## Quick start
 
