@@ -1,0 +1,7 @@
+rootProject.name = 'TonNfcCardReactNativeTest'
+include ':ton-nfc-client'
+project(':ton-nfc-client').projectDir = new File(rootProject.projectDir, '../node_modules/ton-nfc-client/android')
+include ':react-native-new-ton-nfc-card-lib'
+project(':react-native-new-ton-nfc-card-lib').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-new-ton-nfc-card-lib/android')
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
