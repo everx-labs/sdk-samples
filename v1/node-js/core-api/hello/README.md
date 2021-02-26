@@ -1,6 +1,6 @@
 # NodeJS SDK Hello example
 
-In this example we deploy solidity contract Hello.sol to [TON OS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview) (local blockchain), run its on-chain method and run its get-method.
+In this example we deploy solidity contract Hello.sol to [TON OS SE](https://docs.ton.dev/86757ecb2/p/19d886-ton-os-se) (local blockchain), run its on-chain method and run its get-method.
 
 ## Prerequisite
 
@@ -11,7 +11,7 @@ In this example we deploy solidity contract Hello.sol to [TON OS SE](https://doc
 
 ## Preparation
 
-* [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/2771b0-overview) 
+* [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/19d886-ton-os-se) 
 
 ```sh
 tondev se start
