@@ -1,12 +1,12 @@
 # NodeJS SDK Hello example
 
-In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js) (ton-client-node-js is deprecated) to deploy solidity contract Hello.sol to [TON OS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview) (local blockchain).
+In this example we deploy solidity contract Hello.sol to [TON OS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview) (local blockchain), run its on-chain method and run its get-method.
 
 ## Prerequisite
 
 * Node.js >= [12.x installed](https://nodejs.org)
-* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain TON OS SE) daemon running
-
+* [Docker](https://docs.docker.com/desktop/#download-and-install) installed and running
+* [TONDEV CLI](https://docs.ton.dev/86757ecb2/p/179e51-tondev)
 
 
 ## Preparation
@@ -14,8 +14,12 @@ In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js)
 * [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/2771b0-overview) 
 
 ```sh
-docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 tonlabs/local-node
+tondev se start
 ```
+
+You're all set! Check out the TON OS SE GraphQL web playground at http://0.0.0.0/graphql. For Windows, use http://127.0.0.1/graphql or http://localhost/graphql. Learn more about GraphQL API here.
+
+See other available [TON OS SE management options in TONDEV](https://docs.ton.dev/86757ecb2/v/0/p/54722f-ton-os-se).
 
 ## Install packages & run:
 
