@@ -14,10 +14,10 @@ function setText(id, text) {
     document.getElementById(id).innerText = text
 }
 
-// Address of giver on NodeSE
+// Address of giver on TON OS SE
 const giverAddress = '0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94';
 
-// Giver ABI on NodeSE
+// Giver ABI on TON OS SE
 const giverAbi = {
     'ABI version': 1,
     functions: [{
@@ -36,7 +36,7 @@ const giverAbi = {
     data: []
 };
 
-// Requesting 1000000000 local test tokens from Node SE giver
+// Requesting 1000000000 local test tokens from TON OS SE giver
 async function get_grams_from_giver(client, account) {
     const params = {
         send_events: false,
