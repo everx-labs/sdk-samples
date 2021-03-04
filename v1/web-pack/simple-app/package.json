@@ -1,5 +1,5 @@
 {
-    "name": "simple-ton-app",
+    "name": "simple-app",
     "version": "1.0.0",
     "private": true,
     "scripts": {
@@ -7,9 +7,15 @@
         "build": "webpack",
         "start": "webpack serve --open"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+	"keywords": [
+		"TON",
+		"Client",
+		"FreeTON",
+		"TONOS",
+		"SDK"
+	],
+	"author": "TON DEV SOLUTIONS LTD.",
+	"license": "SEE LICENSE IN LICENSE",
     "dependencies": {
         "@tonclient/core": "latest",
         "@tonclient/lib-node": "latest",
