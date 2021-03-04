@@ -10,7 +10,7 @@ const { contracts, clientParams } = require('./config')
 const { clickHandler, exec, $, $val } = require('./helpers')
 const { utf8ToHex, fromNano, sleep, toNano } = require('./utils')
 
-const WALLET_INITIAL_VALUE = 500 * 1e9 //
+const WALLET_INITIAL_VALUE = 20 * 1e9
 
 const main = async () => {
     TonClient.useBinaryLibrary(libWeb)
