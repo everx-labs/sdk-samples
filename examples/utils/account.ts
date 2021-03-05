@@ -60,8 +60,8 @@ export type AccountGiver = (address: string, value: number) => Promise<void>;
 /**
  * Deploy options
  */
-type AccountDeployOptions = {
-    initFunctionName?: string,
+export type AccountDeployOptions = {
+    initFunctionName?: string | null,
     initInput?: object,
     /**
      * Giver to be used to send amount of value to deploying address
@@ -77,7 +77,7 @@ type AccountDeployOptions = {
 /**
  * Smart Contract related data
  */
-type Contract = {
+export type Contract = {
     abi: AbiContract,
     tvc: string,
 }
@@ -200,11 +200,11 @@ export class Account {
         if (this.initData) {
             (params.deploy_set as any).initial_data = this.initData;
         }
-        if (options?.initFunctionName) {
+        if (options?.initFunctionName !== null) {
             params.call_set = {
-                function_name: options.initFunctionName,
+                function_name: options?.initFunctionName ?? "constructor",
             };
-            if (options.initInput !== undefined) {
+            if (options?.initInput !== undefined) {
                 params.call_set.input = options.initInput;
 
             }
