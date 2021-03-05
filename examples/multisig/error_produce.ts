@@ -53,23 +53,19 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         // Print the custodians of the wallet
         console.log("Сustodians list:", response.decoded?.output?.custodians);
 
-
-        // Prepare input parameter for 'submitTransaction' method of multisig wallet
-        const submitTransactionParams = {
-            dest: recipient,
-            value: 100_000_000,
-            bounce: false,
-            allBalance: false,
-            payload: "",
-        };
-
         // Run 'submitTransaction' method of multisig wallet
 
         //use wrong key pair
         const keyPair2 = JSON.parse(fs.readFileSync(keyPairFile2, "utf8"));
 
         console.log("Call `submitTransaction` function");
-        const sentTransactionInfo = await acc.run("submitTransaction", submitTransactionParams, {
+        const sentTransactionInfo = await acc.run("submitTransaction", {
+            dest: recipient,
+            value: 100_000_000,
+            bounce: false,
+            allBalance: false,
+            payload: "",
+        }, {
             signer: signerKeys(keyPair2),
         });
         // Call `submitTransaction` function
