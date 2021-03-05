@@ -32,7 +32,7 @@ const giverAbi = abiContract(Giver.abi);
  * @param {TonClient} client 
  * @param {string} account 
  */
-async function get_grams_from_giver(client, account) {
+async function get_tokens_from_giver(client, account) {
     if (!fs.existsSync(giverKeyPairFile)) {
         console.log(`Please place ${giverKeyPairFileName} file in project root folder with Giver's keys`);
         process.exit(1);
@@ -122,8 +122,8 @@ async function main(client) {
 
     // Requesting contract deployment funds form a local TON OS SE giver
     // not suitable for other networks
-    await get_grams_from_giver(client, futureAddress);
-    console.log(`Grams were transferred from giver to ${futureAddress}`);
+    await get_tokens_from_giver(client, futureAddress);
+    console.log(`Tokens were transferred from giver to ${futureAddress}`);
 
     // Contract deployment
     const helloAddress = (await client.processing.process_message({
