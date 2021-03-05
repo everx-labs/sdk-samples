@@ -2,54 +2,92 @@
 // using `encode_message`, `send_message` and `wait_for_transaction` functions.
 // Also it demonstrates how to catch intermediate events during message processing and log them
 
-const { TonClient } = require("@tonclient/core");
+const { abiContract, TonClient } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
+const fs = require('fs');
+const path = require('path');
+const giverKeyPairFileName = 'GiverV2.keys.json';
+const giverKeyPairFile = path.join(__dirname, giverKeyPairFileName);
 // ABI and imageBase64 of a binary Hello contract
 const contractPackage = require('./HelloContract.js');
 
 // Address of giver on TON OS SE
-const giverAddress = '0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94';
+const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
 // Giver ABI on TON OS SE
-const giverAbi = {
-    'ABI version': 1,
-    functions: [{
+const giverAbi = abiContract({
+    'ABI version': 2,
+    header: ['time', 'expire'],
+    functions: [
+        {
+            name: 'sendTransaction',
+            inputs: [
+                { 'name': 'dest', 'type': 'address' },
+                { 'name': 'value', 'type': 'uint128' },
+                { 'name': 'bounce', 'type': 'bool' }
+            ],
+            outputs: []
+        },
+        {
+            name: 'getMessages',
+            inputs: [],
+            outputs: [
+                {
+                    components: [
+                        { name: 'hash', type: 'uint256' },
+                        { name: 'expireAt', type: 'uint64' }
+                    ],
+                    name: 'messages',
+                    type: 'tuple[]'
+                }
+            ]
+        },
+        {
+            name: 'upgrade',
+            inputs: [
+                { name: 'newcode', type: 'cell' }
+            ],
+            outputs: []
+        },
+        {
             name: 'constructor',
             inputs: [],
             outputs: []
-        }, {
-            name: 'sendGrams',
-            inputs: [
-                { name: 'dest', type: 'address' },
-                { name: 'amount', type: 'uint64' }
-            ],
-            outputs: []
-        }],
-    events: [],
-    data: []
-};
+        }
+    ],
+    data: [],
+    events: []
+});
 
 // Requesting 1000000000 local test tokens from TON OS SE giver
 async function get_grams_from_giver(client, account) {
+    if (!fs.existsSync(giverKeyPairFile)) {
+        console.log(`Please place ${giverKeyPairFileName} file in project root folder with Giver's keys`);
+        process.exit(1);
+    }
+
+    const giverKeyPair = JSON.parse(fs.readFileSync(giverKeyPairFile, 'utf8'));
+
     const params = {
         send_events: false,
         message_encode_params: {
             address: giverAddress,
-            abi: {
-                type: 'Contract',
-                value: giverAbi
-            },
+            abi: giverAbi,
             call_set: {
-                function_name: 'sendGrams',
+                function_name: 'sendTransaction',
                 input: {
                     dest: account,
-                    amount: 10_000_000_000
+                    value: 10_000_000_000,
+                    bounce: false
                 }
             },
-            signer: { type: 'None' }
+            signer: {
+                type: 'Keys',
+                keys: giverKeyPair
+            },
         },
     }
     await client.processing.process_message(params)
-};
+}
 
 async function logEvents(params, response_type){
     console.log(`params = ${JSON.stringify(params,null,2)}`);
