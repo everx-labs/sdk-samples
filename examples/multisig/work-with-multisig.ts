@@ -48,20 +48,17 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
         console.log("Сustodians list:", response.decoded?.output?.custodians);
 
 
-        // Prepare input parameter for 'submitTransaction' method of multisig wallet
-        const submitTransactionParams = {
+        // Run 'submitTransaction' method of multisig wallet
+
+        console.log("Call `submitTransaction` function");
+        // Call `submitTransaction` function
+        const sentTransactionInfo = await acc.run("submitTransaction", {
             dest: recipient,
             value: 100_000_000,
             bounce: false,
             allBalance: false,
             payload: "",
-        };
-
-        // Run 'submitTransaction' method of multisig wallet
-
-        console.log("Call `submitTransaction` function");
-        // Call `submitTransaction` function
-        const sentTransactionInfo = await acc.run("submitTransaction", submitTransactionParams);
+        });
 
         console.log(sentTransactionInfo);
         console.log("Transaction info:");
