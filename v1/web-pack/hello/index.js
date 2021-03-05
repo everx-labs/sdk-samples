@@ -67,7 +67,7 @@ const giverKeyPair = {
 };
 
 // Requesting 1000000000 local test tokens from TON OS SE giver
-async function get_grams_from_giver(client, account) {
+async function get_tokens_from_giver(client, account) {
     const params = {
         send_events: false,
         message_encode_params: {
@@ -126,7 +126,7 @@ window.addEventListener('load', async () => {
 
     // Request contract deployment funds form a local TON OS SE giver
     // not suitable for other networks
-    await get_grams_from_giver(client, address);
+    await get_tokens_from_giver(client, address);
     setText("prepaid", "Success")
 
     // Deploy `hello` contract

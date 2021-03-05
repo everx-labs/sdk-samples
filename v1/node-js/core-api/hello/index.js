@@ -55,7 +55,7 @@ const giverAbi = abiContract({
 });
 
 // Requesting 1000000000 local test tokens from TON OS SE giver
-async function get_grams_from_giver(client, account) {
+async function get_tokens_from_giver(client, account) {
     if (!fs.existsSync(giverKeyPairFile)) {
         console.log(`Please place ${giverKeyPairFileName} file in project root folder with Giver's keys`);
         process.exit(1);
@@ -122,8 +122,8 @@ async function main(client) {
 
     // Request contract deployment funds form a local TON OS SE giver
     // not suitable for other networks
-    await get_grams_from_giver(client, address);
-    console.log(`Grams were transfered from giver to ${address}`);
+    await get_tokens_from_giver(client, address);
+    console.log(`Tokens were transfered from giver to ${address}`);
 
     // Deploy `hello` contract
     // See more info about `process_message` here  
