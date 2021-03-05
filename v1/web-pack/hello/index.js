@@ -15,25 +15,55 @@ function setText(id, text) {
 }
 
 // Address of giver on TON OS SE
-const giverAddress = '0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94';
-
+const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
 // Giver ABI on TON OS SE
-const giverAbi = {
-    'ABI version': 1,
-    functions: [{
-        name: 'constructor',
-        inputs: [],
-        outputs: []
-    }, {
-        name: 'sendGrams',
-        inputs: [
-            { name: 'dest', type: 'address' },
-            { name: 'amount', type: 'uint64' }
-        ],
-        outputs: []
-    }],
-    events: [],
-    data: []
+const giverAbi = abiContract({
+    'ABI version': 2,
+    header: ['time', 'expire'],
+    functions: [
+        {
+            name: 'sendTransaction',
+            inputs: [
+                { 'name': 'dest', 'type': 'address' },
+                { 'name': 'value', 'type': 'uint128' },
+                { 'name': 'bounce', 'type': 'bool' }
+            ],
+            outputs: []
+        },
+        {
+            name: 'getMessages',
+            inputs: [],
+            outputs: [
+                {
+                    components: [
+                        { name: 'hash', type: 'uint256' },
+                        { name: 'expireAt', type: 'uint64' }
+                    ],
+                    name: 'messages',
+                    type: 'tuple[]'
+                }
+            ]
+        },
+        {
+            name: 'upgrade',
+            inputs: [
+                { name: 'newcode', type: 'cell' }
+            ],
+            outputs: []
+        },
+        {
+            name: 'constructor',
+            inputs: [],
+            outputs: []
+        }
+    ],
+    data: [],
+    events: []
+});
+// Giver keypair:
+const giverKeyPair = {
+    public: '2ada2e65ab8eeab09490e3521415f45b6e42df9c760a639bcf53957550b25a16',
+    secret: '172af540e43a524763dd53b26a066d472a97c4de37d5498170564510608250c3'
 };
 
 // Requesting 1000000000 local test tokens from TON OS SE giver
@@ -42,18 +72,19 @@ async function get_grams_from_giver(client, account) {
         send_events: false,
         message_encode_params: {
             address: giverAddress,
-            abi: {
-                type: 'Contract',
-                value: giverAbi
-            },
+            abi: giverAbi,
             call_set: {
-                function_name: 'sendGrams',
+                function_name: 'sendTransaction',
                 input: {
                     dest: account,
-                    amount: 10_000_000_000
+                    value: 10_000_000_000,
+                    bounce: false
                 }
             },
-            signer: { type: 'None' }
+            signer: {
+                type: 'Keys',
+                keys: giverKeyPair
+            },
         },
     }
     await client.processing.process_message(params)
