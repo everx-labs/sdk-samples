@@ -61,7 +61,16 @@ export type AccountGiver = (address: string, value: number) => Promise<void>;
  * Deploy options
  */
 export type AccountDeployOptions = {
+    /**
+     * Function name that will be run on deploy. Special values:
+     * - `undefined` (omitted): library will use `constructor` as a function name.
+     * - `null`: library will not produce message body (no init function invocation).
+     */
     initFunctionName?: string | null,
+    /**
+     * Parameters of init function.
+     * Note: library ignores this parameter if `initFunctionName` is `null`.
+     */
     initInput?: object,
     /**
      * Giver to be used to send amount of value to deploying address
@@ -75,14 +84,27 @@ export type AccountDeployOptions = {
 }
 
 /**
- * Smart Contract related data
+ * Smart Contract
+ *
+ * This object contains information about smart contract class.
  */
 export type Contract = {
+    /**
+     * ABI of smart contract
+     */
     abi: AbiContract,
-    tvc: string,
+    /**
+     * Compiled artifact of the smart contract.
+     * This field contains BOC with code and initial data (init state).
+     * If it is missing, then application can't deploy account of this contracts.
+     */
+    tvc?: string,
 }
 
 export class AccountError extends Error {
+    static missingTVC(): AccountError {
+        return new AccountError("Can't calculate deploy params: missing required TVC.");
+    }
 }
 
 export class TonClientEx {
@@ -92,26 +114,13 @@ export class TonClientEx {
         },
     };
     private static _default: TonClient | null = null;
-    private static _giver: AccountGiver | null = null;
 
     static useBinaryLibrary(lib: any) {
         TonClient.useBinaryLibrary(lib);
     }
 
-    static setDefault(client: TonClient) {
+    static set default(client: TonClient) {
         this._default = client;
-    }
-
-    static setDefaultConfig(config: ClientConfig) {
-        this._defaultConfig = config;
-    }
-
-    static setGiver(giver: AccountGiver) {
-        this._giver = giver;
-    }
-
-    static get defaultConfig(): ClientConfig {
-        return this._defaultConfig;
     }
 
     static get default(): TonClient {
@@ -119,6 +128,22 @@ export class TonClientEx {
             this._default = new TonClient(this._defaultConfig);
         }
         return this._default;
+    }
+
+    static set defaultConfig(config: ClientConfig) {
+        this._defaultConfig = config;
+    }
+
+    static get defaultConfig(): ClientConfig {
+        return this._defaultConfig;
+    }
+
+}
+
+export class Account {
+    private static _giver: AccountGiver | null = null;
+    static set giver(giver: AccountGiver) {
+        this._giver = giver;
     }
 
     // private static createGiver(): AccountGiver {
@@ -138,7 +163,7 @@ export class TonClientEx {
 
     private static createDeprecatedGiver(): AccountGiver {
         const giver = new Account(DeprecatedGiver, {
-            client: this.default,
+            client: TonClientEx.default,
             address: DeprecatedGiver.defaultAddress,
         });
         return async (address, value) => {
@@ -155,9 +180,7 @@ export class TonClientEx {
         }
         return this._giver;
     }
-}
 
-export class Account {
     private readonly client: TonClient;
     private readonly abi: Abi;
     private readonly initData: object | null;
@@ -190,6 +213,9 @@ export class Account {
     getParamsOfDeployMessage(
         options?: AccountDeployOptions,
     ): ParamsOfEncodeMessage {
+        if (!this.contract.tvc) {
+            throw AccountError.missingTVC();
+        }
         const params: ParamsOfEncodeMessage = {
             abi: this.abi,
             signer: this.signer,
@@ -219,7 +245,7 @@ export class Account {
     async deploy(options?: AccountDeployOptions): Promise<ResultOfProcessMessage> {
         const deployParams = this.getParamsOfDeployMessage(options);
         const useGiver = options?.useGiver;
-        const giver = useGiver === true ? TonClientEx.giver : useGiver;
+        const giver = useGiver === true ? Account.giver : useGiver;
         this.address = (await this.client.abi.encode_message(deployParams)).address;
         if (giver) {
             await giver(this.address, 10_000_000_000);

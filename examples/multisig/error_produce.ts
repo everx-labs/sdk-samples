@@ -18,7 +18,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
 (async () => {
     try {
         TonClientEx.useBinaryLibrary(libNode);
-        TonClientEx.setDefaultConfig({
+        TonClientEx.defaultConfig = {
             network: {
                 // server_address:'net.ton.dev',
                 endpoints: ["net.ton.dev"],
@@ -27,7 +27,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
             abi: {
                 message_expiration_timeout: 30000, // default = 40000
             },
-        });
+        };
 
         if (!fs.existsSync(keyPairFile)) {
             console.log("Please use preparation.js to generate key pair and seed phrase");
