@@ -16,7 +16,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
 (async () => {
     try {
         TonClientEx.useBinaryLibrary(libNode);
-        TonClientEx.setDefaultConfig({
+        TonClientEx.defaultConfig = {
             network: {
                 //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
                 server_address: "net.ton.dev",
@@ -25,7 +25,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
                 network_retries_count: 2,
                 reconnect_timeout: 3,
             },
-        });
+        };
 
         if (!fs.existsSync(keyPairFile)) {
             console.log("Please use preparation.js to generate key pair and seed phrase");

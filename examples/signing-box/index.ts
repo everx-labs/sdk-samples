@@ -10,7 +10,7 @@ import {libNode} from "@tonclient/lib-node";
 import {Account, TonClientEx} from "utils/account";
 
 TonClientEx.useBinaryLibrary(libNode);
-TonClientEx.setDefaultConfig({network: {endpoints: ["http://localhost"]}});
+TonClientEx.defaultConfig = {network: {endpoints: ["http://localhost"]}};
 
 const SEED_PHRASE_WORD_COUNT = 12;
 const SEED_PHRASE_DICTIONARY_ENGLISH = 1;
