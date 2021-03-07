@@ -27,7 +27,7 @@ const keyPairFile = path.join(__dirname, "keyPair.json");
         // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
         // (see README in  https://github.com/tonlabs/ton-client-js )
         TonClientEx.useBinaryLibrary(libNode);
-        TonClientEx.setDefaultConfig({network: {endpoints: ["net.ton.dev"]}});
+        TonClientEx.defaultConfig = {network: {endpoints: ["net.ton.dev"]}};
 
         const {crypto} = TonClientEx.default;
         // Generate seed phrase. It is used to generate or re-generate keys. Keep it secret.

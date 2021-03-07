@@ -18,7 +18,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 
 TonClientEx.useBinaryLibrary(libNode);
-TonClientEx.setDefaultConfig({network: {endpoints: ["net.ton.dev"]}});
+TonClientEx.defaultConfig = {network: {endpoints: ["net.ton.dev"]}};
 
 (async () => {
     try {
