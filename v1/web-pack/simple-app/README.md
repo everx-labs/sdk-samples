@@ -16,6 +16,7 @@ Novice blockchain developers, who prefer to learn by doing.
     -   [Sample deal](#sample-deal)
 -   [Algorithm](#algorithm)
 -   [Conslusion](#conslusion)
+-   [Troubleshooting](#troubleshooting)
 -   [Appendix A](#appendix-a)
 
 ## What are we building?
@@ -36,7 +37,9 @@ $ npm i
 npm run test
 ```
 
-The test takes up to 10 minutes (see jest.config `testTimeout`), and **if passes you can go directly to the [Run the App](#run-the-app) section**
+The test takes up to 10 minutes (see jest.config `testTimeout`).
+
+If test passes you can go directly to the **[Run the App](#run-the-app) section**, else check [Troubleshooting](#troubleshooting) section.
 
 Why the time is not determined?
 To simplify greatly, we can say the following:
@@ -190,6 +193,11 @@ To fully understand the workflow and how a moderator can resolve disputes, see t
 ## Conslusion
 
 In the next part we will add a DeBot to make our application immediately available to all Serf users.
+
+## Troubleshooting
+
+If you choose to use NodeSE, then this application requires NodeSE ver >=  0.25. Run `tondev se info` to see current version
+
 
 ## Appendix A
 

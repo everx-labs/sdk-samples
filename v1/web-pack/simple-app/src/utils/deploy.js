@@ -34,20 +34,13 @@ const deploy = (client) => async ({
     const { address } = await client.abi.encode_message(message_encode_params)
 
     // Credit account
-    if (giver.keyPair) {
-        await run(client)(giver, 'sendTransaction', {
-            dest: address,
-            value,
-            bounce: false,
-            ...(flags !== undefined ? { flags } : {}),
-            ...(payload !== undefined ? { payload } : {}),
-        })
-    } else {
-        await run(client)(giver, 'sendGrams', {
-            dest: address,
-            amount: value,
-        })
-    }
+    await run(client)(giver, 'sendTransaction', {
+        dest: address,
+        value,
+        bounce: false,
+        ...(flags !== undefined ? { flags } : {}),
+        ...(payload !== undefined ? { payload } : {}),
+    })
 
     await repeatWithPredicate(() => client.processing.process_message({ send_events: false, message_encode_params }))
     return address
