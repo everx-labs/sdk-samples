@@ -135,3 +135,5 @@ local.properties
 *.js.map
 /examples/**/*.js
 /examples/**/*.d.ts
+/demo/**/*.js
+/demo/**/*.d.ts
