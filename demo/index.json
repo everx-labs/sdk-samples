@@ -1,0 +1,8 @@
+{
+	"applications": [
+		{
+			"name": "hello",
+			"title": "Simple NodeJs Application"
+		}
+	]
+}

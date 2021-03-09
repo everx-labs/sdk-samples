@@ -1,0 +1,21 @@
+const abi = {
+    'ABI version': 1,
+    functions: [
+        {
+            name: 'constructor',
+            inputs: [],
+            outputs: [],
+        },
+        {
+            name: 'sendGrams',
+            inputs: [
+                { name: 'dest', type: 'address' },
+                { name: 'amount', type: 'uint64' },
+            ],
+            outputs: [],
+        },
+    ],
+    events: [],
+    data: [],
+}
+module.exports = { abi }
