@@ -343,6 +343,13 @@ export class Account {
     }
 
     /**
+     * Drops all cached and local data.
+     */
+    refresh() {
+        this.cachedBoc = null;
+    }
+
+    /**
      * Returns parsed data of the account.
      */
     async getAccount(): Promise<any> {
