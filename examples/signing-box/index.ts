@@ -57,7 +57,6 @@ async function main() {
     console.log(`Future address of the contract will be: ${await hello.getAddress()}`);
 
     await hello.deploy({
-        initFunctionName: "constructor",
         useGiver: true,
     });
     console.log(`Hello contract was deployed at address: ${await hello.getAddress()}`);
