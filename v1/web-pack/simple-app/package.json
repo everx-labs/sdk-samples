@@ -7,15 +7,15 @@
         "build": "webpack",
         "start": "webpack serve --open"
     },
-	"keywords": [
-		"TON",
-		"Client",
-		"FreeTON",
-		"TONOS",
-		"SDK"
-	],
-	"author": "TON DEV SOLUTIONS LTD.",
-	"license": "SEE LICENSE IN LICENSE",
+    "keywords": [
+        "TON",
+        "Client",
+        "FreeTON",
+        "TONOS",
+        "SDK"
+    ],
+    "author": "TON DEV SOLUTIONS LTD.",
+    "license": "SEE LICENSE IN LICENSE",
     "dependencies": {
         "@tonclient/core": "latest",
         "@tonclient/lib-node": "latest",
