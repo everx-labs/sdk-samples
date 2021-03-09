@@ -55,7 +55,7 @@ $ npm install
 $ node index.js
 Hello localhost TON!
 Future address of the contract will be: 0:6a77bd82590eeef139d2ef149df31947759b32b3cc25da39d562b12d03ecd4a2
-Tokens were transferred from giver to 0:6a77bd82590eeef139d2ef149df31947759b32b3cc25da39d562b12d03ecd4a2
+Grams were transferred from giver to 0:6a77bd82590eeef139d2ef149df31947759b32b3cc25da39d562b12d03ecd4a2
 Hello contract was deployed at address: 0:6a77bd82590eeef139d2ef149df31947759b32b3cc25da39d562b12d03ecd4a2
 Contract run transaction with output null, f5d04358f56dbd943670e13fa0e4b308d321134db362d2ed2dc643ea7c3f109d
 Contract reacted to your sayHello {"value0":"0x00000000000000000000000000000000000000000000000000000000603a0a75"}
