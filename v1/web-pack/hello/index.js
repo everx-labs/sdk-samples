@@ -15,45 +15,73 @@ function setText(id, text) {
 }
 
 // Address of giver on TON OS SE
-const giverAddress = '0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94';
-
+const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
 // Giver ABI on TON OS SE
-const giverAbi = {
-    'ABI version': 1,
-    functions: [{
-        name: 'constructor',
-        inputs: [],
-        outputs: []
-    }, {
-        name: 'sendGrams',
-        inputs: [
-            { name: 'dest', type: 'address' },
-            { name: 'amount', type: 'uint64' }
-        ],
-        outputs: []
-    }],
-    events: [],
-    data: []
-};
+const giverAbi = abiContract({
+    'ABI version': 2,
+    header: ['time', 'expire'],
+    functions: [
+        {
+            name: 'sendTransaction',
+            inputs: [
+                { 'name': 'dest', 'type': 'address' },
+                { 'name': 'value', 'type': 'uint128' },
+                { 'name': 'bounce', 'type': 'bool' }
+            ],
+            outputs: []
+        },
+        {
+            name: 'getMessages',
+            inputs: [],
+            outputs: [
+                {
+                    components: [
+                        { name: 'hash', type: 'uint256' },
+                        { name: 'expireAt', type: 'uint64' }
+                    ],
+                    name: 'messages',
+                    type: 'tuple[]'
+                }
+            ]
+        },
+        {
+            name: 'upgrade',
+            inputs: [
+                { name: 'newcode', type: 'cell' }
+            ],
+            outputs: []
+        },
+        {
+            name: 'constructor',
+            inputs: [],
+            outputs: []
+        }
+    ],
+    data: [],
+    events: []
+});
+// Giver keypair:
+const giverKeyPair = require('./GiverV2.keys.json');
 
 // Requesting 1000000000 local test tokens from TON OS SE giver
-async function get_grams_from_giver(client, account) {
+async function get_tokens_from_giver(client, account) {
     const params = {
         send_events: false,
         message_encode_params: {
             address: giverAddress,
-            abi: {
-                type: 'Contract',
-                value: giverAbi
-            },
+            abi: giverAbi,
             call_set: {
-                function_name: 'sendGrams',
+                function_name: 'sendTransaction',
                 input: {
                     dest: account,
-                    amount: 10_000_000_000
+                    value: 10_000_000_000,
+                    bounce: false
                 }
             },
-            signer: { type: 'None' }
+            signer: {
+                type: 'Keys',
+                keys: giverKeyPair
+            },
         },
     }
     await client.processing.process_message(params)
@@ -95,7 +123,7 @@ window.addEventListener('load', async () => {
 
     // Request contract deployment funds form a local TON OS SE giver
     // not suitable for other networks
-    await get_grams_from_giver(client, address);
+    await get_tokens_from_giver(client, address);
     setText("prepaid", "Success")
 
     // Deploy `hello` contract
