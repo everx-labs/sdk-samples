@@ -36,24 +36,47 @@ module.exports = {
     },
     Giver: {
         abi: {
-            "ABI version": 1,
+            'ABI version': 2,
+            header: ['time', 'expire'],
             functions: [
                 {
-                    name: "constructor",
-                    inputs: [],
-                    outputs: [],
+                    name: 'sendTransaction',
+                    inputs: [
+                        { 'name': 'dest', 'type': 'address' },
+                        { 'name': 'value', 'type': 'uint128' },
+                        { 'name': 'bounce', 'type': 'bool' }
+                    ],
+                    outputs: []
                 },
                 {
-                    name: "sendGrams",
-                    inputs: [
-                        { name: "dest", type: "address" },
-                        { name: "amount", type: "uint64" },
-                    ],
-                    outputs: [],
+                    name: 'getMessages',
+                    inputs: [],
+                    outputs: [
+                        {
+                            components: [
+                                { name: 'hash', type: 'uint256' },
+                                { name: 'expireAt', type: 'uint64' }
+                            ],
+                            name: 'messages',
+                            type: 'tuple[]'
+                        }
+                    ]
                 },
+                {
+                    name: 'upgrade',
+                    inputs: [
+                        { name: 'newcode', type: 'cell' }
+                    ],
+                    outputs: []
+                },
+                {
+                    name: 'constructor',
+                    inputs: [],
+                    outputs: []
+                }
             ],
-            events: [],
             data: [],
+            events: []
         }
     }
 }
