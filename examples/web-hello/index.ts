@@ -2,7 +2,10 @@ import {signerKeys} from "@tonclient/core";
 import {libWeb} from "@tonclient/lib-web";
 
 import {HelloContract} from "./HelloContract";
-import {Account, TonClientEx} from "utils/account";
+import {
+    Account,
+    TonClientEx,
+} from "utils/account";
 
 TonClientEx.useBinaryLibrary(libWeb);
 TonClientEx.defaultConfig = {
