@@ -8,6 +8,10 @@ const {
 } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
 const { Giver, Hello } = require("./contracts");
+const fs = require('fs');
+const path = require('path');
+const giverKeyPairFileName = 'GiverV2.keys.json';
+const giverKeyPairFile = path.join(__dirname, giverKeyPairFileName);
 
 TonClient.useBinaryLibrary(libNode);
 
@@ -18,7 +22,7 @@ const seedPhrase = "abandon math mimic master filter design carbon crystal rooki
 
 
 // address of giver on TON OS SE
-const giverAddress = "0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94";
+const giverAddress = "0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5";
 // giver ABI on TON OS SE
 const giverAbi = abiContract(Giver.abi);
 
@@ -28,22 +32,34 @@ const giverAbi = abiContract(Giver.abi);
  * @param {TonClient} client 
  * @param {string} account 
  */
-async function get_grams_from_giver(client, account) {
-    await client.processing.process_message({
-        message_encode_params: messageSourceEncodingParams({
+async function get_tokens_from_giver(client, account) {
+    if (!fs.existsSync(giverKeyPairFile)) {
+        console.log(`Please place ${giverKeyPairFileName} file in project root folder with Giver's keys`);
+        process.exit(1);
+    }
+
+    const giverKeyPair = JSON.parse(fs.readFileSync(giverKeyPairFile, 'utf8'));
+
+    const params = {
+        send_events: false,
+        message_encode_params: {
             address: giverAddress,
+            abi: giverAbi,
             call_set: {
-                function_name: "sendGrams",
+                function_name: 'sendTransaction',
                 input: {
                     dest: account,
-                    amount: 10_000_000_000,
-                },
+                    value: 10_000_000_000,
+                    bounce: false
+                }
             },
-            abi: giverAbi,
-            signer: signerNone(),
-        }),
-        send_events: false,
-    });
+            signer: {
+                type: 'Keys',
+                keys: giverKeyPair
+            },
+        },
+    }
+    await client.processing.process_message(params)
 }
 
 class dummySigningBox {
@@ -106,8 +122,8 @@ async function main(client) {
 
     // Requesting contract deployment funds form a local TON OS SE giver
     // not suitable for other networks
-    await get_grams_from_giver(client, futureAddress);
-    console.log(`Grams were transferred from giver to ${futureAddress}`);
+    await get_tokens_from_giver(client, futureAddress);
+    console.log(`Tokens were transferred from giver to ${futureAddress}`);
 
     // Contract deployment
     const helloAddress = (await client.processing.process_message({
