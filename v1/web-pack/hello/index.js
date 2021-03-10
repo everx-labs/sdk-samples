@@ -63,7 +63,7 @@ const giverAbi = abiContract({
 // Giver keypair:
 const giverKeyPair = require('./GiverV2.keys.json');
 
-// Requesting 1000000000 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from TON OS SE giver
 async function get_tokens_from_giver(client, account) {
     const params = {
         send_events: false,

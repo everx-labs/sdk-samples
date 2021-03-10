@@ -54,7 +54,7 @@ const giverAbi = abiContract({
     events: []
 });
 
-// Requesting 1000000000 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from TON OS SE giver
 async function get_tokens_from_giver(client, account) {
     if (!fs.existsSync(giverKeyPairFile)) {
         console.log(`Please place ${giverKeyPairFileName} file in project root folder with Giver's keys`);
