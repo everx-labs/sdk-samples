@@ -1,6 +1,6 @@
 # TON Labs SDK Samples
 
-In this repository you will find examples of using official SDKs.
+In this repository you will find examples of using official TON Labs Free TON SDKs.
 
 
 **Have a question? Get quick help in our channel:**
@@ -21,7 +21,7 @@ To get a deeper understanding dive into [SDK guides](https://docs.ton.dev/86757e
 
 # Repository structure
 
-`demo` folder contains demo samples that can be installed via [TONDEV](https://github.com/tonlabs/tondev).
+`demo` folder contains demo samples that can be used as a quick start and also can be installed via [TONDEV](https://github.com/tonlabs/tondev).
 
 `examples` folder contains samples demonstrating different sdk features using high-level SDK functions and is constantly replenished with samples with new sdk features. 
 See news about new samples [here](https://docs.ton.dev/86757ecb2/p/6553fc-api-and-sdk)
