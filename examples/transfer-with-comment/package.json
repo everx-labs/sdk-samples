@@ -1,0 +1,20 @@
+{
+    "name": "transfer-with-comment-example",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "example": "tsc & node index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@tonclient/core": "^1.9.0",
+        "@tonclient/lib-node": "^1.9.0",
+        "utils": "file:../utils"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.31"
+    }
+}
