@@ -26,7 +26,7 @@
 	"dependencies": {
 		"@tonclient/core": "^1.10.0",
 		"@tonclient/lib-web": "^1.10.0",
-		"utils": "file:../utils"
+		"utils": "file:../../utils"
 	},
 	"devDependencies": {
 		"assert": "^2.0.0",
