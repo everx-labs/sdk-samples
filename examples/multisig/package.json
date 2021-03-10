@@ -1,10 +1,12 @@
 {
-    "name": "cache-example",
+    "name": "multisig-example",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "example": "tsc && node index.js"
+        "preparation": "tsc && node preparation.js",
+        "deploy": "tsc && node deploy.js",
+        "error_produce": "tsc && node error_produce.js"
     },
     "keywords": [],
     "author": "",

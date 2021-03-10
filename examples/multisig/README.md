@@ -20,6 +20,7 @@ Below we describe each of the steps in more detail.
 You can find the source code in `preparation.js`. In order to run it, use:
 
 ```sh
+tsc
 node preparation.js
 ```
 

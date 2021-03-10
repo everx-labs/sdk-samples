@@ -35,10 +35,16 @@ TonClientEx.defaultConfig = {network: {endpoints: ["net.ton.dev"]}};
         });
 
         const address = await acc.getAddress();
-        const info = await acc.getAccount();
+        let info;
+        try {
+            info = await acc.getAccount();
+        } catch (err) {
+            console.log(`Account with address ${address} isn't exist`);
+            process.exit(1);
+        }
 
         if (info.acc_type == ACCOUNT_TYPE_ACTIVE) {
-            console.log(`Contract ${address} is already deployed`);
+            console.log(`Account with address ${address} is already deployed`);
             process.exit(1);
         }
 
