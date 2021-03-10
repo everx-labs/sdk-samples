@@ -26,7 +26,7 @@ const giverAddress = "0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698
 // giver ABI on TON OS SE
 const giverAbi = abiContract(Giver.abi);
 
-// Requesting 1000000000 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from TON OS SE giver
 /**
  * 
  * @param {TonClient} client 

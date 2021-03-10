@@ -34,7 +34,7 @@ const giverAbi = {
 // enter your wallet address that you got at the preparation.js step here:
 const multisigAddress = "0:fefbfd88b07e1d5b4027e7d346beb758d4454c73f2310275920131665034073e";
 
-// Requesting 1000000000 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from TON OS SE giver
 async function get_grams_from_giver(client, account) {
     // console.log(account);
     const { contracts } = client;
