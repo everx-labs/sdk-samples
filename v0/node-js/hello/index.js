@@ -26,7 +26,7 @@ const giverAbi = {
     data: [],
 };
 
-// Requesting 1000000000 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from TON OS SE giver
 async function get_grams_from_giver(client, account) {
     // console.log(account);
     const { contracts } = client;
