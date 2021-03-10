@@ -196,7 +196,9 @@ export class Account {
     async getAddress(): Promise<string> {
         let address = this.address;
         if (address === null) {
-            const deployParams = this.getParamsOfDeployMessage();
+            const deployParams = this.getParamsOfDeployMessage({
+                initFunctionName: null,
+            });
             address = (await this.client.abi.encode_message(deployParams)).address;
             this.address = address;
         }
@@ -329,6 +331,7 @@ export class Account {
                 collection: "accounts",
                 filter: {id: {eq: this.address}},
                 result: "boc",
+                timeout: 1000,
             })
         ).result.boc;
         this.cachedBoc = boc;
