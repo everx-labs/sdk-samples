@@ -23,8 +23,10 @@ To get a deeper understanding dive into [SDK guides](https://docs.ton.dev/86757e
 
 `demo` folder contains demo samples that can be installed via [TONDEV](https://github.com/tonlabs/tondev).
 
-`examples` folder contains samples demonstrating different sdk features and is constantly replenished with samples with new sdk features. 
+`examples` folder contains samples demonstrating different sdk features using high-level SDK functions and is constantly replenished with samples with new sdk features. 
 See news about new samples [here](https://docs.ton.dev/86757ecb2/p/6553fc-api-and-sdk)
+
+`low level` folder contains samples working on low-level sdk functions, which may be useful to implement some complex use-cases.
 
 `nfc_card` folder contains examples of projects working with NFC Security Card using React-Native, Swift and Android SDKs.
 
