@@ -1,0 +1,1327 @@
+.globl	constructor
+.public	constructor
+.type	constructor, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7_with_init_storage$
+}
+IF
+;; constructor protection
+GETGLOB 6
+THROWIF 51
+PUSHINT 1
+SETGLOB 6
+;; end constructor protection
+; Decode input parameters
+; Decode pubkey
+LDUQ 256
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 256
+}
+IFNOT
+; Decode sellerWallet
+LDMSGADDRQ
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDMSGADDR
+}
+IFNOT
+; Decode amount
+LDUQ 16
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 16
+}
+IFNOT
+; Decode currency
+DUP
+SREFS
+EQINT 1
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDREF
+; Decode deposit
+LDUQ 256
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 256
+}
+IFNOT
+; Decode text
+LDREF
+ENDS
+;; param: pubkey
+;; param: sellerWallet
+;; param: amount
+;; param: currency
+;; param: deposit
+;; param: text
+; constructor Offer
+;; push identifier pubkey
+PUSH S5
+NEQINT 0
+THROWIFNOT 120
+;; push identifier deposit
+PUSH S1
+NEQINT 0
+THROWIFNOT 125
+;; push identifier sellerWallet
+PUSH S4
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+SDEQ
+NOT
+THROWIFNOT 121
+ACCEPT
+; expValue
+; end expValue
+;; push identifier pubkey
+PUSH S5
+; colValue
+SETGLOB 15
+; end colValue
+; expValue
+; end expValue
+;; push identifier sellerWallet
+PUSH S4
+; colValue
+SETGLOB 16
+; end colValue
+; expValue
+; end expValue
+;; push identifier amount
+PUSH S3
+; colValue
+SETGLOB 12
+; end colValue
+; expValue
+; end expValue
+;; push identifier currency
+PUSH S2
+; colValue
+SETGLOB 13
+; end colValue
+; expValue
+; end expValue
+;; push identifier deposit
+PUSH S1
+; colValue
+SETGLOB 11
+; end colValue
+; expValue
+; end expValue
+;; push identifier text
+DUP
+; colValue
+SETGLOB 14
+; end colValue
+BLKDROP 6
+; end constructor Offer
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	sellerDiscardsOffer
+.public	sellerDiscardsOffer
+.type	sellerDiscardsOffer, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function sellerDiscardsOffer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_sellerPubkey
+GETGLOB 15
+;; ==
+EQUAL
+THROWIFNOT 101
+ACCEPT
+;; if
+;; push identifier m_buyerPubkey
+GETGLOB 17
+EQINT 0
+PUSHCONT {
+	;; push identifier m_sellerWallet
+	GETGLOB 16
+	NEWC
+	STSLICECONST x42_
+	STSLICE
+	PUSHSLICE x203e8000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	ENDC
+	PUSHINT 160
+	SENDRAWMSG
+}
+PUSHCONT {
+	; expValue
+	; end expValue
+	;; push identifier now
+	NOW
+	; colValue
+	SETGLOB 19
+	; end colValue
+}
+IFELSE
+;; end if
+; end function sellerDiscardsOffer
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	sellerDiscardsOffer_internal
+.type	sellerDiscardsOffer_internal, @function
+; function sellerDiscardsOffer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_sellerPubkey
+GETGLOB 15
+;; ==
+EQUAL
+THROWIFNOT 101
+ACCEPT
+;; if
+;; push identifier m_buyerPubkey
+GETGLOB 17
+EQINT 0
+PUSHCONT {
+	;; push identifier m_sellerWallet
+	GETGLOB 16
+	NEWC
+	STSLICECONST x42_
+	STSLICE
+	PUSHSLICE x203e8000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	ENDC
+	PUSHINT 160
+	SENDRAWMSG
+}
+PUSHCONT {
+	; expValue
+	; end expValue
+	;; push identifier now
+	NOW
+	; colValue
+	SETGLOB 19
+	; end colValue
+}
+IFELSE
+;; end if
+; end function sellerDiscardsOffer
+
+.globl	sellerDoesTransfer
+.public	sellerDoesTransfer
+.type	sellerDoesTransfer, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function sellerDoesTransfer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_sellerPubkey
+GETGLOB 15
+;; ==
+EQUAL
+THROWIFNOT 101
+;; push identifier m_buyerWallet
+GETGLOB 18
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+SDEQ
+NOT
+THROWIFNOT 121
+ACCEPT
+;; push identifier m_buyerWallet
+GETGLOB 18
+NEWC
+STSLICECONST x42_
+STSLICE
+PUSHSLICE x203e8000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 160
+SENDRAWMSG
+; end function sellerDoesTransfer
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	sellerDoesTransfer_internal
+.type	sellerDoesTransfer_internal, @function
+; function sellerDoesTransfer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_sellerPubkey
+GETGLOB 15
+;; ==
+EQUAL
+THROWIFNOT 101
+;; push identifier m_buyerWallet
+GETGLOB 18
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+SDEQ
+NOT
+THROWIFNOT 121
+ACCEPT
+;; push identifier m_buyerWallet
+GETGLOB 18
+NEWC
+STSLICECONST x42_
+STSLICE
+PUSHSLICE x203e8000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 160
+SENDRAWMSG
+; end function sellerDoesTransfer
+
+.globl	buyerPlacesDeposit
+.public	buyerPlacesDeposit
+.type	buyerPlacesDeposit, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+; Decode buyerPubkey
+LDUQ 256
+PUSHCONT {
+	;; load next cell
+	LDREF
+	ENDS
+	CTOS
+	LDU 256
+}
+IFNOT
+ENDS
+;; param: buyerPubkey
+; function buyerPlacesDeposit
+;; push identifier buyerPubkey
+DUP
+NEQINT 0
+THROWIFNOT 120
+;; push identifier m_buyerPubkey
+GETGLOB 17
+EQINT 0
+THROWIFNOT 122
+;; get member value
+CALL $message_balance_macro$
+;; push identifier m_depositAmount
+GETGLOB 11
+;; >=
+GEQ
+THROWIFNOT 123
+ACCEPT
+; expValue
+; end expValue
+;; push identifier buyerPubkey
+DUP
+; colValue
+SETGLOB 17
+; end colValue
+; expValue
+; end expValue
+;; get member sender
+GETGLOB 9
+; colValue
+SETGLOB 18
+; end colValue
+DROP
+; end function buyerPlacesDeposit
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	buyerPlacesDeposit_internal
+.type	buyerPlacesDeposit_internal, @function
+;; param: buyerPubkey
+; function buyerPlacesDeposit
+;; push identifier buyerPubkey
+DUP
+NEQINT 0
+THROWIFNOT 120
+;; push identifier m_buyerPubkey
+GETGLOB 17
+EQINT 0
+THROWIFNOT 122
+;; get member value
+CALL $message_balance_macro$
+;; push identifier m_depositAmount
+GETGLOB 11
+;; >=
+GEQ
+THROWIFNOT 123
+ACCEPT
+; expValue
+; end expValue
+;; push identifier buyerPubkey
+DUP
+; colValue
+SETGLOB 17
+; end colValue
+; expValue
+; end expValue
+;; get member sender
+GETGLOB 9
+; colValue
+SETGLOB 18
+; end colValue
+DROP
+; end function buyerPlacesDeposit
+
+.globl	buyerClaimsTransfer
+.public	buyerClaimsTransfer
+.type	buyerClaimsTransfer, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function buyerClaimsTransfer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_buyerPubkey
+GETGLOB 17
+;; ==
+EQUAL
+THROWIFNOT 101
+ACCEPT
+; expValue
+; end expValue
+;; push identifier now
+NOW
+; colValue
+SETGLOB 20
+; end colValue
+; end function buyerClaimsTransfer
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	buyerClaimsTransfer_internal
+.type	buyerClaimsTransfer_internal, @function
+; function buyerClaimsTransfer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_buyerPubkey
+GETGLOB 17
+;; ==
+EQUAL
+THROWIFNOT 101
+ACCEPT
+; expValue
+; end expValue
+;; push identifier now
+NOW
+; colValue
+SETGLOB 20
+; end colValue
+; end function buyerClaimsTransfer
+
+.globl	buyerDiscardsOffer
+.public	buyerDiscardsOffer
+.type	buyerDiscardsOffer, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+ENDS
+; function buyerDiscardsOffer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_buyerPubkey
+GETGLOB 17
+;; ==
+EQUAL
+THROWIFNOT 101
+ACCEPT
+;; push identifier m_sellerWallet
+GETGLOB 16
+NEWC
+STSLICECONST x42_
+STSLICE
+PUSHSLICE x203e8000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 160
+SENDRAWMSG
+; end function buyerDiscardsOffer
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	buyerDiscardsOffer_internal
+.type	buyerDiscardsOffer_internal, @function
+; function buyerDiscardsOffer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_buyerPubkey
+GETGLOB 17
+;; ==
+EQUAL
+THROWIFNOT 101
+ACCEPT
+;; push identifier m_sellerWallet
+GETGLOB 16
+NEWC
+STSLICECONST x42_
+STSLICE
+PUSHSLICE x203e8000000000000000000000000004_
+STSLICER
+STSLICECONST 0
+STSLICECONST 0
+ENDC
+PUSHINT 160
+SENDRAWMSG
+; end function buyerDiscardsOffer
+
+.globl	moderatorDoesTransfer
+.public	moderatorDoesTransfer
+.type	moderatorDoesTransfer, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+; Decode input parameters
+; Decode flag
+LDI 1
+ENDS
+;; param: flag
+; function moderatorDoesTransfer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_moderPubkey
+GETGLOB 10
+;; ==
+EQUAL
+THROWIFNOT 101
+;; push identifier m_buyerWallet
+GETGLOB 18
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+SDEQ
+NOT
+THROWIFNOT 124
+ACCEPT
+;; if
+;; push identifier flag
+DUP
+TRUE
+;; ==
+EQUAL
+PUSHCONT {
+	;; push identifier m_buyerWallet
+	GETGLOB 18
+	NEWC
+	STSLICECONST x42_
+	STSLICE
+	PUSHSLICE x203e8000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	ENDC
+	PUSHINT 160
+	SENDRAWMSG
+}
+PUSHCONT {
+	;; push identifier m_sellerWallet
+	GETGLOB 16
+	NEWC
+	STSLICECONST x42_
+	STSLICE
+	PUSHSLICE x203e8000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	ENDC
+	PUSHINT 160
+	SENDRAWMSG
+}
+IFELSE
+;; end if
+DROP
+; end function moderatorDoesTransfer
+CALL $c7_to_c4$
+TRUE
+SETGLOB 7
+
+.globl	moderatorDoesTransfer_internal
+.type	moderatorDoesTransfer_internal, @function
+;; param: flag
+; function moderatorDoesTransfer
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+;; push identifier m_moderPubkey
+GETGLOB 10
+;; ==
+EQUAL
+THROWIFNOT 101
+;; push identifier m_buyerWallet
+GETGLOB 18
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+SDEQ
+NOT
+THROWIFNOT 124
+ACCEPT
+;; if
+;; push identifier flag
+DUP
+TRUE
+;; ==
+EQUAL
+PUSHCONT {
+	;; push identifier m_buyerWallet
+	GETGLOB 18
+	NEWC
+	STSLICECONST x42_
+	STSLICE
+	PUSHSLICE x203e8000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	ENDC
+	PUSHINT 160
+	SENDRAWMSG
+}
+PUSHCONT {
+	;; push identifier m_sellerWallet
+	GETGLOB 16
+	NEWC
+	STSLICECONST x42_
+	STSLICE
+	PUSHSLICE x203e8000000000000000000000000004_
+	STSLICER
+	STSLICECONST 0
+	STSLICECONST 0
+	ENDC
+	PUSHINT 160
+	SENDRAWMSG
+}
+IFELSE
+;; end if
+DROP
+; end function moderatorDoesTransfer
+
+.globl	getOfferState
+.public	getOfferState
+.type	getOfferState, @function
+GETGLOB 1
+ISNULL
+PUSHCONT {
+	CALL $c4_to_c7$
+}
+IF
+PUSH S1
+PUSHCONT {
+	LDU 32
+	GETGLOB 4
+	ROT
+	SETINDEXQ 5
+	SETGLOB 4
+}
+IFNOT
+; Decode input parameters
+ENDS
+; function getOfferState
+;; ret param: fiatAmount
+PUSHINT 0
+;; ret param: depositAmount
+PUSHINT 0
+;; ret param: fiatCurrency
+NEWC
+ENDC
+;; ret param: text
+NEWC
+ENDC
+;; ret param: sellerPubkey
+PUSHINT 0
+;; ret param: sellerWallet
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+;; ret param: buyerPubkey
+PUSHINT 0
+;; ret param: buyerWallet
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+;; ret param: sellerClaimsDiscardTs
+PUSHINT 0
+;; ret param: buyerClaimsTransferTs
+PUSHINT 0
+; expValue
+; end expValue
+;; push identifier m_fiatAmount
+GETGLOB 12
+; colValue
+POP S10
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_depositAmount
+GETGLOB 11
+; colValue
+POP S9
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_fiatCurrency
+GETGLOB 13
+; colValue
+POP S8
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_text
+GETGLOB 14
+; colValue
+POP S7
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_sellerPubkey
+GETGLOB 15
+; colValue
+POP S6
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_sellerWallet
+GETGLOB 16
+; colValue
+POP S5
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_buyerPubkey
+GETGLOB 17
+; colValue
+POP S4
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_buyerWallet
+GETGLOB 18
+; colValue
+POP S3
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_sellerClaimsDiscardTs
+GETGLOB 19
+; colValue
+POP S2
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_buyerClaimsTransferTs
+GETGLOB 20
+; colValue
+NIP
+; end colValue
+;; returning named params
+;; emitting 10 value(s)
+PUSH S10
+EQINT -1
+PUSHCONT {
+	PUSH S12
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 96
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	STSLICECONST xc052a28f
+	PUSH S11
+	STUR 16
+	PUSH S10
+	STUR 256
+	PUSH S9
+	STREFR
+	PUSH S8
+	STREFR
+	PUSH S7
+	STUR 256
+	PUSH S6
+	STSLICER
+	NEWC
+	PUSH S6
+	STUR 256
+	PUSH S5
+	STSLICER
+	PUSH S4
+	STUR 64
+	PUSH S3
+	STUR 64
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 1
+	SENDRAWMSG
+}
+PUSHCONT {
+	GETGLOB 4
+	DUP
+	INDEX 3
+	PUSH S1
+	INDEX 2
+	GETGLOB 9
+	BLKSWAP 1, 3
+	INDEX 1
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 104
+	STZEROES
+	STSLICECONST 0
+	STSLICECONST 1
+	NEWC
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	PUSH S11
+	STUR 16
+	PUSH S10
+	STUR 256
+	PUSH S9
+	STREFR
+	PUSH S8
+	STREFR
+	PUSH S7
+	STUR 256
+	PUSH S6
+	STSLICER
+	NEWC
+	PUSH S6
+	STUR 256
+	PUSH S5
+	STSLICER
+	PUSH S4
+	STUR 64
+	PUSH S3
+	STUR 64
+	STBREFR
+	STBREFR
+	ENDC
+	GETGLOB 4
+	INDEX 4
+	SENDRAWMSG
+}
+IFELSE
+BLKDROP 10
+; end function getOfferState
+PUSHCONT {
+	CALL $c7_to_c4$
+}
+IF
+TRUE
+SETGLOB 7
+
+.globl	getOfferState_internal
+.type	getOfferState_internal, @function
+; function getOfferState
+;; ret param: fiatAmount
+PUSHINT 0
+;; ret param: depositAmount
+PUSHINT 0
+;; ret param: fiatCurrency
+NEWC
+ENDC
+;; ret param: text
+NEWC
+ENDC
+;; ret param: sellerPubkey
+PUSHINT 0
+;; ret param: sellerWallet
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+;; ret param: buyerPubkey
+PUSHINT 0
+;; ret param: buyerWallet
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+;; ret param: sellerClaimsDiscardTs
+PUSHINT 0
+;; ret param: buyerClaimsTransferTs
+PUSHINT 0
+; expValue
+; end expValue
+;; push identifier m_fiatAmount
+GETGLOB 12
+; colValue
+POP S10
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_depositAmount
+GETGLOB 11
+; colValue
+POP S9
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_fiatCurrency
+GETGLOB 13
+; colValue
+POP S8
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_text
+GETGLOB 14
+; colValue
+POP S7
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_sellerPubkey
+GETGLOB 15
+; colValue
+POP S6
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_sellerWallet
+GETGLOB 16
+; colValue
+POP S5
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_buyerPubkey
+GETGLOB 17
+; colValue
+POP S4
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_buyerWallet
+GETGLOB 18
+; colValue
+POP S3
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_sellerClaimsDiscardTs
+GETGLOB 19
+; colValue
+POP S2
+; end colValue
+; expValue
+; end expValue
+;; push identifier m_buyerClaimsTransferTs
+GETGLOB 20
+; colValue
+NIP
+; end colValue
+;; returning named params
+; end function getOfferState
+
+.globl	c7_to_c4
+.type	c7_to_c4, @function
+GETGLOB 2
+NEWC
+STU 256
+GETGLOB 3
+STUR 64
+GETGLOB 6
+STUR 1
+NEWC
+GETGLOB 15
+GETGLOB 16
+GETGLOB 17
+REVERSE 4, 0
+STU 256
+STSLICE
+STU 256
+NEWC
+GETGLOB 18
+SWAP
+STSLICE
+GETGLOB 10
+GETGLOB 11
+GETGLOB 12
+GETGLOB 13
+GETGLOB 14
+GETGLOB 19
+GETGLOB 20
+REVERSE 10, 0
+STBREF
+STBREF
+STU 256
+STU 256
+STU 16
+STREF
+STREF
+STU 64
+STU 64
+ENDC
+POP C4
+
+.globl	c4_to_c7
+.type	c4_to_c7, @function
+PUSHROOT
+CTOS        ; c4
+LDU 256      ; pubkey c4
+LDU 64      ; pubkey timestamp c4
+LDU 1       ; pubkey [timestamp] constructor_flag memory
+LDREFRTOS
+LDU 256
+LDMSGADDR
+PLDU 256
+SETGLOB 17
+SETGLOB 16
+SETGLOB 15
+LDREFRTOS
+SETGLOB 18
+LDU 256
+LDU 256
+LDU 16
+LDREF
+LDREF
+LDU 64
+PLDU 64
+SETGLOB 20
+SETGLOB 19
+SETGLOB 14
+SETGLOB 13
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+TRUE
+SETGLOB 1   ; pubkey [timestamp] constructor_flag
+SETGLOB 6   ; pubkey [timestamp]
+SETGLOB 3   ; D
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS        ; c4
+DUP        ; c4 c4
+SBITS      ; c4 bits
+GTINT 1    ; c4 bits>1
+PUSHCONT {
+	LDU 256      ; pubkey c4
+	LDU 64      ; pubkey timestamp c4
+	LDU 1       ; pubkey [timestamp] constructor_flag memory
+	LDREFRTOS
+	LDU 256
+	LDMSGADDR
+	PLDU 256
+	SETGLOB 17
+	SETGLOB 16
+	SETGLOB 15
+	LDREFRTOS
+	SETGLOB 18
+	LDU 256
+	LDU 256
+	LDU 16
+	LDREF
+	LDREF
+	LDU 64
+	PLDU 64
+	SETGLOB 20
+	SETGLOB 19
+	SETGLOB 14
+	SETGLOB 13
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	TRUE
+	SETGLOB 1   ; pubkey [timestamp] constructor_flag
+	SETGLOB 6   ; pubkey [timestamp]
+	SETGLOB 3   ; D
+	SETGLOB 2
+}
+PUSHCONT {
+	PLDDICT   ; D
+	; init m_moderPubkey
+	PUSHINT 0
+	SETGLOB 10
+	; init m_depositAmount
+	PUSHINT 0
+	SETGLOB 11
+	; init m_fiatAmount
+	PUSHINT 0
+	SETGLOB 12
+	; init m_fiatCurrency
+	NEWC
+	ENDC
+	SETGLOB 13
+	; init m_text
+	NEWC
+	ENDC
+	SETGLOB 14
+	; init m_sellerPubkey
+	PUSHINT 0
+	SETGLOB 15
+	; init m_sellerWallet
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 16
+	; init m_buyerPubkey
+	PUSHINT 0
+	SETGLOB 17
+	; init m_buyerWallet
+	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	SETGLOB 18
+	; init m_sellerClaimsDiscardTs
+	PUSHINT 0
+	SETGLOB 19
+	; init m_buyerClaimsTransferTs
+	PUSHINT 0
+	SETGLOB 20
+	; set contract pubkey
+	PUSHINT 0
+	SWAP
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+	PUSHINT 0 ; constructor_flag
+	SETGLOB 6
+	TRUE
+	SETGLOB 1
+	;; init state var: m_moderPubkey
+	PUSHINT 72679048662408319810043006509962807745077002079968866732317235176870751255948
+	SETGLOB 10
+}
+IFELSE
+
+.internal-alias :main_internal,        0
+.internal	:main_internal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Function: main_internal
+;; param: contract_balance
+;; param: msg_balance
+;; param: int_msg_info
+;; param: msg_body_slice
+PUSHINT 0  ; main_external trans id
+PUSH S2
+CTOS
+LDU 4       ; bounced tail
+LDMSGADDR   ; bounced src tail
+DROP
+SETGLOB 9
+MODPOW2 1
+GETGLOB 4
+TRUE
+SETINDEXQ 1
+PUSHINT 10000000
+SETINDEXQ 2
+NULL
+SETINDEXQ 3
+PUSHINT 1
+SETINDEXQ 4
+SETGLOB 4
+IFRET
+PUSH S1    ; body
+SEMPTY     ; isEmpty
+IFRET
+PUSH S1 ; body
+LDU 32  ; funcId body'
+PUSH S1 ; funcId body' funcId
+IFNOTRET
+PUSH S1 ; funcId body' funcId
+LESSINT 3            ; funcId body' funcId<3
+PUSH S2              ; funcId body' funcId<3 funcId
+PUSHINT 4294967293   ; funcId body' funcId<3 funcId 4294967293
+GREATER              ; funcId body' funcId<3 funcId>4294967293
+OR                   ; funcId body' funcId<3||funcId>4294967293
+PUSHCONT {
+	DROP2
+	THROW 60
+}
+IFJMP
+SWAP    ; body funcId
+CALL 1
+GETGLOB 7
+ISNULL
+PUSHCONT {
+	DROP
+	THROW 60
+}
+IF
+
+.internal-alias :main_external,        -1
+.internal	:main_external
+PUSHINT -1 ; main_external trans id
+PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+SETGLOB 9
+PUSH S1
+CALL $c4_to_c7_with_init_storage$
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHINT 512
+	LDSLICEX ; signatureSlice msgSlice
+	DUP      ; signatureSlice msgSlice msgSlice
+	HASHSU   ; signatureSlice msgSlice hashMsgSlice
+	SWAP  ; signatureSlice hashMsgSlice msgSlice
+	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
+	SWAP  ; signatureSlice hashMsgSlice msgSlice havePubkey
+	PUSHCONT {
+		LDU 256       ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG s3
+		SWAP
+	}
+	PUSHCONT {
+		XCHG s2
+		GETGLOB 2
+	}
+	IFELSE
+	DUP
+	SETGLOB 5
+	CHKSIGNU      ; msgSlice isSigned
+	THROWIFNOT 40 ; msgSlice
+}
+PUSHCONT {
+	LDU 1      ; havePubkey msgSlice
+	SWAP       ; msgSlice havePubkey
+	THROWIF 58 ; msgSlice
+}
+IFELSE
+LDU 64                         ; timestamp msgSlice
+SWAP                           ; msgSlice timestamp
+CALL $replay_protection_macro$ ; msgSlice
+LDU 32  ; expireAt msgSlice
+SWAP    ; msgSlice expireAt
+NOW     ; msgSlice expireAt now
+GREATER ; msgSlice expireAt>now
+THROWIFNOT 57
+LDU  32 ; funcId body
+PUSH S1 ; funcId body funcId
+LESSINT 3            ; funcId body' funcId<3
+PUSH S2              ; funcId body' funcId<3 funcId
+PUSHINT 4294967293   ; funcId body' funcId<3 funcId 4294967293
+GREATER              ; funcId body' funcId<3 funcId>4294967293
+OR                   ; funcId body' funcId<3||funcId>4294967293
+PUSHCONT {
+	DROP2
+	THROW 60
+}
+IFJMP
+SWAP    ; body funcId
+CALL 1
+GETGLOB 7
+ISNULL
+PUSHCONT {
+	DROP
+	THROW 60
+}
+IF
+

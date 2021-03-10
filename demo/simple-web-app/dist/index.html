@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="index.css">
+        <title>Simple App</title>
+    </head>
+    <body>
+        <div>
+            <div>
+                <div id="parent">
+                    <div id="left">
+                        <b>Your wallet</b>
+                        <div>address: <span id="wallet_address"></span></div>
+                        <div>balance: <span id="wallet_balance"></span></div>
+                        <button id="balance_btn">Update</button>
+                        <br />
+                        <br />
+                        <label for="tokens_amount">Tokens amount:</label><br />
+                        <input type="text" id="tokens_amount" /><br />
+
+                        <label for="tokens_deposit">Deposit in tokens:</label><br />
+                        <input type="text" id="tokens_deposit" /> <br />
+
+                        <label for="fiat_amount">Currency amount:</label><br />
+                        <input type="text" id="fiat_amount" /> <br />
+
+                        <label for="fiat_currency">Currency code:</label><br />
+                        <input type="text" id="fiat_currency" /> <br />
+
+                        <label for="bank_details">Bank details:</label><br />
+                        <input type="text" id="bank_details" /> <br />
+
+                        <label for="other_details">Other details:</label><br />
+                        <input type="text" id="other_details" /> <br />
+
+                        <button id="offer_btn">Post a new offer</button>
+                    </div>
+
+                    <div id="right">
+                        <textarea id="log"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div id="update_interval_block" hidden>
+                    Update table every
+                    <input type="text" id="update_interval" value="5" />
+                    seconds
+                </div>
+                <table id="table_offers"></table>
+            </div>
+        </div>
+        <script defer src="main.bundle.js"></script>
+    </body>
+</html>
