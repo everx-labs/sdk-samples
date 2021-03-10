@@ -16,6 +16,13 @@ In this example we deploy solidity contract Hello.sol to [TON OS SE](https://doc
 tondev se start
 ```
 
+* Install utils package
+
+```shell
+cd ../../utils
+npm i
+```
+
 You're all set! Check out the TON OS SE GraphQL web playground at http://0.0.0.0/graphql. For Windows, use http://127.0.0.1/graphql or http://localhost/graphql. Learn more about GraphQL API here.
 
 See other available [TON OS SE management options in TONDEV](https://docs.ton.dev/86757ecb2/v/0/p/54722f-ton-os-se).
