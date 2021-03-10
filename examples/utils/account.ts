@@ -178,6 +178,7 @@ export class Account {
     private readonly abi: Abi;
     private readonly initData: object | null;
     private readonly signer: Signer;
+    private syncLastTransLt: string | null = null;
     private address: string | null;
     private cachedBoc: string | null;
 
@@ -245,10 +246,12 @@ export class Account {
         if (giver) {
             await giver(this.address, 10_000_000_000);
         }
-        return await this.client.processing.process_message({
+        const result = await this.client.processing.process_message({
             message_encode_params: deployParams,
             send_events: false,
         });
+        this.needSyncWithTransaction(result.transaction);
+        return result;
     }
 
     /**
@@ -263,7 +266,7 @@ export class Account {
         input: object,
         options?: AccountRunOptions,
     ): Promise<ResultOfProcessMessage> {
-        return (await this.client.processing.process_message({
+        const result = (await this.client.processing.process_message({
             message_encode_params: {
                 address: await this.getAddress(),
                 abi: this.abi,
@@ -275,6 +278,8 @@ export class Account {
             },
             send_events: false,
         }));
+        this.needSyncWithTransaction(result.transaction);
+        return result;
     }
 
     /**
@@ -319,6 +324,13 @@ export class Account {
         return result;
     }
 
+    private needSyncWithTransaction(transaction: any) {
+        if (!transaction.aborted && transaction.lt) {
+            this.syncLastTransLt = transaction.lt;
+            this.cachedBoc = null;
+        }
+    }
+
     /**
      * Returns raw data of the account in form of BOC.
      */
@@ -326,8 +338,26 @@ export class Account {
         if (this.cachedBoc) {
             return this.cachedBoc;
         }
+        const address = await this.getAddress();
+        const net = this.client.net;
+        if (this.syncLastTransLt) {
+            const accounts = await net.query_collection({
+                collection: "accounts",
+                filter: {
+                    id: {eq: address},
+                    last_trans_lt: {ge: this.syncLastTransLt},
+                },
+                result: "boc",
+            });
+            if (accounts.result.length > 0) {
+                const boc = accounts.result[0].boc;
+                this.syncLastTransLt = null;
+                this.cachedBoc = boc;
+                return boc;
+            }
+        }
         const boc = (
-            await this.client.net.wait_for_collection({
+            await net.wait_for_collection({
                 collection: "accounts",
                 filter: {id: {eq: this.address}},
                 result: "boc",
