@@ -137,4 +137,6 @@ local.properties
 /examples/**/*.d.ts
 /demo/**/*.js
 /demo/**/*.d.ts
+/utils/*.js
+/utils/*.d.ts
 /examples/transfer-with-comment/keys.json
