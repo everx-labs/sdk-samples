@@ -4,9 +4,10 @@
 	"private": true,
 	"description": "Hello Web – WebPack TON Client example",
 	"scripts": {
+        "install": "npx tsc",
 		"npm install": "npm install",
-		"web": "tsc & webpack-dev-server -d --config webpack.config.js --progress --colors --host 127.0.0.1",
-		"web:bundle": "tsc & webpack -p --config webpack.config.js --progress --colors --display-error-details"
+		"web": "webpack-dev-server -d --config webpack.config.js --progress --colors --host 127.0.0.1",
+		"web:bundle": "webpack -p --config webpack.config.js --progress --colors --display-error-details"
 	},
 	"keywords": [
 		"TON",
