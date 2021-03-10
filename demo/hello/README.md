@@ -8,7 +8,6 @@ In this example we deploy solidity contract Hello.sol to [TON OS SE](https://doc
 * [Docker](https://docs.docker.com/desktop/#download-and-install) installed and running
 * [TONDEV CLI](https://docs.ton.dev/86757ecb2/p/179e51-tondev)
 
-
 ## Preparation
 
 * [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/19d886-ton-os-se) 

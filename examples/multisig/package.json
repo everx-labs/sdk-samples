@@ -4,9 +4,10 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "preparation": "tsc && node preparation.js",
-        "deploy": "tsc && node deploy.js",
-        "error_produce": "tsc && node error_produce.js"
+        "install": "npx tsc",
+        "preparation": "node preparation.js",
+        "deploy": "node deploy.js",
+        "error_produce": "node error_produce.js"
     },
     "keywords": [],
     "author": "",
