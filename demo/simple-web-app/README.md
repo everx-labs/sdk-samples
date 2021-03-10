@@ -6,18 +6,22 @@ Novice blockchain developers, who prefer to learn by doing.
 
 ## Content Table
 
--   [What are we building?](#what-are-we-building)
--   [Setup](#Setup)
--   [Run tests to check integrity](#run-tests-to-check-integrity)
--   [Blockchain net.ton.dev and NodeSe](#blockchain-nettondev-and-nodese)
--   [Tokens](#tokens)
--   [Run the App](#run-the-app)
-    -   [Rules](#rules)
-    -   [Sample deal](#sample-deal)
--   [Algorithm](#algorithm)
--   [Conslusion](#conslusion)
--   [Troubleshooting](#troubleshooting)
--   [Appendix A](#appendix-a)
+- [Simple TON application](#simple-ton-application)
+  - [Audience](#audience)
+  - [Content Table](#content-table)
+  - [What are we building?](#what-are-we-building)
+  - [Setup](#setup)
+  - [Run tests to check integrity](#run-tests-to-check-integrity)
+  - [Blockchain net.ton.dev and TON OS SE](#blockchain-nettondev-and-TON OS SE)
+  - [Tokens](#tokens)
+  - [Run the App](#run-the-app)
+    - [Rules](#rules)
+    - [Sample deal](#sample-deal)
+  - [Algorithm](#algorithm)
+  - [Conslusion](#conslusion)
+  - [Troubleshooting](#troubleshooting)
+  - [Appendix A](#appendix-a)
+    - [How to get a wallet with crystals](#how-to-get-a-wallet-with-crystals)
 
 ## What are we building?
 
@@ -56,14 +60,14 @@ It ensures that if a message hasn't been processed at a predetermined time, it w
       - `tonClient.abi.message_processing_timeout` is specified.
 -->
 
-## Blockchain net.ton.dev and NodeSE
+## Blockchain net.ton.dev and TON OS SE
 
-Smart contracts need a blockchain. By default this application uses a standalone blockchain **NodeSE**, which helps you quickly debug and test your application.
+Smart contracts need a blockchain. By default this application uses a standalone blockchain **TON OS SE**, which helps you quickly debug and test your application.
 
-NodeSE is twenty times faster than the real blockchain, so it's a real time saver.
-It's very easy to [install NodeSE](https://docs.ton.dev/86757ecb2/p/324b55-installation), if you already have Docker installed
+TON OS SE is twenty times faster than the real blockchain, so it's a real time saver.
+It's very easy to [install TON OS SE](https://docs.ton.dev/86757ecb2/p/324b55-installation), if you already have Docker installed
 
-> If you are running your NodeSE on a custom IP or port, please change the NODE_SE_TON_SERVER_ADDRESS variable in **`/src/config.js`** accordingly.
+> If you are running your TON OS SE on a custom IP or port, please change the NODE_SE_TON_SERVER_ADDRESS variable in **`/src/config.js`** accordingly.
 
 <!---
 Tip. I prefer not to have Docker on my netbook and use a $5/month VDS with Docker pre-installed.
@@ -72,7 +76,7 @@ Since this is for testing purposes only, I save time not to configure the user a
 root@vm# docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 tonlabs/local-node
 -->
 
-If your choice is NodeSE,you are ready to [run the application](#run-the-app)
+If your choice is TON OS SE,you are ready to [run the application](#run-the-app)
 
 You can of course run this application at **net.ton.dev**. This is a real blockchain consisting of several nodes, but you must have test tokens - Crystals. See next section
 
@@ -81,9 +85,9 @@ You can of course run this application at **net.ton.dev**. This is a real blockc
 Each participant of our application must have their own wallet with crystals.
 In real life, your wallet is only yours, but in our example, the wallets of all participants are initially filled from another smart contract. Let's call it a **Giver**
 
-How many tokens does this Giver have? It depends if you are using NodeSE or net.ton.dev
+How many tokens does this Giver have? It depends if you are using TON OS SE or net.ton.dev
 
--   NodeSE.
+-   TON OS SE.
 
     There are 1.5 billion test tokens in your Giver contract and everything is ready to run the app, just check the variable **`NODE_SE=true`** in `/src/config.js`
 
@@ -196,7 +200,7 @@ In the next part we will add a DeBot to make our application immediately availab
 
 ## Troubleshooting
 
-If you choose to use NodeSE, then this application requires NodeSE ver >=  0.25. Run `tondev se info` to see current version
+If you choose to use TON OS SE, then this application requires TON OS SE ver >=  0.25. Run `tondev se info` to see current version
 
 
 ## Appendix A
