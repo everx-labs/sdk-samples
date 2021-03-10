@@ -3,7 +3,7 @@ import {TonClientEx} from "utils/account";
 import {Account} from "utils/account";
 import {signerKeys} from "@tonclient/core";
 
-const {libNode} = require("@tonclient/lib-node");
+import {libNode} from "@tonclient/lib-node";
 
 TonClientEx.useBinaryLibrary(libNode);
 TonClientEx.defaultConfig = {

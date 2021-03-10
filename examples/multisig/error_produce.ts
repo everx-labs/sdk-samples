@@ -39,10 +39,16 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
         const acc = new Account(MultisigContract, {signer: signerKeys(keyPair)});
         const address = await acc.getAddress();
         console.log(address);
-        const info = await acc.getAccount();
+        let info;
+        try {
+            info = await acc.getAccount();
+        } catch (err) {
+            console.log(`Account with address ${address} isn't exist`);
+            process.exit(1);
+        }
 
         if (info.acc_type !== ACCOUNT_TYPE_ACTIVE) {
-            console.log(`Contract ${address} is not deployed yet. Use deploy.js to deploy it.`);
+            console.log(`Account with address ${address} is not deployed yet. Use deploy.js to deploy it.`);
             process.exit(1);
         }
 
@@ -51,7 +57,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
         // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_tvm
         const response = await acc.runLocal("getCustodians", {});
         // Print the custodians of the wallet
-        console.log("Сustodians list:", response.decoded?.output?.custodians);
+        console.log("Custodians list:", response.decoded?.output?.custodians);
 
         // Run 'submitTransaction' method of multisig wallet
 
