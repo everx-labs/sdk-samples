@@ -2,8 +2,11 @@
 import {libNode} from "@tonclient/lib-node";
 import * as fs from "fs";
 import * as path from "path";
-import {Account, TonClientEx} from "utils/account";
-import {signerKeys} from "@tonclient/core";
+import {
+    Account,
+    signerKeys,
+    TonClient,
+} from "@tonclient/core";
 import {MultisigContract} from "./contracts";
 
 const keyPairFile = path.join(__dirname, "keyPair.json");
@@ -17,8 +20,8 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
 
 (async () => {
     try {
-        TonClientEx.useBinaryLibrary(libNode);
-        TonClientEx.defaultConfig = {
+        TonClient.useBinaryLibrary(libNode);
+        TonClient.defaultConfig = {
             network: {
                 // server_address:'net.ton.dev',
                 endpoints: ["net.ton.dev"],
@@ -95,7 +98,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
 
         // Convert address to different types
         console.log("Multisig address in HEX:");
-        let convertedAddress = (await TonClientEx.default.utils.convert_address({
+        let convertedAddress = (await TonClient.default.utils.convert_address({
             address,
             output_format: {
                 type: "Hex",
@@ -104,7 +107,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         console.log(convertedAddress);
 
         console.log("Multisig non-bounce address in Base64:");
-        convertedAddress = (await TonClientEx.default.utils.convert_address({
+        convertedAddress = (await TonClient.default.utils.convert_address({
             address,
             output_format: {
                 type: "Base64",
@@ -116,7 +119,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         console.log(convertedAddress);
 
         console.log("Multisig bounce address in Base64:");
-        convertedAddress = (await TonClientEx.default.utils.convert_address({
+        convertedAddress = (await TonClient.default.utils.convert_address({
             address,
             output_format: {
                 type: "Base64",

@@ -4,12 +4,16 @@
 
 import {libNode} from "@tonclient/lib-node";
 import {HelloContract} from "./HelloContract.js";
-import {TonClientEx} from "utils/account";
-import {Account} from "utils";
-import {abiContract, ParamsOfEncodeMessage, signerKeys} from "@tonclient/core";
+import {
+    abiContract,
+    Account,
+    ParamsOfEncodeMessage,
+    signerKeys,
+    TonClient,
+} from "@tonclient/core";
 
-TonClientEx.useBinaryLibrary(libNode);
-TonClientEx.defaultConfig = {
+TonClient.useBinaryLibrary(libNode);
+TonClient.defaultConfig = {
     network: {
         // Local node URL here
         server_address: "http://localhost",
@@ -24,7 +28,7 @@ async function logEvents(params: any, response_type: any) {
 async function main() {
     // Generate an ed25519 key pair for new account
     const helloAcc = new Account(HelloContract, {
-        signer: signerKeys(await TonClientEx.default.crypto.generate_random_sign_keys()),
+        signer: signerKeys(await TonClient.default.crypto.generate_random_sign_keys()),
     });
 
     const address = await helloAcc.getAddress();
@@ -38,9 +42,9 @@ async function main() {
     // Send deploy message to the network
     // See more info about `send_message` here
     // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#send_message
-    const deployMessage = await TonClientEx.default.abi.encode_message(await helloAcc.getParamsOfDeployMessage());
+    const deployMessage = await TonClient.default.abi.encode_message(await helloAcc.getParamsOfDeployMessage());
     let shard_block_id;
-    shard_block_id = (await TonClientEx.default.processing.send_message({
+    shard_block_id = (await TonClient.default.processing.send_message({
             message: deployMessage.message,
             send_events: true,
         }, logEvents,
@@ -51,7 +55,7 @@ async function main() {
     // Monitor message delivery.
     // See more info about `wait_for_transaction` here
     // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#wait_for_transaction
-    const deploy_processing_result = await TonClientEx.default.processing.wait_for_transaction({
+    const deploy_processing_result = await TonClient.default.processing.wait_for_transaction({
             abi: abiContract(HelloContract.abi),
             message: deployMessage.message,
             shard_block_id: shard_block_id,
@@ -79,13 +83,13 @@ async function main() {
     };
 
     // Create external inbound message with `touch` function call
-    const encode_touch_result = await TonClientEx.default.abi.encode_message(params);
+    const encode_touch_result = await TonClient.default.abi.encode_message(params);
     console.log(`Encoded successfully`);
 
     // Send `touch` call message to the network
     // See more info about `send_message` here
     // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#send_message
-    shard_block_id = (await TonClientEx.default.processing.send_message({
+    shard_block_id = (await TonClient.default.processing.send_message({
             message: encode_touch_result.message,
             send_events: true,
         }, logEvents,
@@ -96,7 +100,7 @@ async function main() {
     // Monitor message delivery.
     // See more info about `wait_for_transaction` here
     // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#wait_for_transaction
-    const touch_processing_result = await TonClientEx.default.processing.wait_for_transaction({
+    const touch_processing_result = await TonClient.default.processing.wait_for_transaction({
             abi: abiContract(HelloContract.abi),
             message: encode_touch_result.message,
             shard_block_id: shard_block_id,

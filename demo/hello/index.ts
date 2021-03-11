@@ -1,8 +1,10 @@
 import {libNode} from "@tonclient/lib-node";
 import {HelloContract} from "./HelloContract.js";
-import {TonClientEx} from "utils/account";
-import {Account} from "utils";
-import {signerKeys} from "@tonclient/core";
+import {
+    Account,
+    signerKeys,
+    TonClient,
+} from "@tonclient/core";
 
 // Link the platform-dependable TON-SDK binary with the target Application in Typescript
 // This is a Node.js project, so we link the application with `libNode` binary
@@ -10,8 +12,8 @@ import {signerKeys} from "@tonclient/core";
 // If you want to use this code on other platforms, such as Web or React-Native,
 // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
 // (see README in  https://github.com/tonlabs/ton-client-js )
-TonClientEx.useBinaryLibrary(libNode);
-TonClientEx.defaultConfig = {
+TonClient.useBinaryLibrary(libNode);
+TonClient.defaultConfig = {
     network: {
         // Local node URL here
         server_address: "http://localhost",
@@ -21,7 +23,7 @@ TonClientEx.defaultConfig = {
 async function main() {
     // Generate an ed25519 key pair for new account
     const helloAcc = new Account(HelloContract, {
-        signer: signerKeys(await TonClientEx.default.crypto.generate_random_sign_keys()),
+        signer: signerKeys(await TonClient.default.crypto.generate_random_sign_keys()),
     });
 
     const address = await helloAcc.getAddress();
