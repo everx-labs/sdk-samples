@@ -1,10 +1,10 @@
-import {libNode} from "@tonclient/lib-node";
-import {HelloContract} from "./HelloContract.js";
-import {
+const { libNode } = require("@tonclient/lib-node");
+const { HelloContract } = require("./HelloContract.js");
+const {
     Account,
     signerKeys,
     TonClient,
-} from "@tonclient/core";
+} = require("@tonclient/core");
 
 // Link the platform-dependable TON-SDK binary with the target Application in Typescript
 // This is a Node.js project, so we link the application with `libNode` binary
@@ -32,7 +32,7 @@ async function main() {
     // Request contract deployment funds form a local TON OS SE giver
     // not suitable for other networks.
     // Deploy `hello` contract.
-    await helloAcc.deploy({useGiver: true});
+    await helloAcc.deploy({ useGiver: true });
     console.log(`Hello contract was deployed at address: ${address}`);
 
     // Call `touch` function

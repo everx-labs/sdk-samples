@@ -133,14 +133,4 @@ local.properties
 .vscode/launch.json
 *.d.ts.map
 *.js.map
-/examples/**/*.js
-/examples/**/*.d.ts
-/demo/**/*.js
-/demo/**/*.d.ts
-/utils/*.js
-/utils/*.d.ts
 /examples/transfer-with-comment/keys.json
-
-!utils/*.d.ts
-!utils/*.js
-!webpack.config.js
