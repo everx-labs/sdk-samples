@@ -1,27 +1,21 @@
-import {
+const {
     signerSigningBox,
-    KeyPair,
-    ParamsOfSigningBoxSign,
-    ResultOfSigningBoxSign,
-    AppSigningBox,
     TonClient,
     Account,
-} from "@tonclient/core";
+} = require("@tonclient/core");
 
-import {libNode} from "@tonclient/lib-node";
+const { libNode } = require("@tonclient/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
-TonClient.defaultConfig = {network: {endpoints: ["http://localhost"]}};
+TonClient.defaultConfig = { network: { endpoints: ["http://localhost"] } };
 
 const SEED_PHRASE_WORD_COUNT = 12;
 const SEED_PHRASE_DICTIONARY_ENGLISH = 1;
 const HD_PATH = "m/44'/396'/0'/0/0";
 const seedPhrase = "abandon math mimic master filter design carbon crystal rookie group knife young";
 
-class dummySigningBox implements AppSigningBox {
-    private keys: KeyPair | undefined;
-
-    async ensureKeys(): Promise<KeyPair> {
+class dummySigningBox {
+    async ensureKeys() {
         if (!this.keys) {
             this.keys = (await TonClient.default.crypto.mnemonic_derive_sign_keys({
                 dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
@@ -39,7 +33,7 @@ class dummySigningBox implements AppSigningBox {
         };
     }
 
-    async sign(params: ParamsOfSigningBoxSign): Promise<ResultOfSigningBoxSign> {
+    async sign(params) {
         return (await TonClient.default.crypto.sign({
             keys: await this.ensureKeys(),
             unsigned: params.unsigned,

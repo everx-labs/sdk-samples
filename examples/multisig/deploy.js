@@ -1,12 +1,12 @@
-import {libNode} from "@tonclient/lib-node";
-import * as fs from "fs";
-import * as path from "path";
-import {
+const { libNode } = require("@tonclient/lib-node");
+const fs = require("fs");
+const path = require("path");
+const {
     Account,
     signerKeys,
     TonClient,
-} from "@tonclient/core";
-import {MultisigContract} from "./contracts";
+} = require("@tonclient/core");
+const { MultisigContract } = require("./contracts");
 
 const keyPairFile = path.join(__dirname, "keyPair.json");
 
@@ -21,7 +21,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 
 TonClient.useBinaryLibrary(libNode);
-TonClient.defaultConfig = {network: {endpoints: ["net.ton.dev"]}};
+TonClient.defaultConfig = { network: { endpoints: ["net.ton.dev"] } };
 
 (async () => {
     try {
@@ -46,13 +46,13 @@ TonClient.defaultConfig = {network: {endpoints: ["net.ton.dev"]}};
             process.exit(1);
         }
 
-        if (info.acc_type == ACCOUNT_TYPE_ACTIVE) {
+        if (info.acc_type === ACCOUNT_TYPE_ACTIVE) {
             console.log(`Account with address ${address} is already deployed`);
             process.exit(1);
         }
 
         // Balance is stored as HEX so we need to convert it.
-        if (info.acc_type == ACCOUNT_TYPE_UNINITIALIZED && BigInt(info.balance) <= BigInt(CONTRACT_REQUIRED_DEPLOY_TOKENS)) {
+        if (info.acc_type === ACCOUNT_TYPE_UNINITIALIZED && BigInt(info.balance) <= BigInt(CONTRACT_REQUIRED_DEPLOY_TOKENS)) {
             console.log(`Balance of ${address} is too low for deploy to net.ton.dev`);
             process.exit(1);
         }

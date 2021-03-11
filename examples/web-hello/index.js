@@ -14,7 +14,7 @@ TonClient.defaultConfig = {
     },
 };
 
-function setText(id: string, text: string) {
+function setText(id, text) {
     const elem = document.getElementById(id);
     if (elem) {
         elem.innerText = text;
