@@ -3,8 +3,8 @@
 	"applications": [
 		{
 			"name": "hello",
-			"path": "demo/hello",
-			"title": "Simple NodeJs Application"
+			"description": "Simple NodeJs Application",
+			"path": "demo/hello"
 		}
 	]
 }
