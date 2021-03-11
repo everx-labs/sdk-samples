@@ -131,3 +131,12 @@ build/
 local.properties
 *.iml
 .vscode/launch.json
+*.d.ts.map
+*.js.map
+/examples/**/*.js
+/examples/**/*.d.ts
+/demo/**/*.js
+/demo/**/*.d.ts
+/utils/*.js
+/utils/*.d.ts
+/examples/transfer-with-comment/keys.json
