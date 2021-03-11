@@ -1,0 +1,84 @@
+{
+	"ABI version": 2,
+	"header": ["pubkey", "time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+				{"name":"pubkey","type":"uint256"},
+				{"name":"sellerWallet","type":"address"},
+				{"name":"amount","type":"uint16"},
+				{"name":"currency","type":"bytes"},
+				{"name":"deposit","type":"uint256"},
+				{"name":"text","type":"bytes"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "sellerDiscardsOffer",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "sellerDoesTransfer",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "buyerPlacesDeposit",
+			"inputs": [
+				{"name":"buyerPubkey","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "buyerClaimsTransfer",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "buyerDiscardsOffer",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "moderatorDoesTransfer",
+			"inputs": [
+				{"name":"flag","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getOfferState",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"fiatAmount","type":"uint16"},
+				{"name":"depositAmount","type":"uint256"},
+				{"name":"fiatCurrency","type":"bytes"},
+				{"name":"text","type":"bytes"},
+				{"name":"sellerPubkey","type":"uint256"},
+				{"name":"sellerWallet","type":"address"},
+				{"name":"buyerPubkey","type":"uint256"},
+				{"name":"buyerWallet","type":"address"},
+				{"name":"sellerClaimsDiscardTs","type":"uint64"},
+				{"name":"buyerClaimsTransferTs","type":"uint64"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	]
+}
