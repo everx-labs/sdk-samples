@@ -6,7 +6,7 @@
 	"scripts": {
 		"install": "npx tsc",
 		"npm install": "npm install",
-		"web": "webpack-dev-server -d --config webpack.config.js --progress --colors --host 127.0.0.1",
+		"web": "webpack serve -d --config webpack.config.js --progress --host 127.0.0.1",
 		"web:bundle": "webpack -p --config webpack.config.js --progress --colors --display-error-details"
 	},
 	"keywords": [
@@ -30,10 +30,10 @@
 	},
 	"devDependencies": {
 		"assert": "^2.0.0",
-		"copy-webpack-plugin": "3.0.1",
-		"webpack": "4.46.0",
-		"webpack-cli": "3.3.12",
-		"webpack-dev-server": "3.11.0"
+		"copy-webpack-plugin": "8.0.0",
+		"webpack": "5.24.4",
+		"webpack-cli": "4.5.0",
+		"webpack-dev-server": "^3.11.2"
 	},
 	"main": "index.js"
 }
