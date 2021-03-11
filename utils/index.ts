@@ -1,15 +1,6 @@
-import {
-    Account,
-    AccountError,
-    AccountRunLocalOptions,
-    AccountRunOptions,
-    AccountOptions, Contract,
-} from "./account";
-
-export {Account, AccountError, AccountRunOptions, AccountOptions, AccountRunLocalOptions};
-
 import * as fs from "fs";
 import * as path from "path";
+import {Contract} from "@tonclient/core";
 
 export function loadContract(relativePath: string): Contract {
     function load(suffix: string): Buffer {

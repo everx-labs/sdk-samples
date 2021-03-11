@@ -1,11 +1,15 @@
-import {Account, TonClientEx} from "utils/account";
-import {AggregationFn, signerKeys} from "@tonclient/core";
+import {
+    Account,
+    AggregationFn,
+    signerKeys,
+    TonClient,
+} from "@tonclient/core";
 import {loadContract} from "utils";
 
 const {libNode} = require("@tonclient/lib-node");
 
-TonClientEx.useBinaryLibrary(libNode);
-TonClientEx.defaultConfig = {
+TonClient.useBinaryLibrary(libNode);
+TonClient.defaultConfig = {
     network: {
         // Local node URL.
         server_address: "http://localhost",
@@ -15,7 +19,7 @@ TonClientEx.defaultConfig = {
 const MultisigContract = loadContract("solidity/safemultisig/SafeMultisigWallet");
 
 async function deployContract() {
-    const walletKeys = await TonClientEx.default.crypto.generate_random_sign_keys();
+    const walletKeys = await TonClient.default.crypto.generate_random_sign_keys();
     const acc = new Account(MultisigContract, {
         signer: signerKeys(walletKeys),
     });
@@ -50,13 +54,13 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
 
         // Query the GraphQL API version.
         console.log(">> query without params sample");
-        let result = (await TonClientEx.default.net.query({"query": "{info{version}}"})).result;
+        let result = (await TonClient.default.net.query({"query": "{info{version}}"})).result;
         console.log("GraphQL API version is " + result.data.info.version + "\n");
 
         // In the following we query a collection. We get balance of the first wallet.
         // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
         console.log(">> query_collection sample");
-        result = (await TonClientEx.default.net.query_collection({
+        result = (await TonClient.default.net.query_collection({
             collection: "accounts",
             filter: {
                 id: {
@@ -72,7 +76,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         // In the following query we get balance of both wallets at the same time.
         // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#batch_query
         console.log(">>batch_query sample");
-        const batchQueryResult = (await TonClientEx.default.net.batch_query({
+        const batchQueryResult = (await TonClient.default.net.batch_query({
             "operations": [
                 {
                     type: "QueryCollection",
@@ -102,7 +106,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#wait_for_collection
         console.log(">>wait_for_collection sample");
 
-        let waitForCollection = TonClientEx.default.net.wait_for_collection({
+        let waitForCollection = TonClient.default.net.wait_for_collection({
             collection: "messages",
             filter: {
                 src: {
@@ -125,7 +129,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         // of the amount of data.
         // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#aggregate_collection
         console.log(">> aggregation_functions example");
-        const aggregationFunctionsResults = (await TonClientEx.default.net.aggregate_collection({
+        const aggregationFunctionsResults = (await TonClient.default.net.aggregate_collection({
             collection: "accounts",
             fields: [
                 {
@@ -156,7 +160,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         // To get ID of the last block in a specified account shard for a wallet 1 use the following code.
         // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#find_last_shard_block
         console.log(">> find_last_shard_block example");
-        const block_id1 = (await TonClientEx.default.net.find_last_shard_block({
+        const block_id1 = (await TonClient.default.net.find_last_shard_block({
             address: await wallet1.getAddress(),
         })).block_id;
         console.log(`Last Shard Block ID for address "${await wallet1.getAddress()}" is "${block_id1}"\n`);
