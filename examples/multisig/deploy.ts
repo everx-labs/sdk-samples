@@ -1,8 +1,11 @@
-import {Account, TonClientEx} from "utils/account";
 import {libNode} from "@tonclient/lib-node";
 import * as fs from "fs";
 import * as path from "path";
-import {signerKeys} from "@tonclient/core";
+import {
+    Account,
+    signerKeys,
+    TonClient,
+} from "@tonclient/core";
 import {MultisigContract} from "./contracts";
 
 const keyPairFile = path.join(__dirname, "keyPair.json");
@@ -17,8 +20,8 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 // See https://docs.ton.dev/86757ecb2/p/6207cd-estimate-fees on how to calculate definite number.
 const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 
-TonClientEx.useBinaryLibrary(libNode);
-TonClientEx.defaultConfig = {network: {endpoints: ["net.ton.dev"]}};
+TonClient.useBinaryLibrary(libNode);
+TonClient.defaultConfig = {network: {endpoints: ["net.ton.dev"]}};
 
 (async () => {
     try {

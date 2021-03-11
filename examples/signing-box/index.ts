@@ -4,13 +4,14 @@ import {
     ParamsOfSigningBoxSign,
     ResultOfSigningBoxSign,
     AppSigningBox,
+    TonClient,
+    Account,
 } from "@tonclient/core";
 
 import {libNode} from "@tonclient/lib-node";
-import {Account, TonClientEx} from "utils/account";
 
-TonClientEx.useBinaryLibrary(libNode);
-TonClientEx.defaultConfig = {network: {endpoints: ["http://localhost"]}};
+TonClient.useBinaryLibrary(libNode);
+TonClient.defaultConfig = {network: {endpoints: ["http://localhost"]}};
 
 const SEED_PHRASE_WORD_COUNT = 12;
 const SEED_PHRASE_DICTIONARY_ENGLISH = 1;
@@ -22,7 +23,7 @@ class dummySigningBox implements AppSigningBox {
 
     async ensureKeys(): Promise<KeyPair> {
         if (!this.keys) {
-            this.keys = (await TonClientEx.default.crypto.mnemonic_derive_sign_keys({
+            this.keys = (await TonClient.default.crypto.mnemonic_derive_sign_keys({
                 dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
                 word_count: SEED_PHRASE_WORD_COUNT,
                 phrase: seedPhrase,
@@ -39,7 +40,7 @@ class dummySigningBox implements AppSigningBox {
     }
 
     async sign(params: ParamsOfSigningBoxSign): Promise<ResultOfSigningBoxSign> {
-        return (await TonClientEx.default.crypto.sign({
+        return (await TonClient.default.crypto.sign({
             keys: await this.ensureKeys(),
             unsigned: params.unsigned,
         }));
@@ -48,7 +49,7 @@ class dummySigningBox implements AppSigningBox {
 
 async function main() {
     const signingBox = new dummySigningBox();
-    const signer = signerSigningBox((await TonClientEx.default.crypto.register_signing_box(signingBox)).handle);
+    const signer = signerSigningBox((await TonClient.default.crypto.register_signing_box(signingBox)).handle);
 
     const hello = new Account(HelloContract, {
         signer,

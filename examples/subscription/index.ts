@@ -1,12 +1,14 @@
 import {loadContract} from "utils";
-import {TonClientEx} from "utils/account";
-import {Account} from "utils/account";
-import {signerKeys} from "@tonclient/core";
+import {
+    Account,
+    signerKeys,
+    TonClient,
+} from "@tonclient/core";
 
 import {libNode} from "@tonclient/lib-node";
 
-TonClientEx.useBinaryLibrary(libNode);
-TonClientEx.defaultConfig = {
+TonClient.useBinaryLibrary(libNode);
+TonClient.defaultConfig = {
     network: {
         // Local node URL.
         server_address: "http://localhost",
@@ -16,7 +18,7 @@ TonClientEx.defaultConfig = {
 const MultisigContract = loadContract("solidity/safemultisig/SafeMultisigWallet");
 
 async function deployContract(): Promise<Account> {
-    const walletKeys = await TonClientEx.default.crypto.generate_random_sign_keys();
+    const walletKeys = await TonClient.default.crypto.generate_random_sign_keys();
     const acc = new Account(MultisigContract, {
         signer: signerKeys(walletKeys),
     });
@@ -63,7 +65,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
 
         // Subscribe to accounts collection filtered by account ID equal to the second wallet address.
         // Returns account balance when account with the specified ID is updated.
-        const subscriptionAccountHandle = (await TonClientEx.default.net.subscribe_collection({
+        const subscriptionAccountHandle = (await TonClient.default.net.subscribe_collection({
             collection: "accounts",
             filter: {id: {eq: await wallet2.getAddress()}},
             result: "balance",
@@ -74,7 +76,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
 
         // Subscribe to transactions collection filtered by account ID equal to the second wallet address.
         // Returns transaction ID when there is a new transaction for this account
-        const subscriptionTransactionHandle = (await TonClientEx.default.net.subscribe_collection({
+        const subscriptionTransactionHandle = (await TonClient.default.net.subscribe_collection({
             collection: "transactions",
             filter: {account_addr: {eq: await wallet2.getAddress()}},
             result: "id",
@@ -85,7 +87,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         // Subscribe to messages collection filtered by src address equal to the first wallet address
         // and dst address equal to the second wallet address.
         // Returns message ID when there is a new message fulfilling this filter.
-        await TonClientEx.default.net.subscribe_collection({
+        await TonClient.default.net.subscribe_collection({
             collection: "messages",
             filter: {
                 src: {eq: await wallet1.getAddress()},
@@ -103,20 +105,20 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         await sendMoney(wallet1, await wallet2.getAddress(), 5_000_000_000);
 
         // Cancels a subscription specified by its handle. https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#unsubscribe
-        await TonClientEx.default.net.unsubscribe({handle: subscriptionAccountHandle});
-        await TonClientEx.default.net.unsubscribe({handle: subscriptionTransactionHandle});
+        await TonClient.default.net.unsubscribe({handle: subscriptionAccountHandle});
+        await TonClient.default.net.unsubscribe({handle: subscriptionTransactionHandle});
         //    await client.net.unsubscribe({ handle: subscriptionMessageHandle });
 
 
         // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#find_last_shard_block
         // Returns ID of the latest block in a wallet 1 address account shard.
-        const block_id1 = (await TonClientEx.default.net.find_last_shard_block({
+        const block_id1 = (await TonClient.default.net.find_last_shard_block({
             address: await wallet1.getAddress(),
         })).block_id;
         console.log(`Last Shard Block id ${block_id1} in shard of ${await wallet1.getAddress()}`);
 
         // Returns ID of the latest block in a wallet 2 address account shard.
-        const block_id2 = (await TonClientEx.default.net.find_last_shard_block({
+        const block_id2 = (await TonClient.default.net.find_last_shard_block({
             address: await wallet2.getAddress(),
         })).block_id;
         console.log(`Last Shard Block id ${block_id2} in shard of ${await wallet2.getAddress()}`);

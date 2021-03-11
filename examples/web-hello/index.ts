@@ -1,14 +1,14 @@
-import {signerKeys} from "@tonclient/core";
+import {
+    Account,
+    signerKeys,
+    TonClient,
+} from "@tonclient/core";
 import {libWeb} from "@tonclient/lib-web";
 
 import {HelloContract} from "./HelloContract";
-import {
-    Account,
-    TonClientEx,
-} from "utils/account";
 
-TonClientEx.useBinaryLibrary(libWeb);
-TonClientEx.defaultConfig = {
+TonClient.useBinaryLibrary(libWeb);
+TonClient.defaultConfig = {
     network: {
         endpoints: ["http://localhost"],
     },
@@ -22,10 +22,10 @@ function setText(id: string, text: string) {
 }
 
 window.addEventListener("load", async () => {
-    setText("version", (await TonClientEx.default.client.version()).version);
+    setText("version", (await TonClient.default.client.version()).version);
 
     const helloAcc = new Account(HelloContract, {
-        signer: signerKeys(await TonClientEx.default.crypto.generate_random_sign_keys()),
+        signer: signerKeys(await TonClient.default.crypto.generate_random_sign_keys()),
     });
 
     setText("address", await helloAcc.getAddress());

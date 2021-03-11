@@ -1,7 +1,10 @@
 import {libNode} from "@tonclient/lib-node";
-import {Account, TonClientEx} from "utils/account";
 import {MultisigContract} from "./contracts";
-import {signerKeys} from "@tonclient/core";
+import {
+    Account,
+    signerKeys,
+    TonClient,
+} from "@tonclient/core";
 
 const fs = require("fs");
 const path = require("path");
@@ -15,8 +18,8 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
 
 (async () => {
     try {
-        TonClientEx.useBinaryLibrary(libNode);
-        TonClientEx.defaultConfig = {
+        TonClient.useBinaryLibrary(libNode);
+        TonClient.defaultConfig = {
             network: {
                 //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
                 server_address: "net.ton.dev",
@@ -80,7 +83,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
 
         // Convert address to different types
         console.log("Multisig address in HEX:");
-        let convertedAddress = (await TonClientEx.default.utils.convert_address({
+        let convertedAddress = (await TonClient.default.utils.convert_address({
             address,
             output_format: {
                 type: "Hex",
@@ -89,7 +92,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
         console.log(convertedAddress);
 
         console.log("Multisig non-bounce address in Base64:");
-        convertedAddress = (await TonClientEx.default.utils.convert_address({
+        convertedAddress = (await TonClient.default.utils.convert_address({
             address,
             output_format: {
                 type: "Base64",
@@ -101,7 +104,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
         console.log(convertedAddress);
 
         console.log("Multisig bounce address in Base64:");
-        convertedAddress = (await TonClientEx.default.utils.convert_address({
+        convertedAddress = (await TonClient.default.utils.convert_address({
             address,
             output_format: {
                 type: "Base64",
