@@ -140,3 +140,7 @@ local.properties
 /utils/*.js
 /utils/*.d.ts
 /examples/transfer-with-comment/keys.json
+
+!utils/*.d.ts
+!utils/*.js
+!webpack.config.js
