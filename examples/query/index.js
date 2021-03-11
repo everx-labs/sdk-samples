@@ -1,12 +1,12 @@
-import {
+const {
     Account,
     AggregationFn,
     signerKeys,
     TonClient,
-} from "@tonclient/core";
-import {loadContract} from "utils";
+} = require("@tonclient/core");
+const { loadContract } = require("utils");
 
-const {libNode} = require("@tonclient/lib-node");
+const { libNode } = require("@tonclient/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 TonClient.defaultConfig = {
@@ -36,7 +36,7 @@ async function deployContract() {
     return acc;
 }
 
-async function sendMoney(acc: Account, toAddress: string, amount: any) {
+async function sendMoney(acc, toAddress, amount) {
     await acc.run("sendTransaction", {
         dest: toAddress,
         value: amount,
@@ -54,7 +54,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
 
         // Query the GraphQL API version.
         console.log(">> query without params sample");
-        let result = (await TonClient.default.net.query({"query": "{info{version}}"})).result;
+        let result = (await TonClient.default.net.query({ "query": "{info{version}}" })).result;
         console.log("GraphQL API version is " + result.data.info.version + "\n");
 
         // In the following we query a collection. We get balance of the first wallet.

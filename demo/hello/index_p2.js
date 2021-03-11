@@ -2,15 +2,14 @@
 // using `encode_message`, `send_message` and `wait_for_transaction` functions.
 // Also it demonstrates how to catch intermediate events during message processing and log them
 
-import {libNode} from "@tonclient/lib-node";
-import {HelloContract} from "./HelloContract.js";
-import {
+const { libNode } = require("@tonclient/lib-node");
+const { HelloContract } = require("./HelloContract.js");
+const {
     abiContract,
     Account,
-    ParamsOfEncodeMessage,
     signerKeys,
     TonClient,
-} from "@tonclient/core";
+} = require("@tonclient/core");
 
 TonClient.useBinaryLibrary(libNode);
 TonClient.defaultConfig = {
@@ -20,7 +19,7 @@ TonClient.defaultConfig = {
     },
 };
 
-async function logEvents(params: any, response_type: any) {
+async function logEvents(params, response_type) {
     console.log(`params = ${JSON.stringify(params, null, 2)}`);
     console.log(`response_type = ${JSON.stringify(response_type, null, 2)}`);
 }
@@ -69,7 +68,7 @@ async function main() {
 
 
     // Encode the message with `touch` function call
-    const params: ParamsOfEncodeMessage = {
+    const params = {
         abi: abiContract(HelloContract.abi),
         address,
         call_set: {
@@ -79,7 +78,7 @@ async function main() {
         // There is no pubkey key check in the contract
         // so we can leave it empty. Never use this approach in production
         // because anyone can call this function
-        signer: {type: "None"},
+        signer: { type: "None" },
     };
 
     // Create external inbound message with `touch` function call

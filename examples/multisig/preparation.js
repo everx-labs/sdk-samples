@@ -1,10 +1,10 @@
-import {libNode} from "@tonclient/lib-node";
-import {
+const { libNode } = require("@tonclient/lib-node");
+const {
     Account,
     signerKeys,
     TonClient,
-} from "@tonclient/core";
-import {MultisigContract} from "./contracts";
+} = require("@tonclient/core");
+const { MultisigContract } = require("./contracts");
 
 const SEED_PHRASE_WORD_COUNT = 12; //Mnemonic word count
 const SEED_PHRASE_DICTIONARY_ENGLISH = 1; //Dictionary identifier
@@ -30,12 +30,12 @@ const keyPairFile = path.join(__dirname, "keyPair.json");
         // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
         // (see README in  https://github.com/tonlabs/ton-client-js )
         TonClient.useBinaryLibrary(libNode);
-        TonClient.defaultConfig = {network: {endpoints: ["net.ton.dev"]}};
+        TonClient.defaultConfig = { network: { endpoints: ["net.ton.dev"] } };
 
-        const {crypto} = TonClient.default;
+        const { crypto } = TonClient.default;
         // Generate seed phrase. It is used to generate or re-generate keys. Keep it secret.
         //https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_crypto.md#mnemonic_from_random
-        const {phrase} = await crypto.mnemonic_from_random({
+        const { phrase } = await crypto.mnemonic_from_random({
             dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
             word_count: SEED_PHRASE_WORD_COUNT,
         });
@@ -52,7 +52,7 @@ const keyPairFile = path.join(__dirname, "keyPair.json");
         console.log(`Generated keyPair:`);
         console.log(keyPair);
 
-        const acc = new Account(MultisigContract, {signer: signerKeys(keyPair)});
+        const acc = new Account(MultisigContract, { signer: signerKeys(keyPair) });
         console.log(`Here is the future address of your contract ${await acc.getAddress()}. Please save the keys. You will need them later to work with your multisig wallet.`);
 
         process.exit(0);

@@ -1,13 +1,13 @@
 // this example produces error intentionally
-import {libNode} from "@tonclient/lib-node";
-import * as fs from "fs";
-import * as path from "path";
-import {
+const {libNode} = require("@tonclient/lib-node");
+const fs = require("fs");
+const path = require("path");
+const {
     Account,
     signerKeys,
     TonClient,
-} from "@tonclient/core";
-import {MultisigContract} from "./contracts";
+} = require("@tonclient/core");
+const {MultisigContract} = require("./contracts");
 
 const keyPairFile = path.join(__dirname, "keyPair.json");
 const keyPairFile2 = path.join(__dirname, "keyPair2.json");

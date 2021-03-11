@@ -4,7 +4,6 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "install": "npx tsc",
         "preparation": "node preparation.js",
         "deploy": "node deploy.js",
         "error_produce": "node error_produce.js"

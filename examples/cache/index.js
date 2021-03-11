@@ -1,17 +1,17 @@
-import {
+const {
     TonClient,
     abiContract,
     signerNone,
     bocCacheTypePinned,
     bocCacheTypeUnpinned,
-} from "@tonclient/core";
-import {libNode} from "@tonclient/lib-node";
+} = require("@tonclient/core");
+const {libNode} = require("@tonclient/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 
 const address = "-1:7777777777777777777777777777777777777777777777777777777777777777";
 
-async function main(client: TonClient) {
+async function main(client) {
     // Download account BOC
     const account = (await client.net.query_collection({
         collection: "accounts",
