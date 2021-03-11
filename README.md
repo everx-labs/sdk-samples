@@ -30,6 +30,15 @@ See news about new samples [here](https://docs.ton.dev/86757ecb2/p/6553fc-api-an
 
 `nfc_card` folder contains examples of projects working with NFC Security Card using React-Native, Swift and Android SDKs.
 
+# Installation
+
+This repository contains submodules. So after cloning you have to:
+
+```shell
+git submodule init
+git submodule update
+```
+
 # Full Documentation 
 * [SDK guides](https://docs.ton.dev/86757ecb2/p/783f9d-about-sdk)
 * [SDK API Reference](https://github.com/tonlabs/TON-SDK/blob/master/docs/modules.md)
