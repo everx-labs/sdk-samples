@@ -1,10 +1,10 @@
-import {libNode} from "@tonclient/lib-node";
-import {MultisigContract} from "./contracts";
-import {
+const { libNode } = require("@tonclient/lib-node");
+const { MultisigContract } = require("./contracts");
+const {
     Account,
     signerKeys,
     TonClient,
-} from "@tonclient/core";
+} = require("@tonclient/core");
 
 const fs = require("fs");
 const path = require("path");
@@ -37,7 +37,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
 
         const keyPair = JSON.parse(fs.readFileSync(keyPairFile, "utf8"));
 
-        const acc = new Account(MultisigContract, {signer: signerKeys(keyPair)});
+        const acc = new Account(MultisigContract, { signer: signerKeys(keyPair) });
         const address = await acc.getAddress();
         console.log(address);
         const info = await acc.getAccount();

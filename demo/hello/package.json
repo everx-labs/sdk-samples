@@ -4,8 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "demo": "node index.js",
-        "install": "npx tsc"
+        "start": "node index.js"
     },
     "keywords": [],
     "author": "",
