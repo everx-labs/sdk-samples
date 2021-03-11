@@ -4,18 +4,18 @@
 // the project root folder into keys.json file
 
 
-import {
+const {
     signerNone,
     abiContract,
     signerKeys,
     TonClient,
     Account,
-} from "@tonclient/core";
-import {libNode} from "@tonclient/lib-node";
-import {loadContract} from "utils";
+} = require("@tonclient/core");
+const { libNode } = require("@tonclient/lib-node");
+const { loadContract } = require("utils");
 
-import * as fs from "fs";
-import * as path from "path";
+const fs = require("fs");
+const path = require("path");
 
 const keyPairFile = path.join(__dirname, "keys.json");
 

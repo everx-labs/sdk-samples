@@ -1,23 +1,23 @@
-import {loadContract} from "utils";
-import {
+const { loadContract } = require("utils");
+const {
     Account,
     signerKeys,
     TonClient,
-} from "@tonclient/core";
+} = require("@tonclient/core");
 
-import {libNode} from "@tonclient/lib-node";
+const { libNode } = require("@tonclient/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 TonClient.defaultConfig = {
     network: {
         // Local node URL.
-        server_address: "http://localhost",
+        endpoints: ["http://localhost"],
     },
 };
 
 const MultisigContract = loadContract("solidity/safemultisig/SafeMultisigWallet");
 
-async function deployContract(): Promise<Account> {
+async function deployContract() {
     const walletKeys = await TonClient.default.crypto.generate_random_sign_keys();
     const acc = new Account(MultisigContract, {
         signer: signerKeys(walletKeys),
@@ -35,7 +35,7 @@ async function deployContract(): Promise<Account> {
     return acc;
 }
 
-async function sendMoney(acc: Account, toAddress: string, amount: any) {
+async function sendMoney(acc, toAddress, amount) {
     await acc.run("sendTransaction", {
         dest: toAddress,
         value: amount,
@@ -67,7 +67,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         // Returns account balance when account with the specified ID is updated.
         const subscriptionAccountHandle = (await TonClient.default.net.subscribe_collection({
             collection: "accounts",
-            filter: {id: {eq: await wallet2.getAddress()}},
+            filter: { id: { eq: await wallet2.getAddress() } },
             result: "balance",
         }, (d) => {
             console.log(">>> Account subscription triggered ", parseInt(d.result.balance));
@@ -78,7 +78,7 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         // Returns transaction ID when there is a new transaction for this account
         const subscriptionTransactionHandle = (await TonClient.default.net.subscribe_collection({
             collection: "transactions",
-            filter: {account_addr: {eq: await wallet2.getAddress()}},
+            filter: { account_addr: { eq: await wallet2.getAddress() } },
             result: "id",
         }, (d) => {
             console.log(">>> Transaction subscription triggered", d);
@@ -90,8 +90,8 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         await TonClient.default.net.subscribe_collection({
             collection: "messages",
             filter: {
-                src: {eq: await wallet1.getAddress()},
-                dst: {eq: await wallet2.getAddress()},
+                src: { eq: await wallet1.getAddress() },
+                dst: { eq: await wallet2.getAddress() },
             },
             result: "id",
         }, (d) => {
@@ -105,8 +105,8 @@ async function sendMoney(acc: Account, toAddress: string, amount: any) {
         await sendMoney(wallet1, await wallet2.getAddress(), 5_000_000_000);
 
         // Cancels a subscription specified by its handle. https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#unsubscribe
-        await TonClient.default.net.unsubscribe({handle: subscriptionAccountHandle});
-        await TonClient.default.net.unsubscribe({handle: subscriptionTransactionHandle});
+        await TonClient.default.net.unsubscribe({ handle: subscriptionAccountHandle });
+        await TonClient.default.net.unsubscribe({ handle: subscriptionTransactionHandle });
         //    await client.net.unsubscribe({ handle: subscriptionMessageHandle });
 
 
