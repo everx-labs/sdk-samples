@@ -38,11 +38,11 @@ async function main() {
     // Call `touch` function
     let response = await helloAcc.run("touch", {});
 
-    console.log(`Contract run transaction with output ${response.decoded?.output}, ${response.transaction.id}`);
+    console.log(`Contract run transaction with output ${response.decoded.output}, ${response.transaction.id}`);
 
     // Execute `getTimestamp` get method  (execute the message locally on TVM)
     response = await helloAcc.runLocal("getTimestamp", {});
-    console.log("Contract reacted to your getTimestamp:", response.decoded?.output);
+    console.log("Contract reacted to your getTimestamp:", response.decoded.output);
 }
 
 (async () => {

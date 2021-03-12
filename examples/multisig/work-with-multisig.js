@@ -48,7 +48,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
 
         const response = await acc.runLocal("getCustodians", {});
         // Print the custodians of the wallet
-        console.log("Сustodians list:", response.decoded?.output?.custodians);
+        console.log("Сustodians list:", response.decoded.output.custodians);
 
 
         // Run 'submitTransaction' method of multisig wallet
