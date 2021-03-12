@@ -52,9 +52,13 @@ async function main() {
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error("Network is inaccessible. You have to start Node SE using `tondev se start`");
+            console.error(`
+Network is inaccessible.
+You have to start Node SE using \`tondev se start\`
+`);
         } else {
             console.error(error);
         }
     }
+    TonClient.default.close();
 })();
