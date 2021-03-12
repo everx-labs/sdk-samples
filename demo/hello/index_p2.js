@@ -114,7 +114,7 @@ async function main() {
     // See more info about run_tvm method here
     // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_tvm
     const response = await helloAcc.runLocal("getTimestamp", {});
-    console.log("Contract reacted to your getTimestamp:", response.decoded?.output);
+    console.log("Contract reacted to your getTimestamp:", response.decoded.output);
 }
 
 (async () => {
