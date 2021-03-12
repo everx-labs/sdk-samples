@@ -60,7 +60,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_tvm
         const response = await acc.runLocal("getCustodians", {});
         // Print the custodians of the wallet
-        console.log("Custodians list:", response.decoded?.output?.custodians);
+        console.log("Custodians list:", response.decoded.output.custodians);
 
         // Run 'submitTransaction' method of multisig wallet
 
