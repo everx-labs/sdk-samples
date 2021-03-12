@@ -51,6 +51,10 @@ async function main() {
         await main();
         process.exit(0);
     } catch (error) {
-        console.error(error);
+        if (error.code === 504) {
+            console.error("Network is inaccessible. You have to start Node SE using `tondev se start`");
+        } else {
+            console.error(error);
+        }
     }
 })();
