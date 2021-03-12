@@ -51,8 +51,8 @@ tondev se start
 Install packages and run:
 
 ```shell
-$ npm install
-$ node index.js
+$ npm i
+$ npm start
 Hello localhost TON!
 Future address of the contract will be: 0:6a77bd82590eeef139d2ef149df31947759b32b3cc25da39d562b12d03ecd4a2
 Grams were transferred from giver to 0:6a77bd82590eeef139d2ef149df31947759b32b3cc25da39d562b12d03ecd4a2

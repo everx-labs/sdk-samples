@@ -4,9 +4,8 @@
 	"private": true,
 	"description": "Hello Web – WebPack TON Client example",
 	"scripts": {
-		"install": "npx tsc",
 		"npm install": "npm install",
-		"web": "webpack serve -d --config webpack.config.js --progress --host 127.0.0.1",
+		"start": "webpack serve --open",
 		"web:bundle": "webpack -p --config webpack.config.js --progress --colors --display-error-details"
 	},
 	"keywords": [
@@ -29,10 +28,9 @@
 		"utils": "file:../../utils"
 	},
 	"devDependencies": {
-		"assert": "^2.0.0",
-		"copy-webpack-plugin": "8.0.0",
-		"webpack": "5.24.4",
-		"webpack-cli": "4.5.0",
+		"copy-webpack-plugin": "^7.0.0",
+		"webpack": "^5.21.2",
+		"webpack-cli": "^4.5.0",
 		"webpack-dev-server": "^3.11.2"
 	},
 	"main": "index.js"
