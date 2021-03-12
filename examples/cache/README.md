@@ -10,6 +10,6 @@ In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js)
 ## Install packages & run:
 
 ```sh
-npm install
-node index.js
+npm i
+npm start
 ```

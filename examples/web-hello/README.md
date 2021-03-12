@@ -14,7 +14,7 @@ In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js)
 * [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/2771b0-overview) 
 
 ```sh
-docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 tonlabs/local-node
+tondev se start
 ```
 
 Note: if you have running TON OS SE already with port mapping other than 80, than you have to
@@ -23,8 +23,8 @@ change TON OS SE address in index.js line 9.
 ## Install packages & run:
 
 ```sh
-npm install
-npm run web
+npm i
+npm start
 ```
 
-Then open in browser address: http://localhost:4000
+This opens the browser with address: http://localhost:4000
