@@ -16,7 +16,7 @@ TonClient.useBinaryLibrary(libNode);
 TonClient.defaultConfig = {
     network: {
         // Local node URL here
-        server_address: "http://localhost",
+        endpoints:[ "http://localhost"],
     },
 };
 
