@@ -46,6 +46,18 @@ class Multisig extends AccountEx {
     }
 }
 
+async function logMessage(title, acc, msg) {
+    let decoded;
+    try {
+        decoded = JSON.stringify(await acc.decodeMessage(msg.boc), undefined, "    ");
+    } catch (err) {
+    }
+    console.log(`>>> ${title} message subscription triggered.`);
+    console.log(">>> Id:   ", msg.id);
+    if (decoded) {
+        console.log("    Body: ", decoded);
+    }
+}
 
 (async () => {
     try {
@@ -65,16 +77,12 @@ class Multisig extends AccountEx {
             console.log(">>> Transaction subscription triggered", tr.id);
         });
 
+        await wallet1.subscribeMessages("id boc", async (msg) => {
+            await logMessage("Wallet1", wallet1, msg);
+        });
+
         await wallet2.subscribeMessages("id boc", async (msg) => {
-            let decoded;
-            try {
-                decoded = JSON.stringify(await wallet2.decodeMessage(msg.boc));
-            } catch (err) {
-                decoded = err.message;
-            }
-            console.log(">>> Message subscription triggered.");
-            console.log(">>> Id:   ", msg.id);
-            console.log("    Body: ", decoded);
+            await logMessage("Wallet2", wallet2, msg);
         });
 
         console.log(

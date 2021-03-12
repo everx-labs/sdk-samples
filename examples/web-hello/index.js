@@ -35,9 +35,9 @@ window.addEventListener("load", async () => {
 
     const touchResponse = await helloAcc.run("touch", {});
 
-    setText("touchOutput", JSON.stringify(touchResponse.decoded?.output));
+    setText("touchOutput", JSON.stringify(touchResponse.decoded.output));
 
     // Execute the get method `getTimestamp` on the latest account's state
     const getTimestampResponse = await helloAcc.runLocal("getTimestamp", {});
-    setText("getTimestampOutput", Number.parseInt(getTimestampResponse.decoded?.output?.value0 ?? 0).toString());
+    setText("getTimestampOutput", Number.parseInt(getTimestampResponse.decoded.output.value0 ?? 0).toString());
 });

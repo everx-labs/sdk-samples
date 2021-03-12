@@ -57,7 +57,7 @@ async function main() {
     console.log(`Hello contract was deployed at address: ${await hello.getAddress()}`);
 
     const responseTouch = await hello.run("touch", {});
-    console.log(`Contract run transaction with output ${responseTouch.decoded?.output}, ${responseTouch.transaction.id}`);
+    console.log(`Contract run transaction with output ${responseTouch.decoded.output}, ${responseTouch.transaction.id}`);
 
     const responseTvm = await hello.runLocal("sayHello", {});
     console.log(`Contract reacted to your sayHello ${JSON.stringify(responseTvm)}`);
