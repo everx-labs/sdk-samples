@@ -26,6 +26,6 @@ See other available [TON OS SE management options in TONDEV](https://docs.ton.de
 ## Install packages and run:
 
 ```sh
-npm install
-node index.js
+npm i
+npm start
 ```
