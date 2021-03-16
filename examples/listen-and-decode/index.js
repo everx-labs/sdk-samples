@@ -1,8 +1,8 @@
 const { AccountEx } = require("./accountex");
-const { loadContract } = require("utils");
 const {
     signerKeys,
     TonClient,
+    MessageBodyType,
 } = require("@tonclient/core");
 
 const { libNode } = require("@tonclient/lib-node");
@@ -10,99 +10,82 @@ const { libNode } = require("@tonclient/lib-node");
 TonClient.useBinaryLibrary(libNode);
 TonClient.defaultConfig = { network: { endpoints: ["http://localhost"] } };
 
-const MultisigContract = loadContract("solidity/safemultisig/SafeMultisigWallet");
+const { HelloEventsContract } = require("./contracts");
 
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+class HelloEvents extends AccountEx {
+    constructor(options) {
+        super(HelloEventsContract, options);
+    }
 
-class Multisig extends AccountEx {
     /**
-     *
-     * @returns {Promise<Multisig>}
+     * @param text {string}
+     * @returns {Promise<HelloEvents>}
      */
-    static async deployNew() {
+    static async deployNew(text) {
         const keys = await TonClient.default.crypto.generate_random_sign_keys();
-        const multisig = new Multisig(MultisigContract, { signer: signerKeys(keys) });
-        await multisig.deploy({
+        const account = new HelloEvents({ signer: signerKeys(keys) });
+        await account.deploy({
             initInput: {
-                owners: [`0x${keys.public}`], // Multisig owner public key.
-                reqConfirms: 0,  // Multisig required confirmations zero means that
-                // no additional confirmation is need to send a transaction.
+                text: Buffer.from(text).toString("hex"),
             },
             useGiver: true,
         });
-        return multisig;
+        return account;
     }
 
-    async sendMoney(toAddress, amount) {
-        await this.run("sendTransaction", {
-            dest: toAddress,
-            value: amount,
-            bounce: false,
-            flags: 0,
-            payload: "",
+    /**
+     *
+     * @param text {string}
+     * @returns {Promise<void>}
+     */
+    async setHelloText(text) {
+        await this.run("setHelloText", {
+            text: Buffer.from(text).toString("hex"),
         });
     }
-}
 
-async function logMessage(title, acc, msg) {
-    let decoded;
-    try {
-        decoded = JSON.stringify(await acc.decodeMessage(msg.boc), undefined, "    ");
-    } catch (err) {
-    }
-    console.log(`>>> ${title} message subscription triggered.`);
-    console.log(">>> Id:   ", msg.id);
-    if (decoded) {
-        console.log("    Body: ", decoded);
+    /**
+     *
+     * @returns {Promise<string>}
+     */
+    async getHelloText() {
+        const { decoded } = await this.runLocal("getHelloText", {});
+        return Buffer.from(decoded.output.text, "hex").toString();
     }
 }
 
 (async () => {
     try {
-        const wallet1 = await Multisig.deployNew();
-        console.log(`Account 1 balance is ${await wallet1.getBalance()}`);
+        const hello = await HelloEvents.deployNew("Hello World!");
+        console.log(`Initial hello text is "${await hello.getHelloText()}"`);
 
-        const wallet2 = await Multisig.deployNew();
-        console.log(`Account 2 balance is ${await wallet2.getBalance()}`);
-
-        await sleep(1_000);
-
-        await wallet2.subscribeAccount("balance", (acc) => {
-            console.log(">>> Account subscription triggered ", parseInt(acc.balance));
+        await hello.subscribeAccount("balance", (acc) => {
+            console.log("Account has updated. Current balance is ", parseInt(acc.balance));
         });
 
-        await wallet2.subscribeTransactions("id", (tr) => {
-            console.log(">>> Transaction subscription triggered", tr.id);
+        await hello.subscribeMessages("boc", async (msg) => {
+            try {
+                const decoded = await hello.decodeMessage(msg.boc);
+                switch (decoded.body_type) {
+                case MessageBodyType.Input:
+                    console.log(`External inbound message, function "${decoded.name}", parameters: `, JSON.stringify(decoded.value));
+                    break;
+                case MessageBodyType.Output:
+                    console.log(`External outbound message, function "${decoded.name}", result`, JSON.stringify(decoded.value));
+                    break;
+                case MessageBodyType.Event:
+                    console.log(`External outbound message, event "${decoded.name}", parameters`, JSON.stringify(decoded.value));
+                    break;
+                }
+            } catch (err) {
+            }
         });
 
-        await wallet1.subscribeMessages("id boc", async (msg) => {
-            await logMessage("Wallet1", wallet1, msg);
-        });
+        await hello.setHelloText("Hello there!");
+        console.log(`Updated hello text is ${await hello.getHelloText()}`);
 
-        await wallet2.subscribeMessages("id boc", async (msg) => {
-            await logMessage("Wallet2", wallet2, msg);
-        });
-
-        console.log(
-            `Sending money from ${await wallet1.getAddress()} ` +
-            `to ${await wallet2.getAddress()} and waiting for completion events.`
-        );
-
-        await wallet1.sendMoney(await wallet2.getAddress(), 5_000_000_000);
-
-        // Free up all internal resources associated with wallets.
-        await wallet1.free();
-        await wallet2.free();
-
-        await sleep(1_000);
-
-        wallet1.refresh();
-        wallet2.refresh();
-
-        console.log(`Account 1 balance is ${(await wallet1.getAccount()).balance}`);
-        console.log(`Account 2 balance is ${(await wallet2.getAccount()).balance}`);
+        /** Free up all internal resources associated with wallets. */
+        await hello.free();
     } catch (error) {
         console.error(error);
     }

@@ -13,12 +13,7 @@ const {
 // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
 // (see README in  https://github.com/tonlabs/ton-client-js )
 TonClient.useBinaryLibrary(libNode);
-TonClient.defaultConfig = {
-    network: {
-        // Local node URL here
-        server_address: "http://localhost",
-    },
-};
+TonClient.defaultConfig = { network: { endpoints: ["http://localhost"] } };
 
 async function main() {
     // Generate an ed25519 key pair for new account
@@ -39,6 +34,7 @@ async function main() {
     let response = await helloAcc.run("touch", {});
 
     console.log(`Contract run transaction with output ${response.decoded.output}, ${response.transaction.id}`);
+
 
     // Execute `getTimestamp` get method  (execute the message locally on TVM)
     response = await helloAcc.runLocal("getTimestamp", {});
