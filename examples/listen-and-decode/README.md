@@ -1,8 +1,8 @@
 # NodeJS SDK Hello example
 
 In this example we demonstrate:
-- How to subscribe for realtime changes related to specific account.
-- How to decode messages related to ABI compliant account.
+- How to subscribe for realtime changes related to a specific account.
+- How to decode events and other messages related to this account.
 
 ## Prerequisite
 
