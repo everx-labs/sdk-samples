@@ -1,18 +1,19 @@
-# NodeJS SDK Hello example
+# NodeJS SDK Subscription example
 
-In this example we demonstrate:
-- How to subscribe for realtime changes related to specific account.
-- How to decode messages related to ABI compliant account.
+In this example we use multisig wallet contract to send tokens from one wallet to another. You will learn how to subscribe to the new transactions and messages of an account.
+
+In the example we use [TON OS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview), local blockchain.
 
 ## Prerequisite
 
 * Node.js >= [12.x installed](https://nodejs.org)
-* [Docker](https://docs.docker.com/desktop/#download-and-install) installed and running
+* [Docker](https://docs.docker.com/desktop/#download-and-install)
 * [TONDEV CLI](https://docs.ton.dev/86757ecb2/p/179e51-tondev)
+
 
 ## Preparation
 
-* [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/19d886-ton-os-se) 
+* [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/2771b0-overview) 
 
 ```sh
 tondev se start
@@ -22,7 +23,7 @@ You're all set! Check out the TON OS SE GraphQL web playground at http://0.0.0.0
 
 See other available [TON OS SE management options in TONDEV](https://docs.ton.dev/86757ecb2/v/0/p/54722f-ton-os-se).
 
-## Install packages & run:
+## Install packages and run:
 
 ```sh
 npm i

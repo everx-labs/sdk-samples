@@ -14,7 +14,10 @@ class AccountEx extends Account {
         const address = await this.getAddress();
         await this.subscribe(
             "transactions",
-            { account_addr: { eq: address } },
+            {
+                account_addr: { eq: address },
+                status: { eq: 5 },
+            },
             result,
             listener
         );
@@ -24,7 +27,14 @@ class AccountEx extends Account {
         const address = await this.getAddress();
         await this.subscribe(
             "messages",
-            { src: { eq: address }, OR: { dst: { eq: address } } },
+            {
+                status: { eq: 5 },
+                src: { eq: address },
+                OR: {
+                    status: { eq: 5 },
+                    dst: { eq: address }
+                }
+            },
             result,
             listener
         );
