@@ -1,5 +1,3 @@
-
-
 const { TonClient } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
 
@@ -9,7 +7,7 @@ TonClient.useBinaryLibrary(libNode);
     const client = new TonClient({
         network: {
             // Blockchain node URL 
-            endpoints: ["https://net.ton.dev"]
+            endpoints: ["https://main.ton.dev"]
         }
     });
     try {
@@ -35,13 +33,7 @@ TonClient.useBinaryLibrary(libNode);
         console.log("\nActive election id: ");
         console.log(JSON.stringify(result));
 
-        result = (await client.tvm.run_get({
-            account: account.boc,
-            function_name: 'compute_returned_stake',
-            input: `0x${ELECTOR_ADDRESS.split(':')[1]}`
-        })).output;
-        console.log(`\nCompute returned stake for wallet ${ELECTOR_ADDRESS}: `);
-        console.log(JSON.stringify(result));
+
 
         result = (await client.tvm.run_get({
             account: account.boc,
@@ -57,6 +49,17 @@ TonClient.useBinaryLibrary(libNode);
             tuple_list_as_array: true  // Use true in case of too many participants
         })).output;
         console.log("\nElection participant list: ");
+        console.log(JSON.stringify(result));
+
+        //get existed participant wallet address or default value
+        let participant = (result && result[0] && result[0].value[0]) ? result[0].value[0][0] : "0x0000000000000000000000000000000000000000000000000000000000000001"
+        
+        result = (await client.tvm.run_get({
+            account: account.boc,
+            function_name: 'compute_returned_stake',
+            input: participant
+        })).output;
+        console.log(`\nCompute returned stake for wallet ${participant}: `);
         console.log(JSON.stringify(result));
 
         result = (await client.tvm.run_get({
