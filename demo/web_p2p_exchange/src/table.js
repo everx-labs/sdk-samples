@@ -6,7 +6,7 @@ const { isValidPublicKey, fromNano } = require('./utils')
 
 const isModerator = false // Moderator UI is not implemented for simplicity
 
-const table = ({ queryParams, client, walletAddress, walletKeys }) => ({
+const table = ({ queryParams, client, wallet }) => ({
     offers: [],
     populate: async (containerElem) => {
         const {
@@ -19,11 +19,12 @@ const table = ({ queryParams, client, walletAddress, walletKeys }) => ({
             sellerDoesTransfer,
         } = blockchain(client)
 
+        const walletKeys = wallet.signer.keys
+
         const offers = await getOffers(queryParams)
 
         if (JSON.stringify(offers) === JSON.stringify(this.offers)) {
-            // No changes
-            return
+            return // No changes
         }
 
         // Clear table
@@ -84,8 +85,7 @@ const table = ({ queryParams, client, walletAddress, walletKeys }) => ({
                 addButton('Send deposit', buyerPlacesDeposit, {
                     dest: r.id,
                     value: r.depositAmount,
-                    walletAddress,
-                    walletKeys,
+                    wallet,
                 })
             }
 
