@@ -1,7 +1,7 @@
+const { Account } = require("@tonclient/appkit");
 const { libNode } = require("@tonclient/lib-node");
 const { HelloContract } = require("./HelloContract.js");
 const {
-    Account,
     signerKeys,
     TonClient,
 } = require("@tonclient/core");
@@ -13,17 +13,16 @@ const {
 // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
 // (see README in  https://github.com/tonlabs/ton-client-js )
 TonClient.useBinaryLibrary(libNode);
-TonClient.defaultConfig = {
-    network: {
-        // Local node URL here
-        endpoints:[ "http://localhost"],
-    },
-};
 
-async function main() {
+/**
+ * @param client {TonClient}
+ * @returns {Promise<void>}
+ */
+async function main(client) {
     // Generate an ed25519 key pair for new account
     const helloAcc = new Account(HelloContract, {
         signer: signerKeys(await TonClient.default.crypto.generate_random_sign_keys()),
+        client,
     });
 
     const address = await helloAcc.getAddress();
@@ -46,9 +45,15 @@ async function main() {
 }
 
 (async () => {
+    const client = new TonClient({
+        network: {
+            // Local TON OS SE instance URL here
+            endpoints: ["http://localhost"],
+        },
+    });
     try {
         console.log("Hello localhost TON!");
-        await main();
+        await main(client);
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
@@ -60,5 +65,5 @@ You have to start TON OS SE using \`tondev se start\`
             console.error(error);
         }
     }
-    TonClient.default.close();
+    client.close();
 })();
