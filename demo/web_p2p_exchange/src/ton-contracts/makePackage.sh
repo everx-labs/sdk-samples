@@ -1,5 +1,5 @@
 #!/bin/bash
-
+name=${1%.*} # filename without extension
 abi=`cat ${name}.abi.json`
 image=`cat ${name}.tvc | base64 -w 0`
 
