@@ -1,0 +1,20 @@
+{
+    "name": "hello-demo",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@tonclient/appkit": "^0.1.0",
+        "@tonclient/core": "^1.11.1",
+        "@tonclient/lib-node": "^1.10.2"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.31"
+    }
+}
