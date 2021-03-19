@@ -5,7 +5,6 @@ const { TonClient } = require('@tonclient/core')
 const { libNode } = require('@tonclient/lib-node')
 
 const blockchain = require('../blockchain')
-
 const { isNear, sleep, isValidAddress, utf8ToHex } = require('../utils')
 const cfg = require('../config')
 
@@ -24,87 +23,78 @@ const OFFER_FIAT_CURRENCY = 'EUR'
 const OFFER_TEXT = 'SWIFT CHASUS33AEG, Lithuania, acc #1234567890, David Mills. Only fast transfers'
 
 TonClient.useBinaryLibrary(libNode)
-const client = new TonClient(cfg.clientParams)
+TonClient.defaultConfig = cfg.clientParams
 
-const seller = {}
-const buyer = {}
-const offer = {
-    params: () => ({
-        value: OFFER_AMOUNT,
-        deposit: OFFER_DEPOSIT,
-        amount: OFFER_FIAT_AMOUNT,
-        currency: utf8ToHex(OFFER_FIAT_CURRENCY),
-        text: utf8ToHex(OFFER_TEXT),
-        sellerWalletKeys: seller.walletKeys,
-        sellerWalletAddress: seller.walletAddress,
-    }),
-}
+const client = TonClient.default
+
+let buyer
+let seller
+let offer
+
+const offerParams = () => ({
+    value: OFFER_AMOUNT,
+    deposit: OFFER_DEPOSIT,
+    amount: OFFER_FIAT_AMOUNT,
+    currency: utf8ToHex(OFFER_FIAT_CURRENCY),
+    text: utf8ToHex(OFFER_TEXT),
+    wallet: seller,
+})
+
 const {
     buyerClaimsTransfer,
     buyerDiscardsOffer,
     buyerPlacesDeposit,
     deployOffer,
     deployWallet,
-    genKeyPair,
-    getContractBalance,
     getOfferByAddress,
     getOffers,
     moderatorDoesTransfer,
     sellerDiscardsOffer,
 } = blockchain(client)
 
-beforeAll(async () => {
-    seller.walletKeys = await genKeyPair()
-    buyer.walletKeys = await genKeyPair()
-})
-
 test('Deploying seller and buyer wallets', async () => {
-    seller.walletAddress = await deployWallet({
-        value: WALLET_INITIAL_VALUE,
-        keys: seller.walletKeys,
-    })
-    expect(isValidAddress(seller.walletAddress)).toBeTruthy()
+    seller = await deployWallet(WALLET_INITIAL_VALUE)
+    expect(isValidAddress(await seller.getAddress())).toBeTruthy()
 
-    buyer.walletAddress = await deployWallet({
-        value: WALLET_INITIAL_VALUE,
-        keys: buyer.walletKeys,
-    })
-    expect(isValidAddress(buyer.walletAddress)).toBeTruthy()
+    buyer = await deployWallet(WALLET_INITIAL_VALUE)
+    expect(isValidAddress(await buyer.getAddress())).toBeTruthy()
 })
 
 test('Deploying offer contract', async () => {
-    offer.address = await deployOffer(offer.params())
-    expect(isValidAddress(offer.address)).toBeTruthy()
+    offer = await deployOffer(offerParams())
+    expect(isValidAddress(await offer.getAddress())).toBeTruthy()
 
-    const offerContractBalance = await getContractBalance(offer.address)
-    expect(isNear(offerContractBalance, OFFER_AMOUNT)).toBeTruthy()
+    const { balance } = await offer.getAccount()
+    expect(isNear(balance, OFFER_AMOUNT)).toBeTruthy()
 })
 
 describe('Discarding an offer', () => {
     test('Seller tries to discard an offer', async () => {
         await expect(
-            sellerDiscardsOffer(offer.address, seller.walletKeys), //
+            sellerDiscardsOffer(await offer.getAddress(), seller.signer.keys), //
         ).resolves.not.toThrow()
     })
+
     test('Checking that all tokens was transfered back to the seller wallet', async () => {
         // Checking wallet balance during 1 minute
-        let sellerWalletBalance
+        let balance
         for (let i = 0; i < 10; i++) {
-            sellerWalletBalance = await getContractBalance(seller.walletAddress)
-            if (isNear(sellerWalletBalance, WALLET_INITIAL_VALUE)) break
+            seller.refresh()
+            ;({ balance } = await seller.getAccount())
+            if (isNear(balance, WALLET_INITIAL_VALUE)) break
             await sleep(6000)
         }
-        expect(isNear(sellerWalletBalance, WALLET_INITIAL_VALUE)).toBeTruthy()
+        expect(isNear(balance, WALLET_INITIAL_VALUE)).toBeTruthy()
     })
 })
 
 describe('Deploing ANOTHER offer contract', () => {
     test('Seller deploys an offer contract', async () => {
-        offer.address = await deployOffer(offer.params())
-        expect(isValidAddress(offer.address)).toBeTruthy()
+        offer = await deployOffer(offerParams())
+        expect(isValidAddress(await offer.getAddress())).toBeTruthy()
     })
 
-    test.skip('Buyer finds the offer and tries to discard it (very long test due to repeated attempts)', async () => {
+    test('Buyer finds the offer and tries to discard it', async () => {
         let thisOffer
         for (let i = 0; i < 10; i++) {
             const results = await getOffers({
@@ -121,7 +111,7 @@ describe('Deploing ANOTHER offer contract', () => {
         expect(thisOffer).toBeTruthy()
         expect(thisOffer.text).toEqual(OFFER_TEXT)
 
-        await expect(buyerDiscardsOffer(thisOffer.id, buyer.walletKeys)).rejects.toMatchObject({
+        await expect(buyerDiscardsOffer(thisOffer.id, buyer.signer.keys)).rejects.toMatchObject({
             data: { exit_code: 101 },
         })
     })
@@ -131,25 +121,25 @@ describe('Buyer starts purchase', () => {
     test('Deposit placement', async () => {
         await expect(
             buyerPlacesDeposit({
-                walletAddress: buyer.walletAddress,
-                walletKeys: buyer.walletKeys,
                 dest: offer.address,
                 value: OFFER_DEPOSIT,
+                wallet: buyer,
             }),
         ).resolves.not.toThrow()
     })
     test('Get offer state', async () => {
         let state
+        const buyerWalletAddress = await buyer.getAddress()
         for (let i = 0; i < 10; i++) {
-            state = await getOfferByAddress(offer.address)
-            if (buyer.walletKeys.public === state.buyerPubkey && buyer.walletAddress === state.buyerWallet) {
+            state = await getOfferByAddress(await offer.getAddress())
+            if (buyer.signer.keys.public === state.buyerPubkey && buyerWalletAddress === state.buyerWallet) {
                 break
             }
             await sleep(6000)
         }
 
-        expect(buyer.walletKeys.public).toEqual(state.buyerPubkey)
-        expect(buyer.walletAddress).toEqual(state.buyerWallet)
+        expect(buyer.signer.keys.public).toEqual(state.buyerPubkey)
+        expect(await buyer.getAddress()).toEqual(state.buyerWallet)
         expect(state.depositAmount).toEqual(OFFER_DEPOSIT)
         expect(state.text).toEqual(OFFER_TEXT)
     })
@@ -159,7 +149,7 @@ describe('Buyer paid fiat money and asks for tokens', () => {
     let now
     test("Setting 'buyerClaimsTransferTs' timestamp", async () => {
         await expect(
-            buyerClaimsTransfer(offer.address, buyer.walletKeys), //
+            buyerClaimsTransfer(await offer.getAddress(), buyer.signer.keys), //
         ).resolves.not.toThrow()
         now = Math.floor(Date.now() / 1000)
     })
@@ -167,7 +157,7 @@ describe('Buyer paid fiat money and asks for tokens', () => {
     test("Getting 'buyerClaimsTransferTs' timestamp", async () => {
         let buyerClaimsTransferTs
         for (let i = 0; i < 10; i++) {
-            ;({ buyerClaimsTransferTs } = await getOfferByAddress(offer.address))
+            ;({ buyerClaimsTransferTs } = await getOfferByAddress(await offer.getAddress()))
             if (buyerClaimsTransferTs > 0) break
             await sleep(6000)
         }
@@ -179,7 +169,7 @@ describe('Seller did not recieve fiat money and wants to discard the offer', () 
     let now
     test("Setting 'sellerDiscardsOfferTs' timestamp", async () => {
         await expect(
-            sellerDiscardsOffer(offer.address, seller.walletKeys), //
+            sellerDiscardsOffer(await offer.getAddress(), seller.signer.keys), //
         ).resolves.not.toThrow()
         now = Math.floor(Date.now() / 1000)
     })
@@ -187,7 +177,7 @@ describe('Seller did not recieve fiat money and wants to discard the offer', () 
     test("Getting 'sellerClaimsDiscardTs' timestamp", async () => {
         let sellerClaimsDiscardTs
         for (let i = 0; i < 10; i++) {
-            ;({ sellerClaimsDiscardTs } = await getOfferByAddress(offer.address))
+            ;({ sellerClaimsDiscardTs } = await getOfferByAddress(await offer.getAddress()))
             if (sellerClaimsDiscardTs > 0) break
             await sleep(6000)
         }
@@ -198,19 +188,19 @@ describe('Seller did not recieve fiat money and wants to discard the offer', () 
 describe('Moderator takes decission', () => {
     test('Moderator sends all tokens to the Buyer', async () => {
         await expect(
-            moderatorDoesTransfer(offer.address, moderKeys, true), //
+            moderatorDoesTransfer(await offer.getAddress(), moderKeys, true), //
         ).resolves.not.toThrow()
     })
 
     test('Check the Buyer balance is increased', async () => {
-        let buyerWalletBalance
+        let balance
         for (let i = 0; i < 10; i++) {
-            buyerWalletBalance = await getContractBalance(buyer.walletAddress)
-            if (isNear(buyerWalletBalance, WALLET_INITIAL_VALUE + OFFER_AMOUNT)) break
+            ;({ balance } = await buyer.getAccount())
+            if (isNear(balance, WALLET_INITIAL_VALUE + OFFER_AMOUNT)) break
             await sleep(6000)
         }
 
-        expect(isNear(buyerWalletBalance, WALLET_INITIAL_VALUE + OFFER_AMOUNT)).toBeTruthy()
+        expect(isNear(balance, WALLET_INITIAL_VALUE + OFFER_AMOUNT)).toBeTruthy()
     })
 })
 

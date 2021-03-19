@@ -1,13 +1,5 @@
-const deploy = require('./deploy')
-const getBalance = require('./getBalance')
-const getLocal = require('./getLocal')
-const repeatWithPredicate = require('./repeatWithPredicate')
-const run = require('./run')
-const sleep = require('./sleep')
-
 const pubkeyRegex = /^[0-9a-fA-F]{64}$/
 const addressRegex = /^-?[0-9a-fA-F]+:[0-9a-fA-F]{64}$/
-
 const onlyZero = /^0+$/
 
 // :: String -> String
@@ -32,21 +24,18 @@ const utf8ToHex = convert('utf8', 'hex')
 const toNano = (n) => n * 1000000000 // 1e9
 const fromNano = (n) => n / 1000000000
 
+const sleep = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms))
+
 module.exports = {
     add0x,
     base64ToUtf8,
-    deploy,
     fromNano,
     toNano,
-    getBalance,
-    getLocal,
     hexToBase64,
     hexToUtf8,
     isNear,
     isValidAddress,
     isValidPublicKey,
-    repeatWithPredicate,
-    run,
     sleep,
     strip0x,
     utf8ToHex,

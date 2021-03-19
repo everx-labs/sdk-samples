@@ -6,22 +6,22 @@ Novice blockchain developers, who prefer to learn by doing.
 
 ## Content Table
 
-- [Simple TON application](#simple-ton-application)
-  - [Audience](#audience)
-  - [Content Table](#content-table)
-  - [What are we building?](#what-are-we-building)
-  - [Setup](#setup)
-  - [Run tests to check integrity](#run-tests-to-check-integrity)
-  - [Blockchain net.ton.dev and TON OS SE](#blockchain-nettondev-and-TON OS SE)
-  - [Tokens](#tokens)
-  - [Run the App](#run-the-app)
-    - [Rules](#rules)
-    - [Sample deal](#sample-deal)
-  - [Algorithm](#algorithm)
-  - [Conslusion](#conslusion)
-  - [Troubleshooting](#troubleshooting)
-  - [Appendix A](#appendix-a)
-    - [How to get a wallet with crystals](#how-to-get-a-wallet-with-crystals)
+-   [Simple TON application](#simple-ton-application)
+    -   [Audience](#audience)
+    -   [Content Table](#content-table)
+    -   [What are we building?](#what-are-we-building)
+    -   [Setup](#setup)
+    -   [Run tests to check integrity](#run-tests-to-check-integrity)
+    -   [Blockchain net.ton.dev and TON OS SE](#blockchain-nettondev-and-TON-OS-SE)
+    -   [Tokens](#tokens)
+    -   [Run the App](#run-the-app)
+        -   [Rules](#rules)
+        -   [Sample deal](#sample-deal)
+    -   [Algorithm](#algorithm)
+    -   [Conslusion](#conslusion)
+    -   [Troubleshooting](#troubleshooting)
+    -   [Appendix A](#appendix-a)
+        -   [How to get a wallet with crystals](#how-to-get-a-wallet-with-crystals)
 
 ## What are we building?
 
@@ -30,73 +30,53 @@ We will build an application in which one person can sell crystals to another. F
 ## Setup
 
 ```
-$ git clone git@github.com:tonlabs/simple-ton-app.git
-$ cd simple-ton-app
+$ git clone git@github.com:tonlabs/sdk-samples.git
+$ cd sdk-samples/demo/web_p2p_exchange
 $ npm i
 ```
 
 ## Run tests to check integrity
 
-```
-npm run test
-```
+Prerequisites:
 
-The test takes up to 10 minutes (see jest.config `testTimeout`).
+TON OS SE installed and listening on 127.0.0.1:80
+
+> If you are running TON OS SE on a custom IP or port, please change the TON_SERVER_ADDRESS variable in **`/src/config.js`** accordingly.
+
+```
+npm test
+```
 
 If test passes you can go directly to the **[Run the App](#run-the-app) section**, else check [Troubleshooting](#troubleshooting) section.
 
-Why the time is not determined?
-To simplify greatly, we can say the following:
-the process of sending messages to blockchain **does not guarantee their processing at a strictly defined time.**
-
-As a result, some questions arise: How long to wait for processing? Something went wrong and we need to re-send the message or just wait?
-
-It's rather difficult to create a robust system in such conditions, and this is where **TON SDK comes to the rescue**.
-It ensures that if a message hasn't been processed at a predetermined time, it will never get processed.
-
-<!---
-      (i) To fulfill such guarantees:
-      -  the line `pragma AbiHeader expire;` must be included in a contract.
-      - `tonClient.abi.message_processing_timeout` is specified.
--->
-
 ## Blockchain net.ton.dev and TON OS SE
 
-Smart contracts need a blockchain. By default this application uses a standalone blockchain **TON OS SE**, which helps you quickly debug and test your application.
+By default this application is configured to use a standalone blockchain **TON OS SE**, which helps you quickly debug and test your application.
 
-TON OS SE is twenty times faster than the real blockchain, so it's a real time saver.
-It's very easy to [install TON OS SE](https://docs.ton.dev/86757ecb2/p/324b55-installation), if you already have Docker installed
+TON OS SE is twenty times faster than a **net.ton.dev** blockchain, so it's a real time saver.
+It's very easy to [install TON OS SE](https://docs.ton.dev/86757ecb2/p/324b55-installation) if you already have Docker installed
 
-> If you are running your TON OS SE on a custom IP or port, please change the NODE_SE_TON_SERVER_ADDRESS variable in **`/src/config.js`** accordingly.
+If your choice is TON OS SE, you are ready to [run the application](#run-the-app)
 
-<!---
-Tip. I prefer not to have Docker on my netbook and use a $5/month VDS with Docker pre-installed.
-Since this is for testing purposes only, I save time not to configure the user and run the following command as root:
-
-root@vm# docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 tonlabs/local-node
--->
-
-If your choice is TON OS SE,you are ready to [run the application](#run-the-app)
-
-You can of course run this application at **net.ton.dev**. This is a real blockchain consisting of several nodes, but you must have test tokens - Crystals. See next section
+You can run this application on **net.ton.dev** blockchain, but you must have your own "Giver" smart contract. See next section
 
 ## Tokens
 
 Each participant of our application must have their own wallet with crystals.
-In real life, your wallet is only yours, but in our example, the wallets of all participants are initially filled from another smart contract. Let's call it a **Giver**
+
+In real life, your wallet is only yours, but in our example, the wallets of all participants are initially filled from another smart contract, called a **Giver**
 
 How many tokens does this Giver have? It depends if you are using TON OS SE or net.ton.dev
 
 -   TON OS SE.
 
-    There are 1.5 billion test tokens in your Giver contract and everything is ready to run the app, just check the variable **`NODE_SE=true`** in `/src/config.js`
+    There are 1.5 billion test tokens in your Giver contract and everything is ready to run the app
 
 -   net.ton.dev.
 
-    If you already have a wallet contract with some crystals, just fill in the following variables in `src/config.js`:
+    You should have your own 'Giver' smart contract (see `src/ton-contracts/giver.package.js`) with some crystals on its balance. If so, just fill in the following variables in `src/config.js`:
 
     ```
-     NODE_SE = false
      GIVER_ADDRESS = <your_wallet_contract_addres>
      GIVER_PUBLIC_KEY = <your_wallet_contract_public_key>
      GIVER_SECRET_KEY = <your_wallet_contract_secret_key>
@@ -118,11 +98,9 @@ To be both seller and buyer, you need to open `http://localhost:4000/` in separa
 
 Wait for your wallet to be deployed. Now you can place your first offer (of course no more than the balance of your wallet)
 
-All logging is done in the panel on the right. **The app is set to do retries forever and always succeeds, just be patient**
-
 ### Rules
 
--   To sell crystals, Seller deploys a special [Offer smart-contract](https://github.com/tonlabs/simple-ton-app/blob/master/src/ton-contracts/Offer.sol)
+-   To sell crystals, Seller deploys a special "Offer" smart-contract, see `src/ton-contracts/Offer.sol`
 -   The deal is made for the entire offered volume of crystals. There is no partial sale / purchase.
 -   Buyers find offers by querying GraphQL by Offer contract hash code.
 -   To start a deal, the Buyer must transfer the specified number of crystals to the Offer contract as a security deposit.
@@ -196,12 +174,11 @@ To fully understand the workflow and how a moderator can resolve disputes, see t
 
 ## Conslusion
 
-In the next part we will add a DeBot to make our application immediately available to all Serf users.
+In the next part we will add a DeBot to make our application immediately available to all Surf users.
 
 ## Troubleshooting
 
-If you choose to use TON OS SE, then this application requires TON OS SE ver >=  0.25. Run `tondev se info` to see current version
-
+If you choose to use TON OS SE, then this application requires TON OS SE ver >= 0.25. Run `tondev se info` to see current version
 
 ## Appendix A
 
@@ -209,23 +186,12 @@ If you choose to use TON OS SE, then this application requires TON OS SE ver >= 
 
 The easiest way to get Crystals is to install the Surf Mobile App and [get 100 tokens to your Surf wallet](https://help.ton.surf/en/support/solutions/articles/77000397851-how-to-get-coins-in-developer-mode-).
 
-When you have got crystals::
+When you have got crystals you need:
 
-1. run the script
-
-    ```
-    $ node src/deployGiver.js
-    Giver contract address is: 0:4de5d782ae4eb3ee962ae9fa22ae800f673af0dc1c7f5b1ca177a7cf105132fc
-    Do not interrupt this script!
-    It's waiting for the balance of this account to become positive to continue execution
-    ```
-
-2. Go to the Surf and transfer tokens to the specified address.
-3. Once the transaction is complete, the script will deploy the Giver contract, just wait.
-4. Fill next variables in `src/config.js`:
+1. To deploy a 'Giver' smart contract (see `src/ton-contracts/giver.package.js`) with some Crystals on its balance
+2. To fill next variables in `src/config.js`:
 
 ```
- NODE_SE = false
  GIVER_ADDRESS = <your_wallet_contract_addres>
  GIVER_PUBLIC_KEY = <your_wallet_contract_public_key>
  GIVER_SECRET_KEY = <your_wallet_contract_secret_key>
