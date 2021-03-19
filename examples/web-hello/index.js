@@ -1,8 +1,8 @@
 import {
-    Account,
     signerKeys,
     TonClient,
 } from "@tonclient/core";
+import {Account} from "@tonclient/appkit";
 import {libWeb} from "@tonclient/lib-web";
 
 import {HelloContract} from "./HelloContract";

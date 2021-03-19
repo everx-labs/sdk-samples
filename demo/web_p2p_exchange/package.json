@@ -17,9 +17,10 @@
     "author": "TON DEV SOLUTIONS LTD.",
     "license": "SEE LICENSE IN LICENSE",
     "dependencies": {
-        "@tonclient/core": "latest",
-        "@tonclient/lib-node": "latest",
-        "@tonclient/lib-web": "latest",
+        "@tonclient/appkit": "^0",
+        "@tonclient/core": "^1",
+        "@tonclient/lib-node": "^1",
+        "@tonclient/lib-web": "^1",
         "buffer": "^6.0.2",
         "currency.js": "^2.0.3",
         "ramda": "^0.26.1",
