@@ -9,7 +9,6 @@ const {
     abiContract,
     signerKeys,
     TonClient,
-    Account,
 } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
 const { loadContract } = require("utils");
@@ -20,23 +19,24 @@ const path = require("path");
 const keyPairFile = path.join(__dirname, "keys.json");
 
 const transferAbi = require("./transfer.abi.json");
+const { Account } = require("@tonclient/appkit");
 const recipient = "0:acad9bed05bbf1223de0c9c7865d5f34d488487e941f76e888b19640ced190cf";
 
 const MultisigContract = loadContract("solidity/safemultisig/SafeMultisigWallet");
 
 TonClient.useBinaryLibrary(libNode);
-TonClient.defaultConfig = {
-    network: {
-        //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
-        server_address: "net.ton.dev",
-        message_retries_count: 3,
-    },
-    abi: {
-        message_expiration_timeout: 30000,
-    },
-};
 
 (async () => {
+    const client = new TonClient({
+        network: {
+            //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
+            server_address: "net.ton.dev",
+            message_retries_count: 3,
+        },
+        abi: {
+            message_expiration_timeout: 30000,
+        },
+    });
     try {
         if (!fs.existsSync(keyPairFile)) {
             console.log("Please create keys.json file in project root folder  with multisig keys");
@@ -47,7 +47,7 @@ TonClient.defaultConfig = {
 
         // Prepare body with comment
         // For that we need to prepare internal message with transferAbi and then extract body from it
-        const body = (await TonClient.default.abi.encode_message_body({
+        const body = (await client.abi.encode_message_body({
             abi: abiContract(transferAbi),
             call_set: {
                 function_name: "transfer",
@@ -62,6 +62,7 @@ TonClient.defaultConfig = {
 
         const multisig = new Account(MultisigContract, {
             signer: signerKeys(keyPair),
+            client,
         });
 
         // Run 'submitTransaction' method of multisig wallet
@@ -87,14 +88,14 @@ TonClient.defaultConfig = {
         const messages = transactionInfo.out_messages;
 
         try {
-            const decoded_comment1 = (await TonClient.default.abi.decode_message({
+            const decoded_comment1 = (await client.abi.decode_message({
                 abi: abiContract(transferAbi),
                 message: messages[0],
             })).value;
 
             console.log(decoded_comment1);
 
-            const decoded_comment2 = (await TonClient.default.abi.decode_message({
+            const decoded_comment2 = (await client.abi.decode_message({
                 abi: abiContract(transferAbi),
                 message: messages[1],
             })).value;
@@ -102,11 +103,9 @@ TonClient.defaultConfig = {
         } catch {
 
         }
-
-
+        client.close();
     } catch (error) {
         console.error(error);
+        process.exit(1);
     }
-    process.exit(1);
-
 })();
