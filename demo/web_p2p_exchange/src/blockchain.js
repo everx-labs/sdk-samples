@@ -2,7 +2,8 @@
 
 const buffer = require('buffer')
 const { prop, path, last } = require('ramda')
-const { Account, signerKeys } = require('@tonclient/core')
+const { Account } = require('@tonclient/appkit')
+const { signerKeys } = require('@tonclient/core')
 
 const { add0x, strip0x, toNano, hexToUtf8 } = require('./utils')
 const {
@@ -108,7 +109,7 @@ module.exports = (client) => {
                 owners: [add0x(signer.keys.public)],
                 reqConfirms: 1,
             },
-            useGiver: async () => giverFn(walletAddress, value),
+            useGiver: { address: giverContract.address, sendTo: () => giverFn(walletAddress, value) },
         })
         return wallet
     }
