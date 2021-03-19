@@ -1,6 +1,5 @@
 const { libNode } = require("@tonclient/lib-node");
 const {
-    Account,
     signerKeys,
     TonClient,
 } = require("@tonclient/core");
@@ -14,6 +13,7 @@ const HD_PATH = "m/44'/396'/0'/0/0";
 
 const fs = require("fs");
 const path = require("path");
+const { Account } = require("@tonclient/appkit");
 
 const seedPhraseFile = path.join(__dirname, "seedPhrase.json");
 
@@ -22,17 +22,18 @@ const seedPhraseFile = path.join(__dirname, "seedPhrase.json");
 const keyPairFile = path.join(__dirname, "keyPair.json");
 
 (async () => {
-    try {
-        // Link the platform-dependable TON-SDK binary with the target Application in Typescript
-        // This is a Node.js project, so we link the application with `libNode` binary
-        // from `@tonclient/lib-node` package
-        // If you want to use this code on other platforms, such as Web or React-Native,
-        // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
-        // (see README in  https://github.com/tonlabs/ton-client-js )
-        TonClient.useBinaryLibrary(libNode);
-        TonClient.defaultConfig = { network: { endpoints: ["net.ton.dev"] } };
+    // Link the platform-dependable TON-SDK binary with the target Application in Typescript
+    // This is a Node.js project, so we link the application with `libNode` binary
+    // from `@tonclient/lib-node` package
+    // If you want to use this code on other platforms, such as Web or React-Native,
+    // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
+    // (see README in  https://github.com/tonlabs/ton-client-js )
+    TonClient.useBinaryLibrary(libNode);
 
-        const { crypto } = TonClient.default;
+    const client = new TonClient({ network: { endpoints: ["net.ton.dev"] } });
+    try {
+
+        const { crypto } = client;
         // Generate seed phrase. It is used to generate or re-generate keys. Keep it secret.
         //https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_crypto.md#mnemonic_from_random
         const { phrase } = await crypto.mnemonic_from_random({
@@ -52,7 +53,7 @@ const keyPairFile = path.join(__dirname, "keyPair.json");
         console.log(`Generated keyPair:`);
         console.log(keyPair);
 
-        const acc = new Account(MultisigContract, { signer: signerKeys(keyPair) });
+        const acc = new Account(MultisigContract, { signer: signerKeys(keyPair), client });
         console.log(`Here is the future address of your contract ${await acc.getAddress()}. Please save the keys. You will need them later to work with your multisig wallet.`);
 
         process.exit(0);

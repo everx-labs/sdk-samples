@@ -1,0 +1,52 @@
+{
+	"ABI version": 2,
+	"header": ["time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+				{"name":"text","type":"bytes"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setHelloText",
+			"inputs": [
+				{"name":"text","type":"bytes"}
+			],
+			"outputs": [
+				{"name":"oldText","type":"bytes"}
+			]
+		},
+		{
+			"name": "getHelloText",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"text","type":"bytes"}
+			]
+		},
+		{
+			"name": "getTextUpdateTime",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"time","type":"uint32"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+		{
+			"name": "TextUpdated",
+			"inputs": [
+				{"name":"text","type":"bytes"},
+				{"name":"time","type":"uint32"}
+			],
+			"outputs": [
+			]
+		}
+	]
+}
