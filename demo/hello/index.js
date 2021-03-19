@@ -13,7 +13,12 @@ const {
 // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
 // (see README in  https://github.com/tonlabs/ton-client-js )
 TonClient.useBinaryLibrary(libNode);
-TonClient.defaultConfig = { network: { endpoints: ["http://localhost"] } };
+TonClient.defaultConfig = {
+    network: {
+        // Local node URL here
+        endpoints:[ "http://localhost"],
+    },
+};
 
 async function main() {
     // Generate an ed25519 key pair for new account
@@ -35,7 +40,6 @@ async function main() {
 
     console.log(`Contract run transaction with output ${response.decoded.output}, ${response.transaction.id}`);
 
-
     // Execute `getTimestamp` get method  (execute the message locally on TVM)
     response = await helloAcc.runLocal("getTimestamp", {});
     console.log("Contract reacted to your getTimestamp:", response.decoded.output);
@@ -50,7 +54,7 @@ async function main() {
         if (error.code === 504) {
             console.error(`
 Network is inaccessible.
-You have to start Node SE using \`tondev se start\`
+You have to start TON OS SE using \`tondev se start\`
 `);
         } else {
             console.error(error);
