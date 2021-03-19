@@ -1,8 +1,8 @@
 const { libNode } = require("@tonclient/lib-node");
 const fs = require("fs");
 const path = require("path");
+const { Account } = require("@tonclient/appkit");
 const {
-    Account,
     signerKeys,
     TonClient,
 } = require("@tonclient/core");
@@ -21,9 +21,9 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
 const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 
 TonClient.useBinaryLibrary(libNode);
-TonClient.defaultConfig = { network: { endpoints: ["net.ton.dev"] } };
 
 (async () => {
+    const client = new TonClient({ network: { endpoints: ["net.ton.dev"] } });
     try {
         if (!fs.existsSync(keyPairFile)) {
             console.log("Please use preparation.js to generate key pair and seed phrase");
@@ -35,6 +35,7 @@ TonClient.defaultConfig = { network: { endpoints: ["net.ton.dev"] } };
         // and to send it with 'sendMessage' later - if we use Pattern 1 for deploy (see below)
         const acc = new Account(MultisigContract, {
             signer: signerKeys(keyPair),
+            client
         });
 
         const address = await acc.getAddress();

@@ -1,13 +1,12 @@
+const { Account } = require("@tonclient/appkit");
 const {
     signerSigningBox,
     TonClient,
-    Account,
 } = require("@tonclient/core");
 
 const { libNode } = require("@tonclient/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
-TonClient.defaultConfig = { network: { endpoints: ["http://localhost"] } };
 
 const SEED_PHRASE_WORD_COUNT = 12;
 const SEED_PHRASE_DICTIONARY_ENGLISH = 1;
@@ -15,9 +14,17 @@ const HD_PATH = "m/44'/396'/0'/0/0";
 const seedPhrase = "abandon math mimic master filter design carbon crystal rookie group knife young";
 
 class dummySigningBox {
+    /**
+     *
+     * @param client {TonClient}
+     */
+    constructor(client) {
+        this.client = client;
+    }
+
     async ensureKeys() {
         if (!this.keys) {
-            this.keys = (await TonClient.default.crypto.mnemonic_derive_sign_keys({
+            this.keys = (await this.client.crypto.mnemonic_derive_sign_keys({
                 dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
                 word_count: SEED_PHRASE_WORD_COUNT,
                 phrase: seedPhrase,
@@ -34,19 +41,25 @@ class dummySigningBox {
     }
 
     async sign(params) {
-        return (await TonClient.default.crypto.sign({
+        return (await this.client.crypto.sign({
             keys: await this.ensureKeys(),
             unsigned: params.unsigned,
         }));
     }
 }
 
-async function main() {
-    const signingBox = new dummySigningBox();
-    const signer = signerSigningBox((await TonClient.default.crypto.register_signing_box(signingBox)).handle);
+/**
+ *
+ * @param client {TonClient}
+ * @returns {Promise<void>}
+ */
+async function main(client) {
+    const signingBox = new dummySigningBox(client);
+    const signer = signerSigningBox((await client.crypto.register_signing_box(signingBox)).handle);
 
     const hello = new Account(HelloContract, {
         signer,
+        client,
     });
 
     console.log(`Future address of the contract will be: ${await hello.getAddress()}`);
@@ -61,12 +74,16 @@ async function main() {
 
     const responseTvm = await hello.runLocal("sayHello", {});
     console.log(`Contract reacted to your sayHello ${JSON.stringify(responseTvm)}`);
+
+    await hello.free();
 }
 
 (async () => {
     try {
         console.log("Hello localhost TON!");
-        await main();
+        const client = new TonClient({ network: { endpoints: ["http://localhost"] } });
+        await main(client);
+        client.close();
         process.exit(0);
     } catch (error) {
         console.error(error);
