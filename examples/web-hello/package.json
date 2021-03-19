@@ -23,8 +23,9 @@
 	},
 	"homepage": "https://docs.ton.dev/",
 	"dependencies": {
-		"@tonclient/core": "^1.10.2",
-		"@tonclient/lib-web": "^1.10.2",
+		"@tonclient/appkit": "^0",
+		"@tonclient/core": "^1",
+		"@tonclient/lib-web": "^1",
 		"utils": "file:../../utils"
 	},
 	"devDependencies": {
