@@ -1,6 +1,7 @@
 # TON Labs SDK Samples
 
 In this repository you will find examples of using official TON Labs Free TON SDKs.
+If it helped you, please give it a star:)
 
 
 **Have a question? Get quick help in our channel:**
