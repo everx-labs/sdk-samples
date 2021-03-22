@@ -3,10 +3,9 @@
 .type	constructor, @function
 GETGLOB 1
 ISNULL
-PUSHCONT {
+IFREF {
 	CALL $c4_to_c7_with_init_storage$
 }
-IF
 ;; constructor protection
 GETGLOB 6
 THROWIF 51
@@ -132,9 +131,11 @@ DUP
 ; colValue
 SETGLOB 14
 ; end colValue
-BLKDROP 6
 ; end constructor Offer
-CALL $c7_to_c4$
+BLKDROP 6
+CALLREF {
+	CALL $c7_to_c4$
+}
 TRUE
 SETGLOB 7
 
@@ -143,63 +144,25 @@ SETGLOB 7
 .type	sellerDiscardsOffer, @function
 GETGLOB 1
 ISNULL
-PUSHCONT {
+IFREF {
 	CALL $c4_to_c7$
 }
-IF
 ; Decode input parameters
 ENDS
-; function sellerDiscardsOffer
-GETGLOB 5
-DUP
-ISNULL
-PUSHCONT {
-	DROP
-	PUSHINT 0
+CALLREF {
+	CALL $sellerDiscardsOffer_internal_macro$
 }
-IF
-;; push identifier m_sellerPubkey
-GETGLOB 15
-;; ==
-EQUAL
-THROWIFNOT 101
-ACCEPT
-;; if
-;; push identifier m_buyerPubkey
-GETGLOB 17
-EQINT 0
-PUSHCONT {
-	;; push identifier m_sellerWallet
-	GETGLOB 16
-	NEWC
-	STSLICECONST x42_
-	STSLICE
-	PUSHSLICE x203e8000000000000000000000000004_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	ENDC
-	PUSHINT 160
-	SENDRAWMSG
+CALLREF {
+	CALL $c7_to_c4$
 }
-PUSHCONT {
-	; expValue
-	; end expValue
-	;; push identifier now
-	NOW
-	; colValue
-	SETGLOB 19
-	; end colValue
-}
-IFELSE
-;; end if
-; end function sellerDiscardsOffer
-CALL $c7_to_c4$
 TRUE
 SETGLOB 7
 
 .globl	sellerDiscardsOffer_internal
 .type	sellerDiscardsOffer_internal, @function
+CALL $sellerDiscardsOffer_internal_macro$
+
+.macro sellerDiscardsOffer_internal_macro
 ; function sellerDiscardsOffer
 GETGLOB 5
 DUP
@@ -209,9 +172,9 @@ PUSHCONT {
 	PUSHINT 0
 }
 IF
+;; ==
 ;; push identifier m_sellerPubkey
 GETGLOB 15
-;; ==
 EQUAL
 THROWIFNOT 101
 ACCEPT
@@ -251,52 +214,25 @@ IFELSE
 .type	sellerDoesTransfer, @function
 GETGLOB 1
 ISNULL
-PUSHCONT {
+IFREF {
 	CALL $c4_to_c7$
 }
-IF
 ; Decode input parameters
 ENDS
-; function sellerDoesTransfer
-GETGLOB 5
-DUP
-ISNULL
-PUSHCONT {
-	DROP
-	PUSHINT 0
+CALLREF {
+	CALL $sellerDoesTransfer_internal_macro$
 }
-IF
-;; push identifier m_sellerPubkey
-GETGLOB 15
-;; ==
-EQUAL
-THROWIFNOT 101
-;; push identifier m_buyerWallet
-GETGLOB 18
-PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-SDEQ
-NOT
-THROWIFNOT 121
-ACCEPT
-;; push identifier m_buyerWallet
-GETGLOB 18
-NEWC
-STSLICECONST x42_
-STSLICE
-PUSHSLICE x203e8000000000000000000000000004_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-ENDC
-PUSHINT 160
-SENDRAWMSG
-; end function sellerDoesTransfer
-CALL $c7_to_c4$
+CALLREF {
+	CALL $c7_to_c4$
+}
 TRUE
 SETGLOB 7
 
 .globl	sellerDoesTransfer_internal
 .type	sellerDoesTransfer_internal, @function
+CALL $sellerDoesTransfer_internal_macro$
+
+.macro sellerDoesTransfer_internal_macro
 ; function sellerDoesTransfer
 GETGLOB 5
 DUP
@@ -306,9 +242,9 @@ PUSHCONT {
 	PUSHINT 0
 }
 IF
+;; ==
 ;; push identifier m_sellerPubkey
 GETGLOB 15
-;; ==
 EQUAL
 THROWIFNOT 101
 ;; push identifier m_buyerWallet
@@ -337,10 +273,9 @@ SENDRAWMSG
 .type	buyerPlacesDeposit, @function
 GETGLOB 1
 ISNULL
-PUSHCONT {
+IFREF {
 	CALL $c4_to_c7$
 }
-IF
 ; Decode input parameters
 ; Decode buyerPubkey
 LDUQ 256
@@ -354,45 +289,20 @@ PUSHCONT {
 IFNOT
 ENDS
 ;; param: buyerPubkey
-; function buyerPlacesDeposit
-;; push identifier buyerPubkey
-DUP
-NEQINT 0
-THROWIFNOT 120
-;; push identifier m_buyerPubkey
-GETGLOB 17
-EQINT 0
-THROWIFNOT 122
-;; get member value
-CALL $message_balance_macro$
-;; push identifier m_depositAmount
-GETGLOB 11
-;; >=
-GEQ
-THROWIFNOT 123
-ACCEPT
-; expValue
-; end expValue
-;; push identifier buyerPubkey
-DUP
-; colValue
-SETGLOB 17
-; end colValue
-; expValue
-; end expValue
-;; get member sender
-GETGLOB 9
-; colValue
-SETGLOB 18
-; end colValue
-DROP
-; end function buyerPlacesDeposit
-CALL $c7_to_c4$
+CALLREF {
+	CALL $buyerPlacesDeposit_internal_macro$
+}
+CALLREF {
+	CALL $c7_to_c4$
+}
 TRUE
 SETGLOB 7
 
 .globl	buyerPlacesDeposit_internal
 .type	buyerPlacesDeposit_internal, @function
+CALL $buyerPlacesDeposit_internal_macro$
+
+.macro buyerPlacesDeposit_internal_macro
 ;; param: buyerPubkey
 ; function buyerPlacesDeposit
 ;; push identifier buyerPubkey
@@ -404,10 +314,12 @@ GETGLOB 17
 EQINT 0
 THROWIFNOT 122
 ;; get member value
-CALL $message_balance_macro$
+CALLREF {
+	CALL $message_balance_macro$
+}
+;; >=
 ;; push identifier m_depositAmount
 GETGLOB 11
-;; >=
 GEQ
 THROWIFNOT 123
 ACCEPT
@@ -425,49 +337,33 @@ GETGLOB 9
 ; colValue
 SETGLOB 18
 ; end colValue
-DROP
 ; end function buyerPlacesDeposit
+DROP
 
 .globl	buyerClaimsTransfer
 .public	buyerClaimsTransfer
 .type	buyerClaimsTransfer, @function
 GETGLOB 1
 ISNULL
-PUSHCONT {
+IFREF {
 	CALL $c4_to_c7$
 }
-IF
 ; Decode input parameters
 ENDS
-; function buyerClaimsTransfer
-GETGLOB 5
-DUP
-ISNULL
-PUSHCONT {
-	DROP
-	PUSHINT 0
+CALLREF {
+	CALL $buyerClaimsTransfer_internal_macro$
 }
-IF
-;; push identifier m_buyerPubkey
-GETGLOB 17
-;; ==
-EQUAL
-THROWIFNOT 101
-ACCEPT
-; expValue
-; end expValue
-;; push identifier now
-NOW
-; colValue
-SETGLOB 20
-; end colValue
-; end function buyerClaimsTransfer
-CALL $c7_to_c4$
+CALLREF {
+	CALL $c7_to_c4$
+}
 TRUE
 SETGLOB 7
 
 .globl	buyerClaimsTransfer_internal
 .type	buyerClaimsTransfer_internal, @function
+CALL $buyerClaimsTransfer_internal_macro$
+
+.macro buyerClaimsTransfer_internal_macro
 ; function buyerClaimsTransfer
 GETGLOB 5
 DUP
@@ -477,9 +373,9 @@ PUSHCONT {
 	PUSHINT 0
 }
 IF
+;; ==
 ;; push identifier m_buyerPubkey
 GETGLOB 17
-;; ==
 EQUAL
 THROWIFNOT 101
 ACCEPT
@@ -497,46 +393,25 @@ SETGLOB 20
 .type	buyerDiscardsOffer, @function
 GETGLOB 1
 ISNULL
-PUSHCONT {
+IFREF {
 	CALL $c4_to_c7$
 }
-IF
 ; Decode input parameters
 ENDS
-; function buyerDiscardsOffer
-GETGLOB 5
-DUP
-ISNULL
-PUSHCONT {
-	DROP
-	PUSHINT 0
+CALLREF {
+	CALL $buyerDiscardsOffer_internal_macro$
 }
-IF
-;; push identifier m_buyerPubkey
-GETGLOB 17
-;; ==
-EQUAL
-THROWIFNOT 101
-ACCEPT
-;; push identifier m_sellerWallet
-GETGLOB 16
-NEWC
-STSLICECONST x42_
-STSLICE
-PUSHSLICE x203e8000000000000000000000000004_
-STSLICER
-STSLICECONST 0
-STSLICECONST 0
-ENDC
-PUSHINT 160
-SENDRAWMSG
-; end function buyerDiscardsOffer
-CALL $c7_to_c4$
+CALLREF {
+	CALL $c7_to_c4$
+}
 TRUE
 SETGLOB 7
 
 .globl	buyerDiscardsOffer_internal
 .type	buyerDiscardsOffer_internal, @function
+CALL $buyerDiscardsOffer_internal_macro$
+
+.macro buyerDiscardsOffer_internal_macro
 ; function buyerDiscardsOffer
 GETGLOB 5
 DUP
@@ -546,9 +421,9 @@ PUSHCONT {
 	PUSHINT 0
 }
 IF
+;; ==
 ;; push identifier m_buyerPubkey
 GETGLOB 17
-;; ==
 EQUAL
 THROWIFNOT 101
 ACCEPT
@@ -571,80 +446,28 @@ SENDRAWMSG
 .type	moderatorDoesTransfer, @function
 GETGLOB 1
 ISNULL
-PUSHCONT {
+IFREF {
 	CALL $c4_to_c7$
 }
-IF
 ; Decode input parameters
 ; Decode flag
 LDI 1
 ENDS
 ;; param: flag
-; function moderatorDoesTransfer
-GETGLOB 5
-DUP
-ISNULL
-PUSHCONT {
-	DROP
-	PUSHINT 0
+CALLREF {
+	CALL $moderatorDoesTransfer_internal_macro$
 }
-IF
-;; push identifier m_moderPubkey
-GETGLOB 10
-;; ==
-EQUAL
-THROWIFNOT 101
-;; push identifier m_buyerWallet
-GETGLOB 18
-PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-SDEQ
-NOT
-THROWIFNOT 124
-ACCEPT
-;; if
-;; push identifier flag
-DUP
-TRUE
-;; ==
-EQUAL
-PUSHCONT {
-	;; push identifier m_buyerWallet
-	GETGLOB 18
-	NEWC
-	STSLICECONST x42_
-	STSLICE
-	PUSHSLICE x203e8000000000000000000000000004_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	ENDC
-	PUSHINT 160
-	SENDRAWMSG
+CALLREF {
+	CALL $c7_to_c4$
 }
-PUSHCONT {
-	;; push identifier m_sellerWallet
-	GETGLOB 16
-	NEWC
-	STSLICECONST x42_
-	STSLICE
-	PUSHSLICE x203e8000000000000000000000000004_
-	STSLICER
-	STSLICECONST 0
-	STSLICECONST 0
-	ENDC
-	PUSHINT 160
-	SENDRAWMSG
-}
-IFELSE
-;; end if
-DROP
-; end function moderatorDoesTransfer
-CALL $c7_to_c4$
 TRUE
 SETGLOB 7
 
 .globl	moderatorDoesTransfer_internal
 .type	moderatorDoesTransfer_internal, @function
+CALL $moderatorDoesTransfer_internal_macro$
+
+.macro moderatorDoesTransfer_internal_macro
 ;; param: flag
 ; function moderatorDoesTransfer
 GETGLOB 5
@@ -655,9 +478,9 @@ PUSHCONT {
 	PUSHINT 0
 }
 IF
+;; ==
 ;; push identifier m_moderPubkey
 GETGLOB 10
-;; ==
 EQUAL
 THROWIFNOT 101
 ;; push identifier m_buyerWallet
@@ -670,8 +493,8 @@ ACCEPT
 ;; if
 ;; push identifier flag
 DUP
-TRUE
 ;; ==
+TRUE
 EQUAL
 PUSHCONT {
 	;; push identifier m_buyerWallet
@@ -703,123 +526,22 @@ PUSHCONT {
 }
 IFELSE
 ;; end if
-DROP
 ; end function moderatorDoesTransfer
+DROP
 
 .globl	getOfferState
 .public	getOfferState
 .type	getOfferState, @function
 GETGLOB 1
 ISNULL
-PUSHCONT {
+IFREF {
 	CALL $c4_to_c7$
 }
-IF
-PUSH S1
-PUSHCONT {
-	LDU 32
-	GETGLOB 4
-	ROT
-	SETINDEXQ 5
-	SETGLOB 4
-}
-IFNOT
 ; Decode input parameters
 ENDS
-; function getOfferState
-;; ret param: fiatAmount
-PUSHINT 0
-;; ret param: depositAmount
-PUSHINT 0
-;; ret param: fiatCurrency
-NEWC
-ENDC
-;; ret param: text
-NEWC
-ENDC
-;; ret param: sellerPubkey
-PUSHINT 0
-;; ret param: sellerWallet
-PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-;; ret param: buyerPubkey
-PUSHINT 0
-;; ret param: buyerWallet
-PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
-;; ret param: sellerClaimsDiscardTs
-PUSHINT 0
-;; ret param: buyerClaimsTransferTs
-PUSHINT 0
-; expValue
-; end expValue
-;; push identifier m_fiatAmount
-GETGLOB 12
-; colValue
-POP S10
-; end colValue
-; expValue
-; end expValue
-;; push identifier m_depositAmount
-GETGLOB 11
-; colValue
-POP S9
-; end colValue
-; expValue
-; end expValue
-;; push identifier m_fiatCurrency
-GETGLOB 13
-; colValue
-POP S8
-; end colValue
-; expValue
-; end expValue
-;; push identifier m_text
-GETGLOB 14
-; colValue
-POP S7
-; end colValue
-; expValue
-; end expValue
-;; push identifier m_sellerPubkey
-GETGLOB 15
-; colValue
-POP S6
-; end colValue
-; expValue
-; end expValue
-;; push identifier m_sellerWallet
-GETGLOB 16
-; colValue
-POP S5
-; end colValue
-; expValue
-; end expValue
-;; push identifier m_buyerPubkey
-GETGLOB 17
-; colValue
-POP S4
-; end colValue
-; expValue
-; end expValue
-;; push identifier m_buyerWallet
-GETGLOB 18
-; colValue
-POP S3
-; end colValue
-; expValue
-; end expValue
-;; push identifier m_sellerClaimsDiscardTs
-GETGLOB 19
-; colValue
-POP S2
-; end colValue
-; expValue
-; end expValue
-;; push identifier m_buyerClaimsTransferTs
-GETGLOB 20
-; colValue
-NIP
-; end colValue
-;; returning named params
+CALLREF {
+	CALL $getOfferState_internal_macro$
+}
 ;; emitting 10 value(s)
 PUSH S10
 EQINT -1
@@ -863,77 +585,22 @@ PUSHCONT {
 	STBREFR
 	STBREFR
 	ENDC
-	PUSHINT 1
+	PUSHINT 0
 	SENDRAWMSG
-}
-PUSHCONT {
-	GETGLOB 4
-	DUP
-	INDEX 3
-	PUSH S1
-	INDEX 2
-	GETGLOB 9
-	BLKSWAP 1, 3
-	INDEX 1
-	NEWC
-	PUSHINT 2
-	STZEROES
-	STI 1
-	PUSHINT 3
-	STZEROES
-	STSLICE
-	SWAP
-	STGRAMS
-	STDICT
-	PUSHINT 104
-	STZEROES
-	STSLICECONST 0
-	STSLICECONST 1
-	NEWC
-	GETGLOB 4
-	INDEX 5
-	STUR 32
-	PUSH S11
-	STUR 16
-	PUSH S10
-	STUR 256
-	PUSH S9
-	STREFR
-	PUSH S8
-	STREFR
-	PUSH S7
-	STUR 256
-	PUSH S6
-	STSLICER
-	NEWC
-	PUSH S6
-	STUR 256
-	PUSH S5
-	STSLICER
-	PUSH S4
-	STUR 64
-	PUSH S3
-	STUR 64
-	STBREFR
-	STBREFR
-	ENDC
-	GETGLOB 4
-	INDEX 4
-	SENDRAWMSG
-}
-IFELSE
-BLKDROP 10
-; end function getOfferState
-PUSHCONT {
-	CALL $c7_to_c4$
 }
 IF
+BLKDROP 10
+IFREF {
+	CALL $c7_to_c4$
+}
 TRUE
 SETGLOB 7
 
 .globl	getOfferState_internal
 .type	getOfferState_internal, @function
-; function getOfferState
+CALL $getOfferState_internal_macro$
+
+.macro getOfferState_internal_macro
 ;; ret param: fiatAmount
 PUSHINT 0
 ;; ret param: depositAmount
@@ -956,6 +623,7 @@ PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 PUSHINT 0
 ;; ret param: buyerClaimsTransferTs
 PUSHINT 0
+; function getOfferState
 ; expValue
 ; end expValue
 ;; push identifier m_fiatAmount
@@ -1026,11 +694,9 @@ GETGLOB 20
 ; colValue
 NIP
 ; end colValue
-;; returning named params
 ; end function getOfferState
 
-.globl	c7_to_c4
-.type	c7_to_c4, @function
+.macro c7_to_c4
 GETGLOB 2
 NEWC
 STU 256
@@ -1070,8 +736,7 @@ STU 64
 ENDC
 POP C4
 
-.globl	c4_to_c7
-.type	c4_to_c7, @function
+.macro c4_to_c7
 PUSHROOT
 CTOS        ; c4
 LDU 256      ; pubkey c4
@@ -1218,16 +883,6 @@ LDMSGADDR   ; bounced src tail
 DROP
 SETGLOB 9
 MODPOW2 1
-GETGLOB 4
-TRUE
-SETINDEXQ 1
-PUSHINT 10000000
-SETINDEXQ 2
-NULL
-SETINDEXQ 3
-PUSHINT 1
-SETINDEXQ 4
-SETGLOB 4
 IFRET
 PUSH S1    ; body
 SEMPTY     ; isEmpty
@@ -1263,7 +918,9 @@ PUSHINT -1 ; main_external trans id
 PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
 SETGLOB 9
 PUSH S1
-CALL $c4_to_c7_with_init_storage$
+CALLREF {
+	CALL $c4_to_c7_with_init_storage$
+}
 LDU 1 ; haveSign msgSlice
 SWAP
 PUSHCONT {
