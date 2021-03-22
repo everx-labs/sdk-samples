@@ -1,4 +1,4 @@
-pragma solidity >= 0.6.0;
+pragma ton-solidity >= 0.38.0;
 pragma AbiHeader expire;
 
 contract HelloTON {
