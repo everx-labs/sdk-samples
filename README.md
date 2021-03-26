@@ -21,6 +21,7 @@ If it helped you, please give it a star:)
 To get a deeper understanding dive into [SDK guides](https://docs.ton.dev/86757ecb2/p/783f9d-about-sdk) where you can find extensive explanations and descriptions of each step of DApp development on Free TON.
 
 # Repository structure
+`best practices` In this folder we will post samples demonstating best practices of implementation of some use cases
 
 `demo` folder contains demo samples that can be used as a quick start and also can be installed via [TONDEV](https://github.com/tonlabs/tondev).
 
