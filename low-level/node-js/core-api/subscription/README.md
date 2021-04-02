@@ -1,6 +1,6 @@
 # NodeJS SDK Subscription example
 
-In this example we use multisig wallet contract to send tokens from one wallet to another. You will learn how to subscribe to the new transactions and messages of an account.
+In this example we deploy "hello world" contract and subscribe to related messages.
 
 In the example we use [TON OS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview), local blockchain.
 
