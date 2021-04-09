@@ -5,7 +5,7 @@ const path = require('path');
 const giverKeyPairFileName = 'GiverV2.keys.json';
 const giverKeyPairFile = path.join(__dirname, giverKeyPairFileName);
 // ABI and imageBase64 of a binary Hello contract
-const contractPackage = require('./HelloContract.js');
+const {HelloContract} = require('./HelloContract.js');
 
 // Address of giver on TON OS SE
 const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
@@ -91,7 +91,7 @@ async function main(client) {
     // See more info about ABI type here https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#abi
     const abi = {
         type: 'Contract',
-        value: contractPackage.abi
+        value: HelloContract.abi
     }
     // Generate an ed25519 key pair
     const helloKeys = await client.crypto.generate_random_sign_keys();
@@ -101,7 +101,7 @@ async function main(client) {
     const deployOptions = {
         abi,
         deploy_set: {
-            tvc: contractPackage.tvcInBase64,
+            tvc: HelloContract.tvc,
             initial_data: {}
         },
         call_set: {
