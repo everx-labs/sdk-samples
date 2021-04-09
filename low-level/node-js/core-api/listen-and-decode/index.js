@@ -188,10 +188,8 @@ async function getHelloText(address) {
         const messageSubscription = await TonClient.default.net.subscribe_collection({
             collection: "messages",
             filter: {
-                status: { eq: 5 },
                 src: { eq: address },
                 OR: {
-                    status: { eq: 5 },
                     dst: { eq: address },
                 }
             },
