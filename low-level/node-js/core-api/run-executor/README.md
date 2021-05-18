@@ -1,6 +1,7 @@
-# NodeJS SDK Hello example
+# NodeJS SDK run_executor sample
 
 In this example we observe the capabilities of `run_executor` function of tvm module. 
+
 We will emulate subsequent execution of multisig wallet deploy with 2 custodians, transaction submition and its confirmation of the 2nd custodian. 
 We will compare estimated deploy and execution fees with the real fees using local blockchain. 
 
