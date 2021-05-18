@@ -2,8 +2,8 @@
 
 In this example we observe the capabilities of `run_executor` function of tvm module. 
 
-We will emulate subsequent execution of multisig wallet deploy with 2 custodians, transaction submission and its confirmation of the 2nd custodian. 
-We will compare estimated deploy and execution fees with the real fees using local blockchain. 
+We will emulate subsequent execution of deploy of multisig wallet with 2 custodians, transaction submission by the 1st custodian and its confirmation by the 2nd custodian. 
+We will compare estimated deploy and execution fees with the real fees using local blockchain TON OS SE. 
 
 In the end of the sample we will find out how to emulate account's initial topup for presise balance emulation. 
 
