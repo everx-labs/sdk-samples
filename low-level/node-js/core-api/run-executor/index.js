@@ -270,7 +270,7 @@ async function main(client) {
     });
     console.log("Emulate account top-up. Account's status changed from ", result.transaction.orig_status_name, "to", result.transaction.end_status_name);
     let account_json = await client.boc.parse_account({boc: result.account});
-    console.log("Account balance is: ", parseInt(account_json.parsed.balance) );
+    console.log("Account balance is: ", BigInt(account_json.parsed.balance).toString(10) );
     console.log("Account state is: ");
     console.log(account_json);
 
