@@ -31,9 +31,9 @@ function readLine() {
 
 async function main(client) {
     console.log("Generate new wallet keys");
-    const walletKeys = await this.client.crypto.generate_random_sign_keys();
+    const walletKeys = await client.crypto.generate_random_sign_keys();
     const wallet = new Account(SafeMultisigContract, {
-        client: this.client,
+        client,
         signer: signerKeys(walletKeys),
     });
 
@@ -41,7 +41,12 @@ async function main(client) {
     console.log(`Sending deploy fee to new wallet at ${walletAddress}`);
     await sendTokensTo(walletAddress, 10000000000, client);
     console.log(`Deploying new wallet at ${walletAddress}`);
-    await wallet.deploy();
+    await wallet.deploy({
+        initInput: {
+            owners: [`0x${walletKeys.public}`],
+            reqConfirms: 1
+        }
+    });
 
     console.log(`Start reading transfers on ${walletAddress}`);
     readTransfers(wallet, null, (transfer) => {
@@ -53,10 +58,11 @@ async function main(client) {
     });
 
 
-    console.log("Sending 1 token...");
-    await sendTokensTo(walletAddress, 1000000000, client);
-    console.log("Sending 2 tokens...");
-    await sendTokensTo(walletAddress, 2000000000, client);
+    console.log("Sending 23 token...");
+    await sendTokensTo(walletAddress, 23000000000, client);
+
+    console.log("Sending 45 tokens...");
+    await sendTokensTo(walletAddress, 45000000000, client);
 
     console.log("Press [Enter] to exit...");
     await readLine();
@@ -65,7 +71,7 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            endpoints: ["net.ton.dev"],
+            endpoints: ["http://localhost"],
         },
     });
     try {
@@ -73,6 +79,6 @@ async function main(client) {
         process.exit(0);
     } catch (error) {
         console.error(error);
+        process.exit(1);
     }
-    client.close();
 })();
