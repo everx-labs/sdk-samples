@@ -17,6 +17,12 @@
  */
 
 /**
+ * @typedef ShardDescr
+ * @property {string} workchain_id
+ * @property {string} shard
+ */
+
+/**
  * @typedef Block
  * @property {string} id
  * @property {string} workchain_id
@@ -96,13 +102,29 @@ async function fetchFirstBlock(account, transactionId) {
 }
 
 /**
+ * Returns true if the specified address matches
+ * to the workchain id and shard prefix of the block.
  *
- * @param {Block} block
+ * @param {ShardDescr} shardDescr
  * @param {string} address
  * @return {boolean}
  */
-function shardMatch(block, address) {
-    const shard = Number.parseInt(block.shard, 16);
+function addressBelongsToShard(address, shardDescr) {
+    const addressParts = address.split(":");
+    const addressWorkchainId = addressParts.length > 1 ? Number(addressParts[0]) : 0;
+    if (addressWorkchainId !== Number(shardDescr.workchain_id)) {
+        return false;
+    }
+    const shardHead = shardDescr.shard.replace(/0+$/, "");
+    const shardPrefix = Number(`0xF${shardHead}`)
+        .toString(2)
+        .replace(/0+$/, "")
+        .slice(4, -1);
+    const accountIdHead = addressParts[addressParts.length > 1 ? 1 : 0].substr(0, shardHead.length);
+    const accountIdPrefix = Number(`0xF${accountIdHead}`)
+        .toString(2)
+        .substr(4, shardPrefix.length);
+    return accountIdPrefix === shardPrefix;
 }
 
 /**
@@ -114,7 +136,7 @@ function shardMatch(block, address) {
 async function fetchNextBlock(account, prevBlock) {
     try {
         /** @type {Block} */
-        const next = (await account.client.net.wait_for_collection({
+        let next = (await account.client.net.wait_for_collection({
             collection: "blocks",
             filter: {
                 prev_ref: {
@@ -128,8 +150,8 @@ async function fetchNextBlock(account, prevBlock) {
             },
             result: BLOCK_FIELDS,
         })).result;
-        if (next.after_split && !shardMatch(next.shard, await account.getAddress())) {
-            return (await account.client.net.wait_for_collection({
+        if (next.after_split && !addressBelongsToShard(await account.getAddress(), next)) {
+            next = (await account.client.net.wait_for_collection({
                 collection: "blocks",
                 filter: {
                     id: { ne: next.id },
@@ -140,6 +162,7 @@ async function fetchNextBlock(account, prevBlock) {
                 result: BLOCK_FIELDS,
             })).result;
         }
+        return next;
     } catch {
     }
     return null;
@@ -166,10 +189,11 @@ async function fetchTransfers(account, afterTransaction, block) {
     /** @type {Transfer[]} */
     const transfers = [];
     while (transactionIds.length > 0) {
+        const portion = transactionIds.splice(0, 20);
         /** @type {Transaction[]} */
         const transactions = (await net.query_collection({
             collection: "transactions",
-            filter: { id: { in: transactionIds } },
+            filter: { id: { in: portion } },
             result: `
                 id
                 balance_delta(format:DEC)
@@ -185,7 +209,7 @@ async function fetchTransfers(account, afterTransaction, block) {
                 }
             `,
         })).result;
-        transactions.map((tr) => {
+        transactions.forEach((tr) => {
             const inbound = tr.in_message;
             if (inbound && Number(inbound.value) > 0) {
                 transfers.push({
