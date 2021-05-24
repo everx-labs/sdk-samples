@@ -24,8 +24,12 @@ TonClient.useBinaryLibrary(libNode);
         console.log(`SetCode Multisig wallet code hash: ${hashCode}`)
 
         // Your can find all popular Smart contract hash codes at https://ton.live/contracts
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+        if (error.code === 504) {
+            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+        } else {
+            console.error(error);
+        }
     }
     client.close();
 })();
