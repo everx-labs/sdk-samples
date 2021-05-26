@@ -1,17 +1,17 @@
 # How to deploy your wallet and make a transfer
-In this example we use AppKit package (https://github.com/tonlabs/AppKit)to deploy solidity multisig contract [SafeMultisigWallet.sol](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/SafeMultisigWallet.abi.json) in to test [net.ton.dev](https://net.ton.live/) blockchain.
+In this example we use [AppKit package](https://github.com/tonlabs/appkit-js) to deploy a [multisig contract](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/) into [Developer Network](https://net.ton.live/) and then make a transfer from it.  
+You can update the scripts to [work with other networks, for example, with Free TON](https://docs.ton.dev/86757ecb2/p/85c869-networks).
 
 ## Prerequisite
 
 * Node.js >= [12.x installed](https://nodejs.org)
-* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain TON OS SE) daemon running
+* Optional [Docker](https://docs.docker.com/desktop/#download-and-install) - if you want to use local blockchain TON OS SE
 
 In order to do it, perform these steps:
 
 1. Make preparations.
 2. Deploy contract.
-3. Use deployed contract.
-
+3. Transfer tokens.
 Below we describe each of the steps in more detail.
 
 ## Make preparations
@@ -42,7 +42,7 @@ node deploy.js
 In this step we use the key pair to deploy the contract. Before performing this step you need to ensure you have
 at least 0.5 tokens on your future wallet address.
 
-## Use deployed contract
+## Transfer tokens
 
 You can find the source code in `work-with-multisig.js`. In order to run it, use:
                                                      
