@@ -1,6 +1,5 @@
-# Work with SDK v.1 multisig example
-
-In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js) (ton-client-node-js is deprecated) to deploy solidity multisig contract [SafeMultisigWallet.sol](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/SafeMultisigWallet.abi.json) in to test [net.ton.dev](https://net.ton.live/) blockchain.
+# How to deploy your wallet and make a transfer
+In this example we use AppKit package (https://github.com/tonlabs/AppKit)to deploy solidity multisig contract [SafeMultisigWallet.sol](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/SafeMultisigWallet.abi.json) in to test [net.ton.dev](https://net.ton.live/) blockchain.
 
 ## Prerequisite
 
