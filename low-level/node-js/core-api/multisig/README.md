@@ -2,12 +2,12 @@
 
 In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js) to deploy a [multisig contract](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/) into the [Developer Network](https://net.ton.live/). 
 
-You can update the scripts to [work with other networks](https://docs.ton.dev/86757ecb2/p/85c869-networks), for example, with Free TON
+You can update the scripts to [work with other networks](https://docs.ton.dev/86757ecb2/p/85c869-networks), for example, with Free TON.
 
 ## Prerequisite
 
 * Node.js >= [12.x installed](https://nodejs.org)
-* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain TON OS SE) daemon running
+* Optional [Docker](https://docs.docker.com/desktop/#download-and-install) - if you want to use local blockchain TON OS SE
 
 In order to do it, perform these steps:
 
