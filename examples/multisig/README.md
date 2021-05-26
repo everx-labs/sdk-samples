@@ -1,6 +1,7 @@
 # How to deploy your wallet and make a transfer
 In this example we use [AppKit package](https://github.com/tonlabs/appkit-js) to deploy a [multisig contract](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/) into [Developer Network](https://net.ton.live/) and then make a transfer from it.  
-You can update the scripts to [work with other networks, for example, with Free TON](https://docs.ton.dev/86757ecb2/p/85c869-networks).
+
+You can update the scripts to [work with other networks](https://docs.ton.dev/86757ecb2/p/85c869-networks), for example, with Free TON.
 
 ## Prerequisite
 
@@ -30,6 +31,7 @@ In this step:
 3. Write these in files.
 4. Check the future contract address.
 
+After the step 4 you will need to sponsor this address with tokens in your network before proceeding with `Deploy` instruction. If you work in Developer Network, you may ask for test tokens (so-called Rubies) in mobile TON Surf version.
 
 ## Deploy contract
 
