@@ -30,6 +30,7 @@ In this step:
 3. Write these in files.
 4. Check the future contract address.
 
+After the step 4 you will need to sponsor this address with tokens in your network before proceeding with `Deploy` instruction. If you work in Developer Network, you may ask for test tokens (so-called Rubies) in mobile TON Surf version.
 
 ## Deploy contract
 
