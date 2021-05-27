@@ -9,7 +9,14 @@ const { BlockIterator, BLOCK_TRANSACTIONS_FIELDS } = require("./blocks");
 TonClient.useBinaryLibrary(libNode);
 
 /**
- * Deposit specified account with specified value.
+ * Topup an account for deploy operation.
+ * This sample uses TON OS SE's High load giver which is integrated into SDK
+ * and works only on local blockchain to topup an address before deploy.
+ * In production you can use any other contract that can transfer funds, as a giver,
+ * like, for example, a multisig wallet.
+ * Or you can deploy your own High Load giver. To do that you need to generate your own pair of keys,
+ * generate its address, sponsor it from another wallet and then finally deploy it the same way as you
+ * deploy other contracts.
  *
  * @param {string} address
  * @param {number} amount
@@ -29,6 +36,7 @@ async function depositAccount(address, amount, client) {
     // and enough positive balance. Such accounts shipped with TONOS SE instance.
     // And keys for this accounts are known.
     const giver = await Account.getGiverForClient(client);
+    // Topup the target account
     await giver.sendTo(address, amount);
 }
 
@@ -132,13 +140,19 @@ async function iterateTransfers(client) {
  * and then read all transfers related to this account
  */
 async function main(client) {
+    // Generate a key pair for a wallet
     console.log("Generate new wallet keys");
     const walletKeys = await client.crypto.generate_random_sign_keys();
+    // In this example we will deploy safeMultisig wallet.
+    // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
+    // The first step - initialize new account object with ABI,
+    // target network (client) and signer (initialize it with previously generated key pair)
     const wallet = new Account(SafeMultisigContract, {
         client,
         signer: signerKeys(walletKeys),
     });
 
+    // Calculate wallet address so that we can sponsor it before deploy
     const walletAddress = await wallet.getAddress();
 
     // Create transfer iterator at this time point
@@ -153,9 +167,12 @@ async function main(client) {
     await depositAccount(walletAddress, 10000000000, client);
 
     console.log(`Deploying new wallet at ${walletAddress}`);
+    // Now lets deploy safeMultisig wallet
+    // Here we declaratively specify 1 custodian and 1 reqConfirms
+    // but in real life there can be many custodians as well and more than 1 required confirmations
     await wallet.deploy({
         initInput: {
-            owners: [`0x${walletKeys.public}`],
+            owners: [`0x${walletKeys.public}`], // constructor parameters of multisig
             reqConfirms: 1,
         },
     });
