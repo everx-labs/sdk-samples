@@ -4,9 +4,77 @@ const { TonClient, signerKeys } = require("@tonclient/core");
 const { SafeMultisigContract } = require("./contracts");
 const { TransferIterator } = require("./transfers");
 const { ShardIdent } = require("./sharding");
-const { BlockIterator, BLOCK_TRANSACTIONS_FIELDS } = require("./blocks");
+const { BlockIterator } = require("./blocks");
 
 TonClient.useBinaryLibrary(libNode);
+
+/**
+ * Prints transfer details.
+ *
+ * @param {Transfer} transfer
+ */
+function dumpTransfer(transfer) {
+    if (transfer.isDeposit) {
+        console.log(`Account ${transfer.account} deposits ${transfer.value} from ${transfer.counterparty} at ${transfer.time}`);
+    } else {
+        console.log(`Account ${transfer.account} withdraws ${transfer.value} to ${transfer.counterparty} at ${transfer.time}`);
+    }
+}
+
+/**
+ * Demonstrates how to iterate 100 transfers since specified time.
+ *
+ * Also this example demonstrates how to suspend iteration
+ * and then resume it from suspension point.
+ *
+ */
+async function iterateTransfers(client) {
+    const startTime = new Date(2021, 4, 27, 0).getTime() / 1000;
+
+    // Starts transfer iterator from specific time.
+    //
+    // Also we can specify shard filter.
+    // Shard filter is a bitmask for first high bits of the account address.
+    // This can significantly reduce time ans loading factor for data retrieval.
+    // You can scale transfer iterator by starting several processes with several
+    // shard filters.
+    //
+    // In addition to shard filter you can specify an account address you
+    // are interested for.
+    //
+    // Transfer iterator will return only transfers related to accounts
+    // satisfying to shard filter and included into account filter.
+    // If you specify empty shard filter and empty account filter,
+    // you will iterate all transfers for all accounts since specified time.
+    //
+    const transfers = await TransferIterator.start(
+        client,
+        startTime,
+        new ShardIdent(0, ""),
+        [],
+    );
+
+    // Reads first 100 transfers and print it details
+    for (let i = 0; i < 100; i += 1) {
+        dumpTransfer(await transfers.next());
+    }
+
+    // We can suspend current iteration and get suspended state
+    const suspended = transfers.suspend();
+
+    // Suspended state is just a plain object so you can
+    // safely serialize it into file and use it later to resume
+    // iteration.
+
+    console.log("\n====================== Resume");
+
+    // Creates new iterator that will continue iteration from
+    // the previously suspended state.
+    const resumed = await TransferIterator.resume(client, [], suspended);
+    for (let i = 0; i < 40; i += 1) {
+        dumpTransfer(await resumed.next());
+    }
+}
 
 /**
  * Topup an account for deploy operation.
@@ -41,100 +109,6 @@ async function depositAccount(address, amount, client) {
 }
 
 /**
- * @param {?Block} block
- */
-function dumpBlock(block) {
-    if (block) {
-        if (block.account_blocks) {
-            console.log(`\n${block.id} ${block.account_blocks.length}`);
-        } else {
-            process.stdout.write(".");
-        }
-    } else {
-        process.stdout.write("-");
-    }
-}
-
-/**
- * Demonstrates how to iterate 100 blocks since specified time.
- *
- * Also this example demonstrates how to suspend iteration
- * and then resume it from suspension point.
- *
- */
-async function iterateBlocks(client) {
-    const yesterday = new Date(2021, 4, 27, 0).getTime() / 1000;
-    console.log(">>>", yesterday);
-    const blocks = await BlockIterator.start(
-        client,
-        yesterday,
-        new ShardIdent(0, ""),
-        BLOCK_TRANSACTIONS_FIELDS,
-    );
-    for (let i = 0; i < 100; i += 1) {
-        dumpBlock(await blocks.next());
-    }
-    const suspended = blocks.suspend();
-    let resumed = await BlockIterator.resume(client, suspended);
-    console.log("\n====================== Resume 1");
-    for (let i = 0; i < 40; i += 1) {
-        dumpBlock(await resumed.next());
-    }
-    console.log("\n====================== Resume 2");
-    resumed = await BlockIterator.resume(client, suspended);
-    for (let i = 0; i < 40; i += 1) {
-        dumpBlock(await resumed.next());
-    }
-}
-
-/**
- *
- * @param {Transfer} transfer
- */
-function dumpTransfer(transfer) {
-    if (transfer.isDeposit) {
-        console.log(`Account ${transfer.account} deposits ${transfer.value} from ${transfer.counterparty} at ${transfer.time}`);
-    } else {
-        console.log(`Account ${transfer.account} withdraws ${transfer.value} to ${transfer.counterparty} at ${transfer.time}`);
-    }
-}
-
-/**
- * Demonstrates how to iterate 100 transfers since specified time.
- *
- * Also this example demonstrates how to suspend iteration
- * and then resume it from suspension point.
- *
- */
-async function iterateTransfers(client) {
-    const yesterday = new Date(2021, 4, 27, 0).getTime() / 1000;
-    const transfers = await TransferIterator.start(
-        client,
-        yesterday,
-        new ShardIdent(0, ""),
-        [],
-    );
-    for (let i = 0; i < 100; i += 1) {
-        dumpTransfer(await transfers.next());
-    }
-    const suspended = transfers.suspend();
-
-    console.log("\n====================== Resume 1");
-
-    let resumed = await TransferIterator.resume(client, [], suspended);
-    for (let i = 0; i < 40; i += 1) {
-        dumpTransfer(await resumed.next());
-    }
-
-    console.log("\n====================== Resume 2");
-
-    resumed = await TransferIterator.resume(client, [], suspended);
-    for (let i = 0; i < 40; i += 1) {
-        dumpTransfer(await resumed.next());
-    }
-}
-
-/**
  * Demonstrates how to create wallet account,
  * deposits it with some values
  * and then read all transfers related to this account
@@ -143,6 +117,7 @@ async function main(client) {
     // Generate a key pair for a wallet
     console.log("Generate new wallet keys");
     const walletKeys = await client.crypto.generate_random_sign_keys();
+
     // In this example we will deploy safeMultisig wallet.
     // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
     // The first step - initialize new account object with ABI,
@@ -156,6 +131,8 @@ async function main(client) {
     const walletAddress = await wallet.getAddress();
 
     // Create transfer iterator at this time point
+    // this iterator will iterate only block containing
+    // our wallet account updates and transactions
     const transfers = await TransferIterator.start(
         client,
         Date.now() / 1000,
