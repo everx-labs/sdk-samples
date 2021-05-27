@@ -2,33 +2,135 @@ const { libNode } = require("@tonclient/lib-node");
 const { Account } = require("@tonclient/appkit");
 const { TonClient, signerKeys } = require("@tonclient/core");
 const { SafeMultisigContract } = require("./contracts");
-const { readTransfers } = require("./exchange");
+const { TransferIterator } = require("./transfers");
+const { ShardIdent } = require("./sharding");
+const { BlockIterator, BLOCK_TRANSACTIONS_FIELDS } = require("./blocks");
 
 TonClient.useBinaryLibrary(libNode);
 
 /**
- * Sends deploy fees.
+ * Deposit specified account with specified value.
  *
  * @param {string} address
  * @param {number} amount
  * @param {TonClient} client
  * @returns {Promise<void>}
  */
-async function sendTokensTo(address, amount, client) {
-    // This is demo version of sending deploy fees
-    // In the real blockchain you have to use some other methods
-    // to send deploy fees to you wallet.
+async function depositAccount(address, amount, client) {
+    // Here you have to send tokens to specified account address
+    //
+    // In the production you can do it with several ways:
+    // - using surf application
+    // - using tonos-cli
+    // - using you own wallet application
+    // - using code
+    //
+    // In this example we use some already deployed account with GiverV2 smart contract
+    // and enough positive balance. Such accounts shipped with TONOS SE instance.
+    // And keys for this accounts are known.
     const giver = await Account.getGiverForClient(client);
     await giver.sendTo(address, amount);
 }
 
-function readLine() {
-    return new Promise((resolve) => {
-        process.stdin.once("data", (buf) => resolve(buf.toString()));
-    });
+/**
+ * @param {?Block} block
+ */
+function dumpBlock(block) {
+    if (block) {
+        if (block.account_blocks) {
+            console.log(`\n${block.id} ${block.account_blocks.length}`);
+        } else {
+            process.stdout.write(".");
+        }
+    } else {
+        process.stdout.write("-");
+    }
 }
 
+/**
+ * Demonstrates how to iterate 100 blocks since specified time.
+ *
+ * Also this example demonstrates how to suspend iteration
+ * and then resume it from suspension point.
+ *
+ */
+async function iterateBlocks(client) {
+    const yesterday = new Date(2021, 4, 27, 0).getTime() / 1000;
+    console.log(">>>", yesterday);
+    const blocks = await BlockIterator.start(
+        client,
+        yesterday,
+        new ShardIdent(0, ""),
+        BLOCK_TRANSACTIONS_FIELDS,
+    );
+    for (let i = 0; i < 100; i += 1) {
+        dumpBlock(await blocks.next());
+    }
+    const suspended = blocks.suspend();
+    let resumed = await BlockIterator.resume(client, suspended);
+    console.log("\n====================== Resume 1");
+    for (let i = 0; i < 40; i += 1) {
+        dumpBlock(await resumed.next());
+    }
+    console.log("\n====================== Resume 2");
+    resumed = await BlockIterator.resume(client, suspended);
+    for (let i = 0; i < 40; i += 1) {
+        dumpBlock(await resumed.next());
+    }
+}
 
+/**
+ *
+ * @param {Transfer} transfer
+ */
+function dumpTransfer(transfer) {
+    if (transfer.isDeposit) {
+        console.log(`Account ${transfer.account} deposits ${transfer.value} from ${transfer.counterparty} at ${transfer.time}`);
+    } else {
+        console.log(`Account ${transfer.account} withdraws ${transfer.value} to ${transfer.counterparty} at ${transfer.time}`);
+    }
+}
+
+/**
+ * Demonstrates how to iterate 100 transfers since specified time.
+ *
+ * Also this example demonstrates how to suspend iteration
+ * and then resume it from suspension point.
+ *
+ */
+async function iterateTransfers(client) {
+    const yesterday = new Date(2021, 4, 27, 0).getTime() / 1000;
+    const transfers = await TransferIterator.start(
+        client,
+        yesterday,
+        new ShardIdent(0, ""),
+        [],
+    );
+    for (let i = 0; i < 100; i += 1) {
+        dumpTransfer(await transfers.next());
+    }
+    const suspended = transfers.suspend();
+
+    console.log("\n====================== Resume 1");
+
+    let resumed = await TransferIterator.resume(client, [], suspended);
+    for (let i = 0; i < 40; i += 1) {
+        dumpTransfer(await resumed.next());
+    }
+
+    console.log("\n====================== Resume 2");
+
+    resumed = await TransferIterator.resume(client, [], suspended);
+    for (let i = 0; i < 40; i += 1) {
+        dumpTransfer(await resumed.next());
+    }
+}
+
+/**
+ * Demonstrates how to create wallet account,
+ * deposits it with some values
+ * and then read all transfers related to this account
+ */
 async function main(client) {
     console.log("Generate new wallet keys");
     const walletKeys = await client.crypto.generate_random_sign_keys();
@@ -38,44 +140,48 @@ async function main(client) {
     });
 
     const walletAddress = await wallet.getAddress();
+
+    // Create transfer iterator at this time point
+    const transfers = await TransferIterator.start(
+        client,
+        Date.now() / 1000,
+        ShardIdent.fromAddress(walletAddress),
+        [walletAddress],
+    );
+
     console.log(`Sending deploy fee to new wallet at ${walletAddress}`);
-    await sendTokensTo(walletAddress, 10000000000, client);
+    await depositAccount(walletAddress, 10000000000, client);
+
     console.log(`Deploying new wallet at ${walletAddress}`);
     await wallet.deploy({
         initInput: {
             owners: [`0x${walletKeys.public}`],
-            reqConfirms: 1
-        }
+            reqConfirms: 1,
+        },
     });
-
-    console.log(`Start reading transfers on ${walletAddress}`);
-    readTransfers(wallet, null, (transfer) => {
-        if (transfer.isDeposit) {
-            console.log(`Received ${transfer.value} from ${transfer.address}`);
-        } else {
-            console.log(`Sent ${transfer.value} to ${transfer.address}`);
-        }
-    });
-
 
     console.log("Sending 23 token...");
-    await sendTokensTo(walletAddress, 23000000000, client);
+    await depositAccount(walletAddress, 23000000000, client);
 
     console.log("Sending 45 tokens...");
-    await sendTokensTo(walletAddress, 45000000000, client);
+    await depositAccount(walletAddress, 45000000000, client);
 
-    console.log("Press [Enter] to exit...");
-    await readLine();
+    let transfer = await transfers.next();
+    while (transfer) {
+        dumpTransfer(transfer);
+        transfer = await transfers.next();
+    }
 }
 
 (async () => {
     const client = new TonClient({
         network: {
-            endpoints: ["http://localhost"],
+            endpoints: ["net.ton.dev"],
         },
     });
     try {
-        await main(client);
+        BlockIterator.debugMode = true;
+        await iterateTransfers(client);
         process.exit(0);
     } catch (error) {
         console.error(error);
