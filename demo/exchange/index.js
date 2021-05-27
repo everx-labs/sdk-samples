@@ -22,30 +22,30 @@ function dumpTransfer(transfer) {
 }
 
 /**
- * Demonstrates how to iterate 100 transfers since specified time.
+ * Demonstrates how to iterate 100 transfers since the specified time.
  *
  * Also this example demonstrates how to suspend iteration
- * and then resume it from suspension point.
+ * and then resume it from the suspension point.
  *
  */
 async function iterateTransfers(client) {
     const startTime = new Date(2021, 4, 27, 0).getTime() / 1000;
 
-    // Starts transfer iterator from specific time.
+    // Starts transfer iterator from the specific time.
     //
     // Also we can specify shard filter.
-    // Shard filter is a bitmask for first high bits of the account address.
-    // This can significantly reduce time ans loading factor for data retrieval.
+    // Shard filter is a bitmask for the first high bits of the account address.
+    // This can significantly reduce time ans loading factor for the data retrieval.
     // You can scale transfer iterator by starting several processes with several
     // shard filters.
     //
-    // In addition to shard filter you can specify an account address you
-    // are interested for.
+    // In addition to the shard filter you can optionally specify a list of accounts address you
+    // are interested in.
     //
     // Transfer iterator will return only transfers related to accounts
-    // satisfying to shard filter and included into account filter.
-    // If you specify empty shard filter and empty account filter,
-    // you will iterate all transfers for all accounts since specified time.
+    // located in shards that satisfy the shard filter and included into the account filter.
+    // If you specify an empty shard filter and empty account filter,
+    // you will iterate all transfers for all accounts since the specified time.
     //
     const transfers = await TransferIterator.start(
         client,
@@ -54,7 +54,7 @@ async function iterateTransfers(client) {
         [],
     );
 
-    // Reads first 100 transfers and print it details
+    // Reads first 100 transfers and print their details
     for (let i = 0; i < 100; i += 1) {
         dumpTransfer(await transfers.next());
     }
@@ -82,9 +82,8 @@ async function iterateTransfers(client) {
  * and works only on local blockchain to topup an address before deploy.
  * In production you can use any other contract that can transfer funds, as a giver,
  * like, for example, a multisig wallet.
- * Or you can deploy your own High Load giver. To do that you need to generate your own pair of keys,
- * generate its address, sponsor it from another wallet and then finally deploy it the same way as you
- * deploy other contracts.
+ * Or you can deploy your own High Load giver. Search for its source code, abi and bytecode (tvc)
+ * here https://github.com/tonlabs/tonos-se/tree/master/contracts/giver_v2
  *
  * @param {string} address
  * @param {number} amount
@@ -92,9 +91,9 @@ async function iterateTransfers(client) {
  * @returns {Promise<void>}
  */
 async function depositAccount(address, amount, client) {
-    // Here you have to send tokens to specified account address
+    // Here you have to send tokens to the specified account address
     //
-    // In the production you can do it with several ways:
+    // In production you can do it with several ways:
     // - using surf application
     // - using tonos-cli
     // - using you own wallet application
@@ -121,7 +120,7 @@ async function main(client) {
     // In this example we will deploy safeMultisig wallet.
     // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
     // The first step - initialize new account object with ABI,
-    // target network (client) and signer (initialize it with previously generated key pair)
+    // target network (client) and signer (previously generated key pair)
     const wallet = new Account(SafeMultisigContract, {
         client,
         signer: signerKeys(walletKeys),
@@ -130,9 +129,9 @@ async function main(client) {
     // Calculate wallet address so that we can sponsor it before deploy
     const walletAddress = await wallet.getAddress();
 
-    // Create transfer iterator at this time point
-    // this iterator will iterate only block containing
-    // our wallet account updates and transactions
+    // Create transfer iterator. Generally it can iterate all the blocks and 
+    // transactions but here this iterator will iterate only the blocks containing
+    // our wallet account transactions
     const transfers = await TransferIterator.start(
         client,
         Date.now() / 1000,
@@ -170,7 +169,7 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            endpoints: ["net.ton.dev"],
+            endpoints: ["net1.ton.dev", "net5.ton.dev"],
         },
     });
     try {
