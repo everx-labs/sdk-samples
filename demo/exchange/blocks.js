@@ -165,7 +165,7 @@ class BlockIterator {
                 workchain_id: { eq: -1 },
                 gen_utime: { gt: afterBlockTime },
             },
-            orderBy: [{ path: "gen_utime", direction: SortDirection.ASC }],
+            order: [{ path: "gen_utime", direction: SortDirection.ASC }],
             result: BLOCK_MASTER_FIELDS,
             limit: 1,
         })).result[0];
