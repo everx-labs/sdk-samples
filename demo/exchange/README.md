@@ -11,5 +11,5 @@ It covers such use-cases as:
 
 ```sh
 npm i
-npm start
+node index
 ```
