@@ -1,17 +1,19 @@
-# Work with SDK v.1 multisig example
+# How to deploy your wallet and make a transfer
 
-In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js) (ton-client-node-js is deprecated) to deploy solidity multisig contract [SafeMultisigWallet.sol](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/SafeMultisigWallet.abi.json) in to test [net.ton.dev](https://net.ton.live/) blockchain.
+In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js) to deploy a [multisig contract](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/) into the [Developer Network](https://net.ton.live/). 
+
+You can update the scripts to [work with other networks](https://docs.ton.dev/86757ecb2/p/85c869-networks), for example, with Free TON.
 
 ## Prerequisite
 
 * Node.js >= [12.x installed](https://nodejs.org)
-* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain TON OS SE) daemon running
+* Optional [Docker](https://docs.docker.com/desktop/#download-and-install) - if you want to use local blockchain TON OS SE
 
 In order to do it, perform these steps:
 
-1. Make preparations.
+1. Make preparations for deploy.
 2. Deploy contract.
-3. Use deployed contract.
+3. Transfer tokens.
 
 Below we describe each of the steps in more detail.
 
@@ -30,6 +32,7 @@ In this step:
 3. Write these in files.
 4. Check the future contract address.
 
+After the step 4 you will need to sponsor this address with tokens in your network before proceeding with `Deploy` instruction. If you work in Developer Network, you may ask for test tokens (so-called Rubies) in mobile TON Surf version.
 
 ## Deploy contract
 
@@ -42,7 +45,7 @@ node deploy.js
 In this step we use the key pair to deploy the contract. Before performing this step you need to ensure you have
 at least 0.5 tokens on your future wallet address.
 
-## Use deployed contract
+## Transfer tokens
 
 You can find the source code in `work-with-multisig.js`. In order to run it, use:
                                                      
