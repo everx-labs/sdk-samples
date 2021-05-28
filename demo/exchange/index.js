@@ -56,7 +56,12 @@ async function iterateTransfers(client) {
 
     // Reads first 100 transfers and print their details
     for (let i = 0; i < 100; i += 1) {
-        dumpTransfer(await transfers.next());
+        const record = await transfers.next()
+        if (record) {
+            dumpTransfer(record)
+        } else {
+            break
+        }
     }
 
     // We can suspend current iteration and get suspended state
@@ -72,7 +77,12 @@ async function iterateTransfers(client) {
     // the previously suspended state.
     const resumed = await TransferIterator.resume(client, [], suspended);
     for (let i = 0; i < 40; i += 1) {
-        dumpTransfer(await resumed.next());
+        const record = await resumed.next()
+        if (record) {
+            dumpTransfer(record)
+        } else {
+            break
+        }
     }
 }
 

@@ -221,7 +221,6 @@ class TransferIterator {
     async _nextPortion() {
         /** @type {string[]} */
         const transactionIds = [];
-        const blocks = this._blocks.clone();
         while (transactionIds.length < 50) {
             let block = await this._blocks.next();
             if (!block) {
@@ -239,7 +238,7 @@ class TransferIterator {
         }
         this._portion = await TransferIterator._queryTransfers(this.client, transactionIds);
         this._nextIndex = 0;
-        this._blocks = blocks;
+        this._blocks = this._blocks.clone();
     }
 
 }
