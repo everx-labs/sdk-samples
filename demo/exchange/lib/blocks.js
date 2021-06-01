@@ -91,6 +91,39 @@ const NextLink = {
  * }} IteratorBuilder
  */
 
+/**
+ * @callback ItemFilter
+ * @param {any} item
+ * @return {boolean}
+ */
+
+/**
+ *
+ * @param {TonClient} client
+ * @param {string} collection
+ * @param {string[]} ids
+ * @param {string} resultFields
+ * @param {ItemFilter} [itemFilter]
+ * @return {Promise<any[]>}
+ */
+async function queryByIds(client, collection, ids, resultFields, itemFilter) {
+    const items = [];
+    const tail = [...ids];
+    while (tail.length > 0) {
+        const head = tail.splice(0, 20);
+        const portion = (await client.net.query_collection({
+            collection,
+            filter: { id: { in: head } },
+            result: resultFields,
+        })).result;
+        if (itemFilter) {
+            items.concat(portion.filter(itemFilter));
+        } else {
+            items.concat(portion);
+        }
+    }
+    return items;
+}
 
 /**
  * @typedef {{
@@ -118,7 +151,8 @@ const NextLink = {
  * @property {number} _nextIndex
  */
 class BlockIterator {
-    debugMode = false;
+    static debugMode = false;
+    static debugBlockLoaded = 0;
 
     /**
      *
@@ -165,7 +199,7 @@ class BlockIterator {
                 workchain_id: { eq: -1 },
                 gen_utime: { gt: afterBlockTime },
             },
-            orderBy: [{ path: "gen_utime", direction: SortDirection.ASC }],
+            order: [{ path: "gen_utime", direction: SortDirection.ASC }],
             result: BLOCK_MASTER_FIELDS,
             limit: 1,
         })).result[0];
@@ -287,19 +321,7 @@ class BlockIterator {
      * @return {Block[]}
      */
     static async _queryBlocks(client, blockIds, fields) {
-        let blocks = [];
-        const blockIdIterator = [...blockIds];
-        while (blockIdIterator.length > 0) {
-            const portionIds = blockIdIterator.splice(0, 40);
-            /** @type {Block[]} */
-            const portion = (await client.net.query_collection({
-                collection: "blocks",
-                filter: { id: { in: portionIds } },
-                result: `${BLOCK_TRAVERSE_FIELDS} ${fields}`,
-            })).result;
-            blocks = blocks.concat(portion);
-        }
-        return blocks;
+        return queryByIds(client, "blocks", blockIds, `${BLOCK_TRAVERSE_FIELDS} ${fields}`);
     }
 
     async _nextPortion() {
@@ -329,7 +351,9 @@ class BlockIterator {
             }
         }
         if (BlockIterator.debugMode && nextBlocks.size > 0) {
-            console.log('>>>', `Load next blocks ${nextBlocks.size} [${[...nextBlocks.values()][0][0].id}, ...]`);
+            BlockIterator.debugBlockLoaded += nextBlocks.size;
+            // console.log('>>>', `Load next blocks ${nextBlocks.size} [${[...nextBlocks.values()][0][0].id}, ...]`);
+            process.stdout.write("🔗".repeat(nextBlocks.size));
         }
         this._branches = builder.branches;
         this._visitedMergeBlocks = builder.visitedMergeBlocks;
@@ -441,6 +465,7 @@ class BlockIterator {
 }
 
 module.exports = {
+    queryByIds,
     BlockIterator,
     BLOCK_TRANSACTIONS_FIELDS,
 };
