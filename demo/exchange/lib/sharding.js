@@ -139,4 +139,5 @@ class ShardIdent {
 
 module.exports = {
     ShardIdent,
+    parseWorkchainIdPrefix,
 };

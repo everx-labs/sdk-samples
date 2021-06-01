@@ -1,36 +1,5 @@
-const { BlockIterator, BLOCK_TRANSACTIONS_FIELDS } = require("./blocks");
-
-/**
- *  @typedef {{
- *      id: string,
- *      now: number,
- *      account_addr: string,
- *      balance_delta: string,
- *      in_message: ?Message,
- *      out_messages: Message[],
- *  }} Transaction
- */
-
-/**
- *  @typedef {{
- *      id: string,
- *      value: string,
- *      msg_type: number,
- *      src: string,
- *      dst: string,
- *      dst_transaction: Transaction,
- *  }} Message
- */
-
-/**
- *  @typedef {{
- *      transaction: string,
- *      account: string,
- *      isDeposit: boolean,
- *      value: string,
- *      counterparty: string,
- *  }} Transfer
- */
+const { BlockIterator, BLOCK_TRANSACTIONS_FIELDS, queryByIds } = require("./blocks");
+const { TransactionIterator } = require("./transactions");
 
 /**
  * @typedef {{
@@ -165,56 +134,29 @@ class TransferIterator {
     static async _queryTransfers(client, transactionIds) {
         /** @type {Transfer[]} **/
         const transfers = [];
-        const transactionIdIterator = [...transactionIds];
-        while (transactionIdIterator.length > 0) {
-            const portion = transactionIdIterator.splice(0, 20);
-            /** @type {Transaction[]} */
-            const transactions = (await client.net.query_collection({
-                collection: "transactions",
-                filter: { id: { in: portion } },
-                result: `
-                id
-                account_addr
-                now
-                balance_delta(format:DEC)
-                in_message { 
-                    value(format:DEC)
-                    msg_type
-                    src
-                } 
-                out_messages {
-                    value(format:DEC)
-                    msg_type
-                    dst
-                }
-            `,
-            })).result;
-            transactions.forEach((tr) => {
-                const inbound = tr.in_message;
-                if (inbound && Number(inbound.value) > 0) {
-                    transfers.push({
-                        account: tr.account_addr,
-                        transaction: tr.id,
-                        isDeposit: true,
-                        counterparty: inbound.src,
-                        value: inbound.value,
-                        time: tr.now,
-                    });
-                }
-                for (const outbound of tr.out_messages) {
-                    if (Number(outbound.value) > 0) {
-                        transfers.push({
-                            account: tr.account_addr,
-                            transaction: tr.id,
-                            isDeposit: false,
-                            counterparty: outbound.dst,
-                            value: outbound.value,
-                            time: tr.now,
-                        });
-                    }
-                }
-            });
-        }
+        /** @type {Transaction[]} */
+        const transactions = queryByIds(
+            client,
+            "transactions",
+            transactionIds,
+            `
+            id
+            account_addr
+            now
+            balance_delta(format:DEC)
+            in_message { 
+                value(format:DEC)
+                msg_type
+                src
+            } 
+            out_messages {
+                value(format:DEC)
+                msg_type
+                dst
+            }
+        `,
+        );
+        transactions.forEach(x => transfers.concat(TransactionIterator.getTransfers(x)));
         return transfers;
     }
 
@@ -222,11 +164,13 @@ class TransferIterator {
         /** @type {string[]} */
         const transactionIds = [];
         const blocks = this._blocks.clone();
+
         while (transactionIds.length < 50) {
             let block = await this._blocks.next();
             if (!block) {
                 break;
             }
+
             if (block.account_blocks) {
                 for (const accountBlock of block.account_blocks) {
                     if (wanted(accountBlock.account_addr, this.accountFilter)) {
