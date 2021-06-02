@@ -87,23 +87,23 @@ TonClient.useBinaryLibrary(libNode);
         console.log(transactionInfo.out_messages);
         const messages = transactionInfo.out_messages;
 
-        try {
-            const decoded_comment1 = (await client.abi.decode_message({
-                abi: abiContract(transferAbi),
-                message: messages[0],
-            })).value;
+        const decodedMessage1 = (await tonClient.abi.decode_message({
+            abi: abiContract(transferAbi),
+            message: messages[0],
+        }));
 
-            console.log(decoded_comment1);
+        // Decode comment from hex to string
+        decodedMessage1.value.comment = Buffer.from(decodedMessage1.value.comment, "hex").toString("utf8");
 
-            const decoded_comment2 = (await client.abi.decode_message({
-                abi: abiContract(transferAbi),
-                message: messages[1],
-            })).value;
-            console.log(decoded_comment2.toString);
-        } catch {
+        console.log("Decoded message 1:", decodedMessage1.value);
 
-        }
-        client.close();
+        const decodedMessage2 = (await tonClient.abi.decode_message({
+            abi: abiContract(multisigContractPackage.abi),
+            message: messages[1],
+        }));
+
+        console.log("Decoded message 2:", decodedMessage2);
+
     } catch (error) {
         console.error(error);
         process.exit(1);
