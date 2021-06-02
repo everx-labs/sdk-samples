@@ -22,30 +22,30 @@ function printTransfer(transfer) {
 }
 
 /**
- * Demonstrates how to iterate 100 transfers since specified time.
+ * Demonstrates how to iterate 100 transfers since the specified time.
  *
  * Also this example demonstrates how to suspend iteration
- * and then resume it from suspension point.
+ * and then resume it from the suspension point.
  *
  */
 async function iterateTransfers(client) {
     const startTime = Math.round(new Date(2021, 4, 27, 0).getTime() / 1000);
 
-    // Starts transfer iterator from specific time.
+    // Starts transfer iterator from the specific time.
     //
     // Also we can specify shard filter.
-    // Shard filter is a bitmask for first high bits of the account address.
-    // This can significantly reduce time ans loading factor for data retrieval.
+    // Shard filter is a bitmask for the first high bits of the account address.
+    // This can significantly reduce time ans loading factor for the data retrieval.
     // You can scale transfer iterator by starting several processes with several
     // shard filters.
     //
-    // In addition to shard filter you can specify an account address you
-    // are interested for.
+    // In addition to the shard filter you can optionally specify a list of accounts address you
+    // are interested in.
     //
     // Transfer iterator will return only transfers related to accounts
-    // satisfying to shard filter and included into account filter.
-    // If you specify empty shard filter and empty account filter,
-    // you will iterate all transfers for all accounts since specified time.
+    // located in shards that satisfy the shard filter and included into the account filter.
+    // If you specify an empty shard filter and empty account filter,
+    // you will iterate all transfers for all accounts since the specified time.
     //
     const transfers = await TransferIterator.start(
         client,
@@ -56,7 +56,7 @@ async function iterateTransfers(client) {
         [],
     );
 
-    // Reads first 100 transfers and print it details
+    // Reads first 100 transfers and print their details
     for (let i = 0; i < 100; i += 1) {
         printTransfer(await transfers.next());
     }
@@ -142,7 +142,7 @@ async function main(client) {
     // In this example we will deploy safeMultisig wallet.
     // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
     // The first step - initialize new account object with ABI,
-    // target network (client) and signer (initialize it with previously generated key pair)
+    // target network (client) and signer (previously generated key pair)
     const wallet = new Account(SafeMultisigContract, {
         client,
         signer: signerKeys(walletKeys),
@@ -217,7 +217,7 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            endpoints: ["net.ton.dev"],
+            endpoints: ["net1.ton.dev", "net5.ton.dev"],
         },
     });
     try {
