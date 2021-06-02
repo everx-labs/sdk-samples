@@ -51,13 +51,13 @@ function parseWorkchainIdPrefix(s) {
  * @property {number} workchainId
  * @property {string} prefixBits
  */
-class ShardIdent {
+class Shard {
 
     /**
      *
      * @param {number} workchainId
      * @param {string} prefixBits
-     * @return {ShardIdent}
+     * @return {Shard}
      */
     constructor(workchainId, prefixBits) {
         this.workchainId = workchainId;
@@ -68,11 +68,15 @@ class ShardIdent {
     /**
      *
      * @param {string} s
-     * @return {ShardIdent}
+     * @return {Shard}
      */
     static parse(s) {
         const { workchainId, tail } = parseWorkchainIdPrefix(s);
-        return new ShardIdent(workchainId, tail);
+        return new Shard(workchainId, tail);
+    }
+
+    static zero() {
+        return new Shard(0, "");
     }
 
     toString() {
@@ -80,11 +84,11 @@ class ShardIdent {
     }
 
     clone() {
-        return new ShardIdent(this.workchainId, this.prefixBits);
+        return new Shard(this.workchainId, this.prefixBits);
     }
 
     static fromDescr(descr) {
-        return new ShardIdent(
+        return new Shard(
             Number(descr.workchain_id),
             trimEndZeros(hexToBits(trimEndZeros(descr.shard))).slice(0, -1),
         );
@@ -93,12 +97,12 @@ class ShardIdent {
     /**
      *
      * @param address
-     * @return {ShardIdent}
+     * @return {Shard}
      */
     static fromAddress(address) {
         const { workchainId, tail } = parseWorkchainIdPrefix(address);
         const accountIdHead = tail.substr(0, 64 / 4 + 1);
-        return new ShardIdent(
+        return new Shard(
             workchainId,
             hexToBits(accountIdHead).substr(0, 64),
         );
@@ -110,12 +114,12 @@ class ShardIdent {
      * @return {boolean}
      */
     containsAddress(address) {
-        return this.isParentOf(ShardIdent.fromAddress(address));
+        return this.isParentOf(Shard.fromAddress(address));
     }
 
     /**
      *
-     * @param {ShardIdent} child
+     * @param {Shard} child
      * @return {boolean}
      */
     isParentOf(child) {
@@ -125,7 +129,7 @@ class ShardIdent {
 
     /**
      *
-     * @param {ShardIdent} shard
+     * @param {Shard} shard
      * @return {boolean}
      */
     isChildOrParentOf(shard) {
@@ -138,6 +142,6 @@ class ShardIdent {
 }
 
 module.exports = {
-    ShardIdent,
+    Shard,
     parseWorkchainIdPrefix,
 };
