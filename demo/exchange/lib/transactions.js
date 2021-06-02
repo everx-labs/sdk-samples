@@ -37,6 +37,7 @@ const { queryByIds } = require("./blocks");
 /**
  *  @typedef {{
  *      transaction: string,
+ *      message: string,
  *      account: string,
  *      isDeposit: boolean,
  *      value: string,
@@ -56,6 +57,43 @@ function wanted(account, accountFilter) {
 }
 
 /**
+ *
+ * @param {Transaction} transaction
+ * @return {Transfer[]}
+ */
+function getTransfersFromTransaction(transaction) {
+    const transfers = [];
+    const inbound = transaction.in_message;
+    if (inbound && Number(inbound.value) > 0) {
+        transfers.push({
+            account: transaction.account_addr,
+            transaction: transaction.id,
+            message: inbound.id,
+            isDeposit: true,
+            counterparty: inbound.src,
+            value: inbound.value,
+            time: transaction.now,
+        });
+    }
+    for (const outbound of transaction.out_messages) {
+        if (Number(outbound.value) > 0) {
+            transfers.push({
+                account: transaction.account_addr,
+                transaction: transaction.id,
+                message: outbound.id,
+                isDeposit: false,
+                counterparty: outbound.dst,
+                value: outbound.value,
+                time: transaction.now,
+            });
+        }
+    }
+    return transfers;
+
+}
+
+
+/**
  * @property {TonClient} client
  * @property {Set.<string>} accountFilter
  * @property {string} requiredFields
@@ -64,7 +102,7 @@ function wanted(account, accountFilter) {
  * @property {Transaction[]} _portion
  * @property {number} _nextIndex
  */
-class TransactionIterator {
+class InconsistentTransactionIterator {
 
     /**
      * @param {TonClient} client
@@ -99,7 +137,7 @@ class TransactionIterator {
      * @param {number} startTime
      * @param {string[]} accountFilter
      * @param {string} requiredFields
-     * @return {Promise<TransactionIterator>}
+     * @return {Promise<InconsistentTransactionIterator>}
      */
     static async start(
         client,
@@ -107,7 +145,7 @@ class TransactionIterator {
         accountFilter,
         requiredFields,
     ) {
-        return new TransactionIterator(
+        return new InconsistentTransactionIterator(
             client,
             new Set(accountFilter),
             requiredFields,
@@ -122,7 +160,7 @@ class TransactionIterator {
      * @param {TransactionIteratorState} suspended
      * @param {string[]} accountFilter
      * @param {string} requiredFields
-     * @return {Promise<TransactionIterator>}
+     * @return {Promise<InconsistentTransactionIterator>}
      */
     static async resume(
         client,
@@ -130,12 +168,13 @@ class TransactionIterator {
         requiredFields,
         suspended,
     ) {
-        const portion = await TransactionIterator._queryPortion(
+        const portion = await queryByIds(
             client,
+            "transactions",
             suspended.portion,
-            requiredFields,
+            InconsistentTransactionIterator.resultFields(requiredFields),
         );
-        return new TransactionIterator(
+        return new InconsistentTransactionIterator(
             client,
             new Set(accountFilter),
             requiredFields,
@@ -174,40 +213,6 @@ class TransactionIterator {
     }
 
     /**
-     *
-     * @param {Transaction} transaction
-     * @return {Transfer[]}
-     */
-    static getTransfers(transaction) {
-        const transfers = [];
-        const inbound = transaction.in_message;
-        if (inbound && Number(inbound.value) > 0) {
-            transfers.push({
-                account: transaction.account_addr,
-                transaction: transaction.id,
-                isDeposit: true,
-                counterparty: inbound.src,
-                value: inbound.value,
-                time: transaction.now,
-            });
-        }
-        for (const outbound of transaction.out_messages) {
-            if (Number(outbound.value) > 0) {
-                transfers.push({
-                    account: transaction.account_addr,
-                    transaction: transaction.id,
-                    isDeposit: false,
-                    counterparty: outbound.dst,
-                    value: outbound.value,
-                    time: transaction.now,
-                });
-            }
-        }
-        return transfers;
-
-    }
-
-    /**
      * @param {string} additionalFields
      * @return {string}
      */
@@ -229,34 +234,6 @@ class TransactionIterator {
             }
             ${additionalFields}
         `;
-    }
-
-    /**
-     * @param {TonClient} client
-     * @param {string[]} transactionIds
-     * @param {string} requiredFields
-     * @return {Transfer[]}
-     */
-    static async _queryPortion(client, transactionIds, requiredFields) {
-        queryByIds();
-        /** @type {Transaction[]} **/
-        const portion = [];
-        const transactionIdIterator = [...transactionIds];
-        while (transactionIdIterator.length > 0) {
-            const idPortion = transactionIdIterator.splice(0, 20);
-            /** @type {Transaction[]} */
-            const transactions = (await client.net.query_collection({
-                collection: "transactions",
-                filter: { id: { in: idPortion } },
-                result: TransactionIterator.resultFields(requiredFields),
-            })).result;
-            transactions.forEach((tr) => {
-                if (wanted(tr.account_addr, this.accountFilter)) {
-                    portion.push(tr);
-                }
-            });
-        }
-        return portion;
     }
 
     async _nextPortion() {
@@ -283,7 +260,7 @@ class TransactionIterator {
             const transactions = (await client.net.query_collection({
                 collection: "transactions",
                 filter,
-                result: TransactionIterator.resultFields(this.requiredFields),
+                result: InconsistentTransactionIterator.resultFields(this.requiredFields),
                 order: [
                     { path: "now", direction: SortDirection.ASC },
                     { path: "account_addr", direction: SortDirection.ASC },
@@ -309,4 +286,7 @@ class TransactionIterator {
 }
 
 
-module.exports = { TransactionIterator };
+module.exports = {
+    InconsistentTransactionIterator,
+    getTransfersFromTransaction,
+};
