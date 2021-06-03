@@ -26,6 +26,7 @@ const { Shard } = require("./sharding");
  *              workchain_id: string,
  *              shard: string,
  *              descr: {
+ *                  gen_utime: number,
  *                  root_hash: string,
  *              },
  *          }[],
@@ -55,6 +56,7 @@ const BLOCK_MASTER_FIELDS = `
         shard_hashes { 
             workchain_id 
             shard descr { 
+                gen_utime
                 root_hash 
             }
         }
@@ -82,6 +84,7 @@ const NextLink = {
  *  @typedef {{
  *      shard: Shard
  *      blockId: string,
+ *      updateTime: number,
  *      nextLink: number,
  *  }} BranchIterator
  */
@@ -201,6 +204,10 @@ class BlockFilter {
     }
 }
 
+function getNowSeconds() {
+    return Math.round(Date.now() / 1000);
+}
+
 /**
  * @property {TonClient} client
  * @property {BlockFilter} filter
@@ -258,11 +265,13 @@ class BlockIterator {
             result: BLOCK_MASTER_FIELDS,
             limit: 1,
         })).result[0];
+        const updateTime = getNowSeconds();
         /** @type {BranchIterator[]} */
         const branches = masterBlock.master.shard_hashes
             .map(x => ({
                 shard: Shard.fromDescr(x),
                 blockId: x.descr.root_hash,
+                updateTime,
                 nextLink: NextLink.ByBoth,
             }))
             .filter(x => filter.matchShard(x.shard));
@@ -292,6 +301,7 @@ class BlockIterator {
             suspended.portion,
             suspended.filter.fields,
         );
+        const updateTime = getNowSeconds();
         return new BlockIterator(
             client,
             new BlockFilter(
@@ -302,6 +312,7 @@ class BlockIterator {
             ),
             suspended.branches.map(x => ({
                 shard: Shard.parse(x.shard),
+                updateTime,
                 blockId: x.blockId,
                 nextLink: x.nextLink,
             })),
@@ -321,6 +332,7 @@ class BlockIterator {
             this._branches.map(x => ({
                 shard: x.shard.clone(),
                 blockId: x.blockId,
+                updateTime: x.updateTime,
                 nextLink: x.nextLink,
             })),
             new Set(this._visitedMergeBlocks),
@@ -515,6 +527,7 @@ class BlockIterator {
         if (this.filter.isRequiredToTraverse(block)) {
             builder.branches.push({
                 blockId: block.id,
+                updateTime: getNowSeconds(),
                 shard: Shard.fromDescr(block),
                 nextLink: nextLink || NextLink.ByBoth,
             });
