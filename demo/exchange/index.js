@@ -1,10 +1,30 @@
+/**
+ * This sample demonstrates how to perform subsequent blockchain deposits or withdraws reading.
+ * You can read either all blockchain transfers, or transfers of specified accounts.
+ * 
+ * Also, for convenience, this sample includes the steps of wallet deploy, deposit and withdraw.
+ * 
+ * To run this sample you need to have a multisig wallet with positive balance,
+ * already deployed to the Developer Network. Specify its private key at the launch
+ * 
+ * `node index privateKey`
+ * 
+ * Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisighttps://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
+ * 
+ * To migrate to Free TON you need to update the endpoints specified in TonClient configuration
+ * to Free TON endpoints.
+ *
+ * See the list of supported networks and endpoints here https://docs.ton.dev/86757ecb2/p/85c869-networks
+ * 
+ * */
+
 const { libNode } = require("@tonclient/lib-node");
 const { Account } = require("@tonclient/appkit");
 const { TonClient, signerKeys } = require("@tonclient/core");
 const { SafeMultisigContract } = require("./contracts");
-const { TransferIterator } = require("./transfers");
-const { ShardIdent } = require("./sharding");
-const { BlockIterator } = require("./blocks");
+const { TransferIterator } = require("./lib/transfers");
+const { Shard } = require("./lib/sharding");
+const { BlockIterator } = require("./lib/blocks");
 
 TonClient.useBinaryLibrary(libNode);
 
@@ -13,7 +33,7 @@ TonClient.useBinaryLibrary(libNode);
  *
  * @param {Transfer} transfer
  */
-function dumpTransfer(transfer) {
+function printTransfer(transfer) {
     if (transfer.isDeposit) {
         console.log(`Account ${transfer.account} deposits ${transfer.value} from ${transfer.counterparty} at ${transfer.time}`);
     } else {
@@ -29,7 +49,7 @@ function dumpTransfer(transfer) {
  *
  */
 async function iterateTransfers(client) {
-    const startTime = new Date(2021, 4, 27, 0).getTime() / 1000;
+    const startTime = Math.round(new Date(2021, 4, 27, 0).getTime() / 1000);
 
     // Starts transfer iterator from the specific time.
     //
@@ -49,14 +69,16 @@ async function iterateTransfers(client) {
     //
     const transfers = await TransferIterator.start(
         client,
-        startTime,
-        new ShardIdent(0, ""),
+        {
+            startBlockTime: startTime,
+            shard: Shard.zero(),
+        },
         [],
     );
 
     // Reads first 100 transfers and print their details
     for (let i = 0; i < 100; i += 1) {
-        dumpTransfer(await transfers.next());
+        printTransfer(await transfers.next());
     }
 
     // We can suspend current iteration and get suspended state
@@ -72,18 +94,40 @@ async function iterateTransfers(client) {
     // the previously suspended state.
     const resumed = await TransferIterator.resume(client, [], suspended);
     for (let i = 0; i < 40; i += 1) {
-        dumpTransfer(await resumed.next());
+        printTransfer(await resumed.next());
     }
+}
+
+let _giver = null;
+
+async function ensureGiver(client) {
+    if (!_giver) {
+        const secret = process.argv[2];
+        if (!secret) {
+            console.log("USE: node index <safe-msig-sign-key>");
+            process.exit(1);
+        }
+        _giver = new Account(SafeMultisigContract, {
+            client,
+            signer: signerKeys({
+                public: (await client.crypto.nacl_sign_keypair_from_secret_key({ secret }))
+                    .secret.substr(64),
+                secret,
+            }),
+        });
+    }
+    return _giver;
 }
 
 /**
  * Topup an account for deploy operation.
- * This sample uses TON OS SE's High load giver which is integrated into SDK
- * and works only on local blockchain to topup an address before deploy.
- * In production you can use any other contract that can transfer funds, as a giver,
- * like, for example, a multisig wallet.
- * Or you can deploy your own High Load giver. Search for its source code, abi and bytecode (tvc)
- * here https://github.com/tonlabs/tonos-se/tree/master/contracts/giver_v2
+ *
+ * We need an account which can be used to deposit other accounts.
+ * Usually it is called "giver".
+ *
+ * This sample uses already deployed multisig wallet with positive balance as a giver.
+ *
+ * In production you can use any other contract that can transfer funds, as a giver.
  *
  * @param {string} address
  * @param {number} amount
@@ -91,28 +135,24 @@ async function iterateTransfers(client) {
  * @returns {Promise<void>}
  */
 async function depositAccount(address, amount, client) {
-    // Here you have to send tokens to the specified account address
-    //
-    // In production you can do it with several ways:
-    // - using surf application
-    // - using tonos-cli
-    // - using you own wallet application
-    // - using code
-    //
-    // In this example we use some already deployed account with GiverV2 smart contract
-    // and enough positive balance. Such accounts shipped with TONOS SE instance.
-    // And keys for this accounts are known.
-    const giver = await Account.getGiverForClient(client);
-    // Topup the target account
-    await giver.sendTo(address, amount);
+    const giver = await ensureGiver(client);
+    await giver.run("sendTransaction", {
+        dest: address,
+        value: amount,
+        bounce: false,
+        flags: 1,
+        payload: "",
+    });
 }
 
 /**
  * Demonstrates how to create wallet account,
- * deposits it with some values
+ * deposits some value to it
  * and then read all transfers related to this account
  */
 async function main(client) {
+    const giver = await ensureGiver(client);
+
     // Generate a key pair for a wallet
     console.log("Generate new wallet keys");
     const walletKeys = await client.crypto.generate_random_sign_keys();
@@ -127,17 +167,10 @@ async function main(client) {
     });
 
     // Calculate wallet address so that we can sponsor it before deploy
+    // https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/359040
     const walletAddress = await wallet.getAddress();
 
-    // Create transfer iterator. Generally it can iterate all the blocks and 
-    // transactions but here this iterator will iterate only the blocks containing
-    // our wallet account transactions
-    const transfers = await TransferIterator.start(
-        client,
-        Date.now() / 1000,
-        ShardIdent.fromAddress(walletAddress),
-        [walletAddress],
-    );
+    const startBlockTime = Date.now() / 1000;
 
     console.log(`Sending deploy fee to new wallet at ${walletAddress}`);
     await depositAccount(walletAddress, 10000000000, client);
@@ -153,28 +186,63 @@ async function main(client) {
         },
     });
 
-    console.log("Sending 23 token...");
-    await depositAccount(walletAddress, 23000000000, client);
+    console.log("Depositing 6 token...");
+    await depositAccount(walletAddress, 6000000000, client);
 
-    console.log("Sending 45 tokens...");
-    await depositAccount(walletAddress, 45000000000, client);
+    console.log("Depositing 7 tokens...");
+    await depositAccount(walletAddress, 7000000000, client);
 
-    let transfer = await transfers.next();
-    while (transfer) {
-        dumpTransfer(transfer);
-        transfer = await transfers.next();
+    const giverAddress = await giver.getAddress();
+    console.log("Withdrawing 2 tokens...");
+    await wallet.run("sendTransaction", {
+        dest: giverAddress,
+        value: 2000000000,
+        bounce: false,
+        flags: 1,
+        payload: "",
+    });
+    console.log("Withdrawing 3 tokens...");
+    await wallet.run("sendTransaction", {
+        dest: giverAddress,
+        value: 3000000000,
+        bounce: false,
+        flags: 1, /// when using flag 1 forward fees are charged from the sender, not the recipient
+        payload: "",
+    });
+
+    // Wait for 5 sec to finalize all transactions
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    // Create transfer iterator
+    // this iterator will iterate only blocks containing
+    // our wallet account updates and transactions
+    const transfers = await TransferIterator.start(
+        client,
+        {
+            startBlockTime,
+            endBlockTime: Math.round(Date.now() / 1000),
+            shard: Shard.fromAddress(walletAddress),
+        },
+        [walletAddress],
+    );
+    while (!transfers.eof()) {
+        const transfer = await transfers.next();
+        if (transfer) {
+            printTransfer(transfer);
+        }
     }
 }
 
 (async () => {
     const client = new TonClient({
         network: {
-            endpoints: ["net1.ton.dev", "net5.ton.dev"],
+            // To migrate to Free TON network, specify its endpoints here 
+            // https://docs.ton.dev/86757ecb2/p/85c869-networks
+            endpoints: ["net1.ton.dev", "net5.ton.dev"], 
         },
     });
     try {
-        BlockIterator.debugMode = true;
-        await iterateTransfers(client);
+        await main(client);
         process.exit(0);
     } catch (error) {
         console.error(error);
