@@ -1,10 +1,11 @@
 const { SortDirection } = require("@tonclient/core");
-const { ShardIdent } = require("./sharding");
+const { Shard } = require("./sharding");
 
 /**
  *  @typedef {{
  *      id: string,
- *      workchain_id: string,
+ *      gen_utime: number,
+ *      workchain_id: number,
  *      shard: string,
  *      after_split: boolean,
  *      after_merge: boolean,
@@ -35,6 +36,7 @@ const { ShardIdent } = require("./sharding");
 
 const BLOCK_TRAVERSE_FIELDS = `
     id
+    gen_utime
     workchain_id
     shard
     after_split
@@ -48,6 +50,7 @@ const BLOCK_TRAVERSE_FIELDS = `
 `;
 
 const BLOCK_MASTER_FIELDS = `
+    gen_utime
     master { 
         shard_hashes { 
             workchain_id 
@@ -77,7 +80,7 @@ const NextLink = {
 
 /**
  *  @typedef {{
- *      shard: ShardIdent
+ *      shard: Shard
  *      blockId: string,
  *      nextLink: number,
  *  }} BranchIterator
@@ -91,11 +94,46 @@ const NextLink = {
  * }} IteratorBuilder
  */
 
+/**
+ *
+ * @param {TonClient} client
+ * @param {string} collection
+ * @param {string[]} ids
+ * @param {string} resultFields
+ * @return {Promise<any[]>}
+ */
+async function queryByIds(client, collection, ids, resultFields) {
+    const items = [];
+    const tailIds = [...ids];
+    while (tailIds.length > 0) {
+        const headIds = tailIds.splice(0, 40);
+        const headById = new Map();
+        const queryQueue = new Set(headIds);
+        while (queryQueue.size > 0) {
+            const portion = (await client.net.query_collection({
+                collection,
+                filter: { id: { in: [...queryQueue] } },
+                result: resultFields,
+            })).result;
+            for (const item of portion) {
+                const id = item.id;
+                queryQueue.delete(id);
+                headById.set(id, item);
+            }
+        }
+        headIds.forEach(x => items.push(headById.get(x)));
+    }
+    return items;
+}
 
 /**
  * @typedef {{
- *      fields: string,
- *      shardFilter: string,
+ *      filter: {
+ *          shard: string,
+ *          startBlockTime: number,
+ *          endBlockTime: ?number,
+ *          fields: string,
+ *      },
  *      branches: {
  *          shard: string
  *          blockId: string,
@@ -108,9 +146,64 @@ const NextLink = {
  */
 
 /**
- * @property {TonClient} client
+ * @property {Shard} shard
+ * @property {number} startBlockTime
+ * @property {?number} endBlockTime
  * @property {string} fields
- * @property {ShardIdent} shardFilter
+ */
+class BlockFilter {
+    /**
+     * @property {Shard} shard
+     * @property {number} startBlockTime
+     * @property {?number} endBlockTime
+     * @property {string} [fields]
+     */
+    constructor(shard, startBlockTime, endBlockTime, fields) {
+        this.shard = shard;
+        this.startBlockTime = startBlockTime;
+        this.endBlockTime = endBlockTime;
+        this.fields = fields || "";
+    }
+
+    /**
+     * @param {number} time
+     * @return {boolean}
+     */
+    matchEndTime(time) {
+        return !this.endBlockTime || time < this.endBlockTime;
+    }
+
+    /**
+     * @param {Shard} shard
+     * @return {boolean}
+     */
+    matchShard(shard) {
+        return this.shard.isChildOrParentOf(shard);
+    }
+
+    /**
+     * @param {Block} block
+     * @return {boolean}
+     */
+    isRequiredToTraverse(block) {
+        return this.matchShard(Shard.fromDescr(block)) && this.matchEndTime(block.gen_utime);
+    }
+
+    /**
+     * @param {Block} block
+     * @return {boolean}
+     */
+    isRequiredToIterate(block) {
+        const time = block.gen_utime;
+        return this.matchShard(Shard.fromDescr(block))
+            && (time >= this.startBlockTime)
+            && this.matchEndTime(time);
+    }
+}
+
+/**
+ * @property {TonClient} client
+ * @property {BlockFilter} filter
 
  * @property {BranchIterator[]} _branches
  * @property {Set.<string>} _visitedMergeBlocks
@@ -118,13 +211,13 @@ const NextLink = {
  * @property {number} _nextIndex
  */
 class BlockIterator {
-    debugMode = false;
+    static debugMode = false;
+    static debugBlockLoaded = 0;
 
     /**
      *
      * @param {TonClient} client
-     * @param {string} fields
-     * @param {ShardIdent} shardFilter
+     * @param {BlockFilter} filter
      * @param {BranchIterator[]} branches
      * @param {Set.<string>} visitedMergeBlocks
      * @param {Block[]} portion
@@ -132,16 +225,14 @@ class BlockIterator {
      */
     constructor(
         client,
-        fields,
-        shardFilter,
+        filter,
         branches,
         visitedMergeBlocks,
         portion,
         nextIndex,
     ) {
         this.client = client;
-        this.fields = fields;
-        this.shardFilter = shardFilter;
+        this.filter = filter;
 
         this._branches = branches;
         this._visitedMergeBlocks = visitedMergeBlocks;
@@ -152,43 +243,40 @@ class BlockIterator {
     /**
      *
      * @param {TonClient} client
-     * @param {number} afterBlockTime
-     * @param {ShardIdent} shardFilter
-     * @param {string} fields
+     * @param {BlockFilter} filter
      * @return {Promise<BlockIterator>}
      */
-    static async start(client, afterBlockTime, shardFilter, fields) {
+    static async start(client, filter) {
         /** @type {Block} */
         const masterBlock = (await client.net.query_collection({
             collection: "blocks",
             filter: {
                 workchain_id: { eq: -1 },
-                gen_utime: { gt: afterBlockTime },
+                gen_utime: { le: filter.startBlockTime },
             },
-            order: [{ path: "gen_utime", direction: SortDirection.ASC }],
+            order: [{ path: "gen_utime", direction: SortDirection.DESC }],
             result: BLOCK_MASTER_FIELDS,
             limit: 1,
         })).result[0];
         /** @type {BranchIterator[]} */
         const branches = masterBlock.master.shard_hashes
             .map(x => ({
-                shard: ShardIdent.fromDescr(x),
+                shard: Shard.fromDescr(x),
                 blockId: x.descr.root_hash,
                 nextLink: NextLink.ByBoth,
             }))
-            .filter(x => shardFilter.isChildOrParentOf(x.shard));
-        const portion = await BlockIterator._queryBlocks(
+            .filter(x => filter.matchShard(x.shard));
+        const branchesBlocks = await BlockIterator._queryBlocks(
             client,
             branches.map(x => x.blockId),
-            fields,
+            filter.fields,
         );
         return new BlockIterator(
             client,
-            fields,
-            shardFilter,
+            filter,
             branches,
             new Set(),
-            portion,
+            branchesBlocks.filter(x => filter.isRequiredToIterate(x)),
             0,
         );
     }
@@ -202,14 +290,18 @@ class BlockIterator {
         const portion = await BlockIterator._queryBlocks(
             client,
             suspended.portion,
-            suspended.fields,
+            suspended.filter.fields,
         );
         return new BlockIterator(
             client,
-            suspended.fields,
-            ShardIdent.parse(suspended.shardFilter),
+            new BlockFilter(
+                Shard.parse(suspended.filter.shard),
+                suspended.filter.startBlockTime,
+                suspended.filter.endBlockTime,
+                suspended.filter.fields,
+            ),
             suspended.branches.map(x => ({
-                shard: ShardIdent.parse(x.shard),
+                shard: Shard.parse(x.shard),
                 blockId: x.blockId,
                 nextLink: x.nextLink,
             })),
@@ -225,8 +317,7 @@ class BlockIterator {
     clone() {
         return new BlockIterator(
             this.client,
-            this.fields,
-            this.shardFilter.clone(),
+            this.filter,
             this._branches.map(x => ({
                 shard: x.shard.clone(),
                 blockId: x.blockId,
@@ -236,6 +327,13 @@ class BlockIterator {
             this._portion.map(x => Object.assign({}, x)),
             this._nextIndex,
         );
+    }
+
+    /**
+     * @return {boolean}
+     */
+    eof() {
+        return this._branches.length === 0 && this._nextIndex >= this._portion.length;
     }
 
     /**
@@ -258,8 +356,12 @@ class BlockIterator {
      */
     suspend() {
         return {
-            fields: this.fields,
-            shardFilter: this.shardFilter.toString(),
+            filter: {
+                shard: this.filter.shard.toString(),
+                startBlockTime: this.filter.startBlockTime,
+                endBlockTime: this.filter.endBlockTime,
+                fields: this.filter.fields,
+            },
             branches: this._branches.map(x => ({
                 shard: x.shard.toString(),
                 blockId: x.blockId,
@@ -272,34 +374,13 @@ class BlockIterator {
     }
 
     /**
-     *
-     * @param {Block} block
-     * @return {boolean}
-     */
-    _wanted(block) {
-        return this.shardFilter.isChildOrParentOf(ShardIdent.fromDescr(block));
-    }
-
-    /**
      * @param {TonClient} client
      * @param {string[]} blockIds
      * @param {string} fields
      * @return {Block[]}
      */
     static async _queryBlocks(client, blockIds, fields) {
-        let blocks = [];
-        const blockIdIterator = [...blockIds];
-        while (blockIdIterator.length > 0) {
-            const portionIds = blockIdIterator.splice(0, 40);
-            /** @type {Block[]} */
-            const portion = (await client.net.query_collection({
-                collection: "blocks",
-                filter: { id: { in: portionIds } },
-                result: `${BLOCK_TRAVERSE_FIELDS} ${fields}`,
-            })).result;
-            blocks = blocks.concat(portion);
-        }
-        return blocks;
+        return await queryByIds(client, "blocks", blockIds, `${BLOCK_TRAVERSE_FIELDS} ${fields}`);
     }
 
     async _nextPortion() {
@@ -329,7 +410,9 @@ class BlockIterator {
             }
         }
         if (BlockIterator.debugMode && nextBlocks.size > 0) {
-            console.log('>>>', `Load next blocks ${nextBlocks.size} [${[...nextBlocks.values()][0][0].id}, ...]`);
+            BlockIterator.debugBlockLoaded += nextBlocks.size;
+            // console.log('>>>', `Load next blocks ${nextBlocks.size} [${[...nextBlocks.values()][0][0].id}, ...]`);
+            process.stdout.write("🔗".repeat(nextBlocks.size));
         }
         this._branches = builder.branches;
         this._visitedMergeBlocks = builder.visitedMergeBlocks;
@@ -360,7 +443,7 @@ class BlockIterator {
                     prev_ref: { root_hash: { in: byPrevPortion } },
                     OR: { prev_alt_ref: { root_hash: { in: byPrevAltPortion } } },
                 },
-                result: `${BLOCK_TRAVERSE_FIELDS} ${this.fields}`,
+                result: `${BLOCK_TRAVERSE_FIELDS} ${this.filter.fields}`,
             })).result;
             blocks.forEach((block) => {
                 const tryAdd = (prevId) => {
@@ -429,18 +512,22 @@ class BlockIterator {
      * @param {number} [nextLink]
      */
     _newWantedBranch(block, builder, nextLink) {
-        if (this._wanted(block)) {
-            builder.blocks.push(block);
+        if (this.filter.isRequiredToTraverse(block)) {
             builder.branches.push({
                 blockId: block.id,
-                shard: ShardIdent.fromDescr(block),
+                shard: Shard.fromDescr(block),
                 nextLink: nextLink || NextLink.ByBoth,
             });
+        }
+        if (this.filter.isRequiredToIterate(block)) {
+            builder.blocks.push(block);
         }
     }
 }
 
 module.exports = {
+    queryByIds,
     BlockIterator,
+    BlockFilter,
     BLOCK_TRANSACTIONS_FIELDS,
 };
