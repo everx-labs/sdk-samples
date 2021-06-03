@@ -1,3 +1,23 @@
+/**
+ * This sample demonstrates how to perform subsequent blockchain deposits or withdraws reading.
+ * You can read either all blockchain transfers, or transfers of specified accounts.
+ * 
+ * Also, for convenience, this sample includes the steps of wallet deploy, deposit and withdraw.
+ * 
+ * To run this sample you need to have a multisig wallet with positive balance,
+ * already deployed to the Developer Network. Specify its private key at the launch
+ * 
+ * `node index privateKey`
+ * 
+ * Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisighttps://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
+ * 
+ * To migrate to Free TON you need to update the endpoints specified in TonClient configuration
+ * to Free TON endpoints.
+ *
+ * See the list of supported networks and endpoints here https://docs.ton.dev/86757ecb2/p/85c869-networks
+ * 
+ * */
+
 const { libNode } = require("@tonclient/lib-node");
 const { Account } = require("@tonclient/appkit");
 const { TonClient, signerKeys } = require("@tonclient/core");
@@ -105,11 +125,9 @@ async function ensureGiver(client) {
  * We need an account which can be used to deposit other accounts.
  * Usually it is called "giver".
  *
- * This sample uses existing account with positive balance and
- * SafeMultisigWallet smart contract.
+ * This sample uses already deployed multisig wallet with positive balance as a giver.
  *
- * In production you can use any other contract that can transfer funds, as a giver,
- * like, for example, a multisig wallet.
+ * In production you can use any other contract that can transfer funds, as a giver.
  *
  * @param {string} address
  * @param {number} amount
@@ -129,7 +147,7 @@ async function depositAccount(address, amount, client) {
 
 /**
  * Demonstrates how to create wallet account,
- * deposits it with some values
+ * deposits some value to it
  * and then read all transfers related to this account
  */
 async function main(client) {
@@ -149,6 +167,7 @@ async function main(client) {
     });
 
     // Calculate wallet address so that we can sponsor it before deploy
+    // https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/359040
     const walletAddress = await wallet.getAddress();
 
     const startBlockTime = Date.now() / 1000;
@@ -187,7 +206,7 @@ async function main(client) {
         dest: giverAddress,
         value: 3000000000,
         bounce: false,
-        flags: 1,
+        flags: 1, /// when using flag 1 forward fees are charged from the sender, not the recipient
         payload: "",
     });
 
@@ -217,7 +236,9 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            endpoints: ["net1.ton.dev", "net5.ton.dev"],
+            // To migrate to Free TON network, specify its endpoints here 
+            // https://docs.ton.dev/86757ecb2/p/85c869-networks
+            endpoints: ["net1.ton.dev", "net5.ton.dev"], 
         },
     });
     try {
