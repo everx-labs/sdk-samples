@@ -11,6 +11,7 @@ const ACCOUNT_TYPE_ACTIVE = 1;
 // Address to send tokens to
 const recipient = '0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13';
 
+// Source code of multisig wallet
 const multisigContractPackage = {
     // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
     abi: require('../../../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
@@ -27,10 +28,9 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
             network: {
                 //Read more about NetworkConfig https://docs.ton.dev/86757ecb2/v/0/p/5328db-configure-sdk
                 endpoints: ['net1.ton.dev', 'net5.ton.dev'],
-                message_retries_count: 3,
-                message_processing_timeout: 60000,
-                network_retries_count: 2,
-                reconnect_timeout: 3
+                // how many retries SDK will perform in case of message delivery failure
+                message_retries_count: 3, 
+                message_processing_timeout: 60000, 
             }
         });
 
@@ -42,6 +42,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         const keyPair = JSON.parse(fs.readFileSync(keyPairFile, 'utf8'));
 
         // Here we create deployMessage simply to get account address and check its balance
+        // if you know your wallet address, you do not need this step. 
         const { address } = await tonClient.abi.encode_message({
             abi: {
                 type: 'Contract',
@@ -70,7 +71,9 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
             }
         });
         console.log(address);
-        // Check account balance
+
+        // Let's check if the account is deployed and check its balance
+        // See more about GraphQL API documentation here https://docs.ton.dev/86757ecb2/p/793337-ton-os-api
         let { result } = await tonClient.net.query_collection({
             collection: 'accounts',
             filter: {
@@ -91,10 +94,15 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
             process.exit(1);
         }
 
+        // Let's run `getCustodians` get method
+        // We need to perform 3 steps: download the wallet's state, encode a message that will request data,
+        // and execute it locally on the wallet's state to receive the data
+
         const [account, message] = await Promise.all([
-            // Download the latest state (BOC)
+            // Download the latest state (so-called BOC)
             // See more info about query method here 
             // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
+            // See more about BOC here https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/11b639
             tonClient.net.query_collection({
                 collection: 'accounts',
                 filter: { id: { eq: address } },
@@ -104,7 +112,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
                 .catch(() => {
                     throw Error(`Failed to fetch account data`)
                 }),
-            // Encode the message with `getTimestamp` call
+            // Encode the message with `getCustodians` call
             tonClient.abi.encode_message({
                 abi: {
                     type: 'Contract',
@@ -132,6 +140,14 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
         console.log('Сustodians list:', response.decoded.output.custodians);
 
 
+        // Transfer tokens from your wallet   
+        //
+        // Attention! If you have more than 1 custodian in your multisig you need to perform the transfer
+        // in 2 steps:     
+        // 1. Run `submitTransaction` function with the first cusdodian to initiate a transfer and get transId from its result
+        // 2. Confirm the transaction with `confirmTransactionz function passing the confirming `transId` with 
+        // `reqConfirms` number of custodians. 
+
         // Prepare input parameter for 'submitTransaction' method of multisig wallet
         const submitTransactionParams = {
             dest: recipient,
@@ -141,9 +157,7 @@ const ACCOUNT_TYPE_UNINITIALIZED = 0;
             payload: ''
         };
 
-        // Run 'submitTransaction' method of multisig wallet       
         // Create run message 
-
         console.log("Call `submitTransaction` function");
         const params = {
             send_events: false,
