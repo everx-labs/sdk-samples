@@ -39,9 +39,13 @@ async function main(client) {
 
     console.log(`Contract run transaction with output ${response.decoded.output}, ${response.transaction.id}`);
 
-    // Execute `getTimestamp` get method  (execute the message locally on TVM)
+
+    // Read local variable `timestamp` with a get method `getTimestamp`
+    // This can be done with `runLocal` function. The execution of runLocal is performed off-chain and does not 
+    // cost any gas.
     response = await helloAcc.runLocal("getTimestamp", {});
-    console.log("Contract reacted to your getTimestamp:", response.decoded.output);
+    console.log("Contract reacted to your getTimestamp:", response.decoded.output)
+
 }
 
 (async () => {
@@ -58,8 +62,8 @@ async function main(client) {
     } catch (error) {
         if (error.code === 504) {
             console.error(`
-Network is inaccessible.
-You have to start TON OS SE using \`tondev se start\`
+                Network is inaccessible.
+                You have to start TON OS SE using \`tondev se start\`
 `);
         } else {
             console.error(error);
