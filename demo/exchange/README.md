@@ -1,4 +1,4 @@
-# Integrates Free TON into exchange backend
+# Integrate Free TON into exchange backend
 
 In this example we demonstrate how to integrate Free TON into an exchange backend.
 
