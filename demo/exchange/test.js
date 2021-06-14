@@ -90,23 +90,26 @@ async function listTransfers(client) {
 /**
  *
  * @param {BlockIterator} blocks
+ * @param {Set.<string>} reported
  */
-function checkForStoppedBranches(blocks) {
+function checkForStoppedBranches(blocks, reported) {
     const nowSeconds = Math.round(Date.now() / 1000);
     blocks._branches.forEach((branch) => {
         const lagInSeconds = nowSeconds - branch.updateTime;
-        if (lagInSeconds > 120) {
-            console.log(`\nBranch with block ${branch.blockId} of shard ${branch.shard.prefixBits} has a lag of ${lagInSeconds} seconds: seems to be stopped.`);
+        if (lagInSeconds > 120 && !reported.has(branch.blockId)) {
+            reported.add(branch.blockId);
+            console.log(`\nBranch with block ${branch.blockId} of shard ${branch.shard.prefixBits} has a lag of ${lagInSeconds} seconds: seems to missing block.`);
         }
     });
 }
 
 async function testBlocks(client) {
-    const startTime = Math.round(Date.parse("2021-06-02T07:00:00.000+03:00") / 1000);
+    const startTime = Math.round(Date.parse("2021-06-04T01:05:00.000+00:00") / 1000);
     const endTime = Math.round(Date.now() / 1000);
 
     const ids = [];
     const visited = new Set();
+    const reported = new Set();
 
     console.log("First Pass");
     let blocks = await BlockIterator.start(
@@ -126,7 +129,7 @@ async function testBlocks(client) {
                 visited.add(block.id);
             }
         }
-        checkForStoppedBranches(blocks);
+        checkForStoppedBranches(blocks, reported);
     }
 
     console.log("Second Pass");
@@ -202,7 +205,7 @@ async function testTransfers(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            endpoints: ["net.ton.dev"],
+            endpoints: ["of1.net.validators.tonlabs.io"],
             // endpoints: ["main.ton.dev"],
         },
     });
