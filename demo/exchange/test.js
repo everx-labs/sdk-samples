@@ -71,7 +71,10 @@ async function listTransfers(client) {
         const shardFilter = Shard.parse(argv.shift() || "");
         console.log(`\n🏁 start from ${time} ${new Date(time * 1000).toUTCString()} (${time}))\n`);
 
-        transfers = await TransferIterator.start(client, time, shardFilter, []);
+        transfers = await TransferIterator.start(client, {
+            shard: shardFilter,
+            startBlockTime: time,
+        }, []);
     }
 
     for (let i = 0; i < count; i += 1) {
@@ -84,12 +87,29 @@ async function listTransfers(client) {
     console.log(`\n💾 suspended state saved to ${suspendedPath}\n`);
 }
 
+/**
+ *
+ * @param {BlockIterator} blocks
+ * @param {Set.<string>} reported
+ */
+function checkForStoppedBranches(blocks, reported) {
+    const nowSeconds = Math.round(Date.now() / 1000);
+    blocks._branches.forEach((branch) => {
+        const lagInSeconds = nowSeconds - branch.updateTime;
+        if (lagInSeconds > 120 && !reported.has(branch.blockId)) {
+            reported.add(branch.blockId);
+            console.log(`\nBranch with block ${branch.blockId} of shard ${branch.shard.prefixBits} has a lag of ${lagInSeconds} seconds: seems to missing block.`);
+        }
+    });
+}
+
 async function testBlocks(client) {
-    const startTime = 1622636544;
-    const endTime = startTime + 30 * 60;
+    const startTime = Math.round(Date.parse("2021-06-04T01:05:00.000+00:00") / 1000);
+    const endTime = Math.round(Date.now() / 1000);
 
     const ids = [];
     const visited = new Set();
+    const reported = new Set();
 
     console.log("First Pass");
     let blocks = await BlockIterator.start(
@@ -99,6 +119,9 @@ async function testBlocks(client) {
     while (!blocks.eof()) {
         const block = await blocks.next();
         if (block) {
+            const percent = Math.round((block.gen_utime - startTime) / (endTime - startTime) * 100);
+            const time = new Date(block.gen_utime * 1000);
+            process.stdout.write(`\r${percent}%  ${time.toUTCString()}   `);
             ids.push(block.id);
             if (visited.has(block.id)) {
                 console.log("Duplicated", block.id);
@@ -106,6 +129,7 @@ async function testBlocks(client) {
                 visited.add(block.id);
             }
         }
+        checkForStoppedBranches(blocks, reported);
     }
 
     console.log("Second Pass");
@@ -116,6 +140,7 @@ async function testBlocks(client) {
     while (!blocks.eof()) {
         const block = await blocks.next();
         if (block) {
+            process.stdout.write(`\r${Math.round((block.gen_utime - startTime) / (endTime - startTime) * 100)}%  `);
             if (block.id !== ids.shift()) {
                 console.log("Wrong order", block.id);
             }
@@ -145,7 +170,7 @@ async function testTransfers(client) {
     while (!transfers.eof()) {
         const transfer = await transfers.next();
         if (transfer) {
-            const id = `${transfer.transaction} ${transfer.message}`
+            const id = `${transfer.transaction} ${transfer.message}`;
             ids.push(id);
             if (visited.has(id)) {
                 console.log("Duplicated", id);
@@ -168,7 +193,7 @@ async function testTransfers(client) {
     while (!transfers.eof()) {
         const transfer = await transfers.next();
         if (transfer) {
-            const id = `${transfer.transaction} ${transfer.message}`
+            const id = `${transfer.transaction} ${transfer.message}`;
             if (id !== ids.shift()) {
                 console.log("Wrong order", id);
             }
@@ -180,14 +205,14 @@ async function testTransfers(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            endpoints: ["net.ton.dev"],
+            endpoints: ["of1.net.validators.tonlabs.io"],
             // endpoints: ["main.ton.dev"],
         },
     });
     try {
         // BlockIterator.debugMode = true;
-        // await testBlocks(client);
-        await testTransfers(client);
+        await testBlocks(client);
+        // await testTransfers(client);
         process.exit(0);
     } catch (error) {
         console.error(error);
