@@ -8,6 +8,9 @@ const { queryByIds } = require("./blocks");
  *      lt: number,
  *      account_addr: string,
  *      balance_delta: string,
+ *      bounce: {
+ *          bounce_type: number,
+ *      },
  *      in_message: ?Message,
  *      out_messages: Message[],
  *  }} Transaction
@@ -40,6 +43,7 @@ const { queryByIds } = require("./blocks");
  *      message: string,
  *      account: string,
  *      isDeposit: boolean,
+ *      isBounced: boolean,
  *      value: string,
  *      counterparty: string,
  *      time: number,
@@ -63,12 +67,14 @@ function wanted(account, accountFilter) {
  */
 function getTransfersFromTransaction(transaction) {
     const transfers = [];
+    const isBounced = transaction.bounce && transaction.bounce.bounce_type === BounceType.Ok;
     const inbound = transaction.in_message;
     if (inbound && Number(inbound.value) > 0) {
         transfers.push({
             account: transaction.account_addr,
             transaction: transaction.id,
             message: inbound.id,
+            isBounced,
             isDeposit: true,
             counterparty: inbound.src,
             value: inbound.value,
@@ -81,6 +87,7 @@ function getTransfersFromTransaction(transaction) {
                 account: transaction.account_addr,
                 transaction: transaction.id,
                 message: outbound.id,
+                isBounced,
                 isDeposit: false,
                 counterparty: outbound.dst,
                 value: outbound.value,
@@ -92,6 +99,11 @@ function getTransfersFromTransaction(transaction) {
 
 }
 
+const BounceType = {
+    NegFunds: 0,
+    NoFunds: 1,
+    Ok: 2,
+};
 
 /**
  * @property {TonClient} client
@@ -222,6 +234,7 @@ class InconsistentTransactionIterator {
             account_addr
             now
             balance_delta(format:DEC)
+            bounce { bounce_type }
             in_message { 
                 value(format:DEC)
                 msg_type
@@ -289,4 +302,5 @@ class InconsistentTransactionIterator {
 module.exports = {
     InconsistentTransactionIterator,
     getTransfersFromTransaction,
+    BounceType,
 };
