@@ -205,7 +205,7 @@ async function main(client) {
         const client = new TonClient({
             network: { 
                 // Local node URL here
-                server_address: 'http://localhost'
+                endpoints: ['http://localhost']
             }
         });
         console.log("Hello localhost TON!");
