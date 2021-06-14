@@ -71,9 +71,16 @@ async function main(client) {
             endpoints: ["http://localhost"],
         },
     });
-    console.log("Hello localhost TON!");
-    await main(client);
-    process.exit(0);
-
+    try {
+        console.log("Hello localhost TON!");
+        await main(client);
+        process.exit(0);
+    } catch (error) {
+        if (error.code === 504) {
+            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+        } else {
+            console.error(error);
+        }
+    }
     client.close();
 })();
