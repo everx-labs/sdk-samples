@@ -154,6 +154,7 @@ class TransferIterator {
             account_addr
             now
             balance_delta(format:DEC)
+            bounce { bounce_type }
             in_message { 
                 id
                 value(format:DEC)
