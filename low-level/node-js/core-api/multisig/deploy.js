@@ -25,9 +25,12 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 (async () => {
     try {
         TonClient.useBinaryLibrary(libNode);
+        
+        //Read more about NetworkConfig https://docs.ton.dev/86757ecb2/v/0/p/5328db-configure-sdk
+
         const tonClient = new TonClient({
             network: {
-                server_address: 'net.ton.dev'
+                endpoints: ['net1.ton.dev', 'net5.ton.dev']
             }
         });
 
