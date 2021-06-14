@@ -147,7 +147,8 @@ async function depositAccount(address, amount, client) {
 
 /**
  * Demonstrates how to create wallet account,
- * deposits some value to it
+ * deposits some values to it,
+ * withdraw some value from it
  * and then read all transfers related to this account
  */
 async function main(client) {
@@ -172,6 +173,7 @@ async function main(client) {
 
     const startBlockTime = Date.now() / 1000;
 
+    // Prepay contract before deploy.
     console.log(`Sending deploy fee to new wallet at ${walletAddress}`);
     await depositAccount(walletAddress, 10000000000, client);
 
@@ -186,6 +188,7 @@ async function main(client) {
         },
     });
 
+    // Lets make a couple deposits
     console.log("Depositing 6 token...");
     await depositAccount(walletAddress, 6000000000, client);
 
@@ -201,6 +204,8 @@ async function main(client) {
         flags: 1,
         payload: "",
     });
+
+    // Now we perform withdraw operation. Let's withdraw 3 tokens
     console.log("Withdrawing 3 tokens...");
     await wallet.run("sendTransaction", {
         dest: giverAddress,
