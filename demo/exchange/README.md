@@ -1,4 +1,4 @@
-# Integrates Free TON into exchange backend
+# Integrate Free TON into exchange backend
 
 In this example we demonstrate how to integrate Free TON into an exchange backend.
 
@@ -12,7 +12,7 @@ It covers such use-cases as:
 To run this sample you need to have a multisig wallet with positive balance,
 already deployed to the Developer Network. Specify its private key at the launch
 
-Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisighttps://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
+Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
 
 **To migrate to Free TON you need to update the endpoints specified in TonClient configuration
 to Free TON endpoints.**
