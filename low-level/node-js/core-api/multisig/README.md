@@ -60,3 +60,13 @@ In this step we:
 1. Get the custodians list.
 2. Send a transaction to transfer 0.1 token to pre-defined address.
 3. Output sent transaction information.
+
+## Read and print the wallet's withdraws
+
+You can find the source code in `print-messages.js`. In order to run it, use:
+                                                     
+```sh
+node print-messages.js
+```
+
+In this step we read the wallet's withdraws (filter the account's internal outbound messages and paginate through them) and print them to the conlose.
