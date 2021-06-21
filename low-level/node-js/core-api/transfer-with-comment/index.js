@@ -29,7 +29,7 @@ const multisigContractPackage = {
         const tonClient = new TonClient({
             network: {
                 //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
-                endpoints: ["net.ton.dev"],
+                endpoints: ["net1.ton.dev","net5.ton.dev"],
                 message_retries_count: 3,
             },
             abi: {
