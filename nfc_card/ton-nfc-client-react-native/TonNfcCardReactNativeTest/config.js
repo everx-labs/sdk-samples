@@ -4,7 +4,7 @@ const config = {
     pass: 'integration',
     networks: {
         ton: {
-            servers: ['https://net.ton.dev/' /*'https://cinet.tonlabs.io'*/],
+            servers: ['net1.ton.dev', 'net5.ton.dev' /*'https://cinet.tonlabs.io'*/],
             log_verbose: false,
             messageRetriesCount: 3 ,
             messageExpirationTimeout: 20000

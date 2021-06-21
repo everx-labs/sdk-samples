@@ -30,7 +30,7 @@ const keyPairFile = path.join(__dirname, "keyPair.json");
     // (see README in  https://github.com/tonlabs/ton-client-js )
     TonClient.useBinaryLibrary(libNode);
 
-    const client = new TonClient({ network: { endpoints: ["net.ton.dev"] } });
+    const client = new TonClient({ network: { endpoints: ["net1.ton.dev", "net5.ton.dev"] } });
     try {
 
         const { crypto } = client;
