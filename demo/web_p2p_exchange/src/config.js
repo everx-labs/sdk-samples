@@ -7,9 +7,9 @@ const OFFER_PACKAGE = require('./ton-contracts/Offer.package')
 const GIVER_PACKAGE = require('./ton-contracts/giver.package')
 
 /*
- * Change TON_SERVER_ADDRESS if you do not use TON OS SE
+ * Change TON_ENDPOINTS if you do not use TON OS SE
  */
-const TON_SERVER_ADDRESS = 'http://0.0.0.0' // or 'https://net.ton.dev'
+const TON_ENDPOINTS = ['http://0.0.0.0'] // or ['net1.ton.dev', 'net5.ton.dev']
 const TON_MESSAGE_PROCESSING_TIMEOUT = 60000
 const TON_MESSAGE_RETRIES_COUNT = 5
 
@@ -30,7 +30,7 @@ const WALLET_INITIAL_VALUE = 20 * 1e9 // Buyer and Seller wallets will be deploy
 module.exports = {
     clientParams: {
         network: {
-            server_address: TON_SERVER_ADDRESS,
+            endpoints: TON_ENDPOINTS,
             message_retries_count: TON_MESSAGE_RETRIES_COUNT,
         },
         abi: {
