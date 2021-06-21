@@ -12,7 +12,7 @@ const path = require('path')
  */
 
 const inMsg = "9add67505ac1cb530414ad6c3979865475722f25506c364df3a9a5c71c93e5ec";
-const endpoints = ['https://net1.ton.dev', 'https://net5.ton.dev'];
+const endpoints = ['net1.ton.dev', 'net5.ton.dev'];
 // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
 const msigAbiFileName = 'SafeMultisigWallet.abi.json'
 
