@@ -23,7 +23,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 TonClient.useBinaryLibrary(libNode);
 
 (async () => {
-    const client = new TonClient({ network: { endpoints: ["net.ton.dev"] } });
+    const client = new TonClient({ network: { endpoints: ["net1.ton.dev", "net5.ton.dev"] } });
     try {
         if (!fs.existsSync(keyPairFile)) {
             console.log("Please use preparation.js to generate key pair and seed phrase");

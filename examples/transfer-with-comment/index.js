@@ -30,7 +30,8 @@ TonClient.useBinaryLibrary(libNode);
     const client = new TonClient({
         network: {
             //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
-            server_address: "net.ton.dev",
+            // server_address: "net.ton.dev",
+            endpoints: ["net1.ton.dev", "net5.ton.dev"],
             message_retries_count: 3,
         },
         abi: {
