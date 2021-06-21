@@ -51,7 +51,7 @@ async function getExistingDePoolAccount(client, validatorWallet) {
 
 (async () => {
     // Use test network
-    const client = new TonClient({ network: { endpoints: ["http://net.ton.dev"] } });
+    const client = new TonClient({ network: { endpoints: ["net1.ton.dev", "net5.ton.dev"] } });
     try {
         let multisigAccount = await getExistingMultisigAccount(client);
         let dePoolAccount = await getExistingDePoolAccount(client, multisigAccount.address);
