@@ -1,0 +1,16 @@
+{
+    "name": "encryption-box-example",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@tonclient/core": "^1.17.0",
+        "@tonclient/lib-node": "^1.17.0"
+    }
+}
