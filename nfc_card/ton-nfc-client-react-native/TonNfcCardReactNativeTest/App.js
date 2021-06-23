@@ -33,19 +33,18 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-//import NfcHandler from 'react-native-new-ton-nfc-card-lib';
 
-import NfcCardModule from 'ton-nfc-client';
-
-
-const recovery = require('./recovery')
-const recoveryRegistration = require('./recoveryRegistration')
+import {NfcCardModuleWrapper} from 'ton-nfc-client';
+//const recovery = require('./recovery')
+//const recoveryRegistration = require('./recoveryRegistration')
 //const testMultisigWithTwoCards = require('./testMultisigWithTwoCards')
 const findActivationDataPiece = require('./activationData')
 import NfcWrapper from "./NfcWrapper";
 
 import Toast from 'react-native-simple-toast';
 
+
+const nfcCardNativeWrapper = new NfcCardModuleWrapper();
 
 function Separator() {
   return <View style={styles.separator}/>;
@@ -569,6 +568,13 @@ export default class HelloWorldApp extends Component {
             </View>
             <Separator/>
 
+            <View>
+              <Button onPress={() => {
+                nfcWrapper.getHashes()
+              }} title="getHashes"/>
+            </View>
+            <Separator/>
+
             <Separator/>
             <Separator/>
 
@@ -700,7 +706,7 @@ export default class HelloWorldApp extends Component {
 
             <View>
               <Button onPress={() => {
-                NfcCardModule.getKeyChainDataAboutAllKeys().then((result) => {
+                nfcCardNativeWrapper.getKeyChainDataAboutAllKeys().then((result) => {
                   this.setState({keyData: JSON.parse(result).keysData})
                 })
                     .catch((error) => {
@@ -753,6 +759,11 @@ export default class HelloWorldApp extends Component {
             </View>
             <Separator/>
 
+            <View>
+              <Button onPress={() => {nfcWrapper.getHmac("0")}
+            } title="getHmac"/>
+            </View>
+            <Separator/>
 
             <View>
               <Dialog.Container visible={this.state.isAddKeyIntoKeyChainDialogVisible}>
@@ -762,7 +773,7 @@ export default class HelloWorldApp extends Component {
                               onChangeText={(newKey) => this.setState({newKey})}></Dialog.Input>
                 <Dialog.Button label="Close" onPress={() => this.showAddKeyIntoKeyChainDialog(false)}/>
                 <Dialog.Button label="Submit" onPress={() => {
-                  NfcCardModule.addKeyIntoKeyChain(this.state.newKey)
+                  nfcCardNativeWrapper.addKeyIntoKeyChain(this.state.newKey)
                       .then((res) => {
                         Alert.alert(
                             'Response from card',
@@ -840,7 +851,7 @@ export default class HelloWorldApp extends Component {
                               onChangeText={(newKeyForChangeKey) => this.setState({newKeyForChangeKey})}></Dialog.Input>
                 <Dialog.Button label="Close" onPress={() => this.showChangeKeyFromKeyChainDialog(false)}/>
                 <Dialog.Button label="Submit" onPress={() => {
-                  NfcCardModule.changeKeyInKeyChain(this.state.newKeyForChangeKey, this.state.keyData[this.state.oldKeyIndex].hmac)
+                  nfcCardNativeWrapper.changeKeyInKeyChain(this.state.newKeyForChangeKey, this.state.keyData[this.state.oldKeyIndex].hmac)
                       .then((res) => {
                         Alert.alert(
                             'Response from card',
@@ -883,7 +894,7 @@ export default class HelloWorldApp extends Component {
                            message={"Enter key index"}
                            hintInput={"Key index..."}
                            submitInput={(keyIndexToDelete) => {
-                            NfcCardModule.deleteKeyFromKeyChain(this.state.keyData[keyIndexToDelete].hmac)
+                            nfcCardNativeWrapper.deleteKeyFromKeyChain(this.state.keyData[keyIndexToDelete].hmac)
                                  .then((result) => {
                                    Alert.alert(
                                        'Response from card',
