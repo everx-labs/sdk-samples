@@ -1298,6 +1298,26 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
+"@tonclient/core@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@tonclient/core/-/core-1.15.0.tgz#1f49212c2f07a1f05a3a612e25dadea48eab27a7"
+  integrity sha512-DjHCnfevMWjyRIRvJUY55Q6KigYEVRX4x5iNBjVUoN1YYR/pHy0TL/QIZGVuQ7ZlMqtcDUJtSoxjp9eWw8Kn6Q==
+
+"@tonclient/lib-node@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@tonclient/lib-node/-/lib-node-1.15.0.tgz#f6a5fa520dbe86ac1c1360024d49224f2d2fdad0"
+  integrity sha512-e6GYa7v/TaqfbHWkuayUSWWLM4Qm87YvsK1dnba1+tJbUq8WHKO0jvzXIWgcfn1vNiZx7h7I4DKe+NlqbVprTw==
+
+"@tonclient/lib-react-native@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@tonclient/lib-react-native/-/lib-react-native-1.15.0.tgz#a91d8254b9430128766d5cd2d43f226e5e3420bc"
+  integrity sha512-slP5n9KFsASUaKpOHrTO8O0Ev/nkRbMAR8CMKD5krydlg5q203VHQzMK7aFIL6RpDiycF/v9JHO7jTGzWm4qow==
+
+"@tonclient/lib-web@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@tonclient/lib-web/-/lib-web-1.15.0.tgz#7f0c464943001d5a2a8b34f8e03410f95ff0c4fe"
+  integrity sha512-GOojdh3tZfZCIKHEL89oIqTpOmYK85pYSOBdoXxqysDBAA6oogKlJEoXMAQBIhYCmEs2KUqJEtuneQoC7W1jwA==
+
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.9"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.9.tgz#77e59d438522a6fb898fa43dc3455c6e72f3963d"
@@ -6169,9 +6189,9 @@ normalize-path@^3.0.0:
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
 
 normalize-url@^4.1.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.0.tgz#453354087e6ca96957bd8f5baf753f5982142129"
-  integrity sha512-2s47yzUxdexf1OhyRi4Em83iQk0aPvwTddtFz4hnSSw9dCEsLEGf6SwIO8ss/19S9iBb5sJaOuTvTGDeZI00BQ==
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.1.tgz#0dd90cf1288ee1d1313b87081c9a5932ee48518a"
+  integrity sha512-9UZCFRHQdNrfTpGg8+1INIg93B6zE0aXMVFkw1WFwvO4SlZywU6aLg5Of0Ap/PgcbSw4LNxvMWXMeugwMCX0AA==
 
 npm-run-path@^2.0.0:
   version "2.0.2"
@@ -8064,8 +8084,15 @@ ton-client-react-native-js@^0.26.0:
   dependencies:
     ton-client-js "^0"
 
-"ton-nfc-client@file:../ton-nfc-client":
+"ton-nfc-client@git+https://github.com/tonlabs/ton-nfc-client.git":
   version "1.0.0"
+  uid "0769d820e1707b45bfac302dac276f0276e43f6d"
+  resolved "git+https://github.com/tonlabs/ton-nfc-client.git#0769d820e1707b45bfac302dac276f0276e43f6d"
+  dependencies:
+    "@tonclient/core" "1.15.0"
+    "@tonclient/lib-node" "1.15.0"
+    "@tonclient/lib-react-native" "1.15.0"
+    "@tonclient/lib-web" "1.15.0"
 
 tough-cookie@^2.3.3, tough-cookie@~2.5.0:
   version "2.5.0"
