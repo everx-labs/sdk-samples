@@ -134,7 +134,7 @@ const testMultisigWithTwoCards = async () => {
     const ton = new TONClient();
 
     ton.config.setData({
-        servers: ['net1.ton.dev', 'net5.ton.dev' /*'cinet.tonlabs.io'*/],
+        servers: ['net.ton.dev'/*'cinet.tonlabs.io'*/],
     });
 
     ton.setup();
