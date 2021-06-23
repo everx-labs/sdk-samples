@@ -1298,6 +1298,26 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
+"@tonclient/core@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@tonclient/core/-/core-1.15.0.tgz#1f49212c2f07a1f05a3a612e25dadea48eab27a7"
+  integrity sha512-DjHCnfevMWjyRIRvJUY55Q6KigYEVRX4x5iNBjVUoN1YYR/pHy0TL/QIZGVuQ7ZlMqtcDUJtSoxjp9eWw8Kn6Q==
+
+"@tonclient/lib-node@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@tonclient/lib-node/-/lib-node-1.15.0.tgz#f6a5fa520dbe86ac1c1360024d49224f2d2fdad0"
+  integrity sha512-e6GYa7v/TaqfbHWkuayUSWWLM4Qm87YvsK1dnba1+tJbUq8WHKO0jvzXIWgcfn1vNiZx7h7I4DKe+NlqbVprTw==
+
+"@tonclient/lib-react-native@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@tonclient/lib-react-native/-/lib-react-native-1.15.0.tgz#a91d8254b9430128766d5cd2d43f226e5e3420bc"
+  integrity sha512-slP5n9KFsASUaKpOHrTO8O0Ev/nkRbMAR8CMKD5krydlg5q203VHQzMK7aFIL6RpDiycF/v9JHO7jTGzWm4qow==
+
+"@tonclient/lib-web@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@tonclient/lib-web/-/lib-web-1.15.0.tgz#7f0c464943001d5a2a8b34f8e03410f95ff0c4fe"
+  integrity sha512-GOojdh3tZfZCIKHEL89oIqTpOmYK85pYSOBdoXxqysDBAA6oogKlJEoXMAQBIhYCmEs2KUqJEtuneQoC7W1jwA==
+
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.9"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.9.tgz#77e59d438522a6fb898fa43dc3455c6e72f3963d"
@@ -4089,9 +4109,9 @@ hermes-profile-transformer@^0.0.6:
     source-map "^0.7.3"
 
 hosted-git-info@^2.1.4:
-  version "2.8.8"
-  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.8.8.tgz#7539bd4bc1e0e0a895815a2e0262420b12858488"
-  integrity sha512-f/wzC2QaWBs7t9IYqB4T3sR1xviIViXJRJTWBlx2Gf3g0Xi5vI7Yy4koXQ1c9OYDGHN9sBy1DQ2AB8fqZBWhUg==
+  version "2.8.9"
+  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.8.9.tgz#dffc0bf9a21c02209090f2aa69429e1414daf3f9"
+  integrity sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==
 
 html-encoding-sniffer@^2.0.1:
   version "2.0.1"
@@ -8064,8 +8084,15 @@ ton-client-react-native-js@^0.26.0:
   dependencies:
     ton-client-js "^0"
 
-"ton-nfc-client@file:../ton-nfc-client":
+"ton-nfc-client@git+https://github.com/tonlabs/ton-nfc-client.git":
   version "1.0.0"
+  uid "0769d820e1707b45bfac302dac276f0276e43f6d"
+  resolved "git+https://github.com/tonlabs/ton-nfc-client.git#0769d820e1707b45bfac302dac276f0276e43f6d"
+  dependencies:
+    "@tonclient/core" "1.15.0"
+    "@tonclient/lib-node" "1.15.0"
+    "@tonclient/lib-react-native" "1.15.0"
+    "@tonclient/lib-web" "1.15.0"
 
 tough-cookie@^2.3.3, tough-cookie@~2.5.0:
   version "2.5.0"
