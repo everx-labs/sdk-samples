@@ -1,21 +1,21 @@
 /**
  * This sample demonstrates how to perform subsequent blockchain deposits or withdraws reading.
  * You can read either all blockchain transfers, or transfers of specified accounts.
- * 
+ *
  * Also, for convenience, this sample includes the steps of wallet deploy, deposit and withdraw.
- * 
+ *
  * To run this sample you need to have a multisig wallet with positive balance,
  * already deployed to the Developer Network. Specify its private key at the launch
- * 
+ *
  * `node index privateKey`
- * 
+ *
  * Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisighttps://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
- * 
+ *
  * To migrate to Free TON you need to update the endpoints specified in TonClient configuration
  * to Free TON endpoints.
  *
  * See the list of supported networks and endpoints here https://docs.ton.dev/86757ecb2/p/85c869-networks
- * 
+ *
  * */
 
 const { libNode } = require("@tonclient/lib-node");
@@ -96,6 +96,92 @@ async function iterateTransfers(client) {
     for (let i = 0; i < 40; i += 1) {
         printTransfer(await resumed.next());
     }
+}
+
+/**
+ *
+ * @param {Transaction} transaction
+ */
+function printTransfers(transaction) {
+    for (const transfer of transaction.transfers) {
+        if (transfer.isDeposit) {
+            console.log(`Account ${transaction.account_addr} deposits ${transfer.value} from ${transfer.counterparty} at ${transaction.now}`);
+        } else {
+            console.log(`Account ${transaction.account_addr} withdraws ${transfer.value} to ${transfer.counterparty} at ${transaction.now}`);
+        }
+    }
+}
+
+/**
+ * Demonstrates how to iterate 100 transactions since the specified time.
+ *
+ * Also this example demonstrates how to suspend iteration
+ * and then resume it from the suspension point.
+ *
+ */
+async function iterateTransactions(client) {
+    const startTime = Math.round(new Date(2021, 4, 27, 0).getTime() / 1000);
+
+    // Starts transfer iterator from the specific time.
+    //
+    // Also we can specify shard filter.
+    // Shard filter is a bitmask for the first high bits of the account address.
+    // This can significantly reduce time ans loading factor for the data retrieval.
+    // You can scale transfer iterator by starting several processes with several
+    // shard filters.
+    //
+    // In addition to the shard filter you can optionally specify a list of accounts address you
+    // are interested in.
+    //
+    // Transfer iterator will return only transfers related to accounts
+    // located in shards that satisfy the shard filter and included into the account filter.
+    // If you specify an empty shard filter and empty account filter,
+    // you will iterate all transfers for all accounts since the specified time.
+    //
+    const iterator = await client.net.create_transaction_iterator({
+        start_time: startTime,
+        include_transfers: true,
+    });
+
+    let resume_state = null;
+
+    // Reads first 100 transfers and print their details
+    for (let i = 0; i < 100; i += 1) {
+        const next = await client.net.iterator_next({
+            iterator: iterator.handle,
+            limit: 10,
+            return_resume_state: true,
+        });
+        for (const transaction of next.items) {
+            printTransfers(transaction);
+        }
+        resume_state = next.resume_state;
+        if (!next.has_more) {
+            break;
+        }
+    }
+    await client.net.remove_iterator(iterator);
+
+    // Suspended state is just a plain object so you can
+    // safely serialize it into file and use it later to resume
+    // iteration.
+
+    console.log("\n====================== Resume");
+
+    // Creates new iterator that will continue iteration from
+    // the previously suspended state.
+    const resumed = await client.net.resume_transaction_iterator({
+        resume_state,
+    });
+    for (let i = 0; i < 40; i += 1) {
+        const next = await client.net.iterator_next({
+            iterator: resumed.handle,
+        });
+        for (const transaction of next.items) {
+            printTransfers(transaction);
+        }
+    }
+    await client.net.remove_iterator(resumed);
 }
 
 let _giver = null;
@@ -241,9 +327,9 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            // To migrate to Free TON network, specify its endpoints here 
+            // To migrate to Free TON network, specify its endpoints here
             // https://docs.ton.dev/86757ecb2/p/85c869-networks
-            endpoints: ["net1.ton.dev", "net5.ton.dev"], 
+            endpoints: ["net1.ton.dev", "net5.ton.dev"],
         },
     });
     try {
