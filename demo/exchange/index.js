@@ -42,6 +42,20 @@ function printTransfer(transfer) {
 }
 
 /**
+ * Prints transaction transfer details.
+ *
+ * @param {Transaction} transaction
+ * @param {TransactionTransfer} transfer
+ */
+function printTransactionTransfer(transaction, transfer) {
+    if (transfer.isDeposit) {
+        console.log(`Account ${transaction.account_addr} deposits ${transfer.value} from ${transfer.counterparty} at ${transaction.now}`);
+    } else {
+        console.log(`Account ${transaction.account_addr} withdraws ${transfer.value} to ${transfer.counterparty} at ${transaction.now}`);
+    }
+}
+
+/**
  * Demonstrates how to iterate 100 transfers since the specified time.
  *
  * Also this example demonstrates how to suspend iteration
@@ -322,7 +336,28 @@ async function main(client) {
             printTransfer(transfer);
         }
     }
+
+    // Iterate transfers using core
+    const iterator = await client.net.create_transaction_iterator({
+        start_time: startBlockTime,
+        end_time: Math.round(Date.now() / 1000),
+        shard_filter: [Shard.fromAddress(walletAddress)],
+        accounts_filter: [walletAddress],
+        include_transfers: true,
+    });
+    let has_more = true;
+    while (has_more) {
+        const next = await client.net.iterator_next({ iterator: iterator.handle });
+        for (const transaction of next.items) {
+            for (const transfer of transaction.transfers) {
+                printTransactionTransfer(transaction, transfer);
+            }
+        }
+        has_more = next.has_more;
+    }
+    await client.net.remove_iterator(iterator);
 }
+
 
 (async () => {
     const client = new TonClient({
