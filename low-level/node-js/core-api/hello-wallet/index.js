@@ -207,7 +207,7 @@ async function main(client) {
                 function_name: 'sendValue',
                 input: {
                     dest: randomAddress,
-                    amount: 100_000_000, // 0.001 token
+                    amount: 100_000_000, // 0.1 token
                     bounce: true,
                 },
             },
