@@ -4,7 +4,7 @@
 
 const { Account } = require("@tonclient/appkit");
 const { libNode } = require("@tonclient/lib-node");
-const { HelloContract } = require("./HelloContract.js");
+const { HelloWallet } = require("./HelloWallet.js")
 const {
     abiContract,
     signerKeys,
@@ -25,7 +25,7 @@ async function logEvents(params, response_type) {
  */
 async function main(client) {
     // Generate an ed25519 key pair for new account
-    const helloAcc = new Account(HelloContract, {
+    const helloAcc = new Account(HelloWallet, {
         signer: signerKeys(await client.crypto.generate_random_sign_keys()),
         client
     });
@@ -56,7 +56,7 @@ async function main(client) {
     // See more info about `wait_for_transaction` here
     // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#wait_for_transaction
     const deploy_processing_result = await client.processing.wait_for_transaction({
-            abi: abiContract(HelloContract.abi),
+            abi: abiContract(HelloWallet.abi),
             message: deployMessage.message,
             shard_block_id: shard_block_id,
             send_events: true,
@@ -70,7 +70,7 @@ async function main(client) {
 
     // Encode the message with `touch` function call
     const params = {
-        abi: abiContract(HelloContract.abi),
+        abi: abiContract(HelloWallet.abi),
         address,
         call_set: {
             function_name: "touch",
@@ -101,7 +101,7 @@ async function main(client) {
     // See more info about `wait_for_transaction` here
     // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#wait_for_transaction
     const touch_processing_result = await client.processing.wait_for_transaction({
-            abi: abiContract(HelloContract.abi),
+            abi: abiContract(HelloWallet.abi),
             message: encode_touch_result.message,
             shard_block_id: shard_block_id,
             send_events: true,
