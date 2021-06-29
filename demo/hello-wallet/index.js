@@ -54,7 +54,7 @@ async function main(client) {
         ).toString("hex");
     response = await helloAcc.run("sendValue", {
         dest: randomAddress,
-        amount: 100_000_000, // 0.001 token
+        amount: 100_000_000, // 0.1 token
         bounce: true,
     });
     console.log("Contract reacted to your sendValue, target address will recieve:", response.fees.total_output);
