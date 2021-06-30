@@ -1,4 +1,4 @@
-const { TonClient, abiContract, signerKeys } = require("@tonclient/core");
+const { TonClient, abiContract, signerKeys, signerNone } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
 const fs = require('fs');
 const path = require('path');
@@ -145,7 +145,7 @@ async function main(client) {
                 function_name: 'touch',
                 input: {}
             },
-            signer: signerKeys(helloKeys),
+            signer: signerNone(),
         }
     }
     // Call `touch` function
