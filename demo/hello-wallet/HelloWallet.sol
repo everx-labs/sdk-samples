@@ -36,9 +36,9 @@ contract HelloWallet {
 
     // Updates variable `timestamp` with current blockchain time.
     function touch() external {
-        // Each function that accepts external message must check that
-        // message is correctly signed.
-        require(msg.pubkey() == tvm.pubkey(), 102);
+        // Skip signature check
+        // require(msg.pubkey() == tvm.pubkey(), 102);
+        
         // Tells to the TVM that we accept this message.
         tvm.accept();
         // Update timestamp
