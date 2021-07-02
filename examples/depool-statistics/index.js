@@ -1,10 +1,13 @@
 const { Account } = require("@tonclient/appkit");
 const { libNode } = require("@tonclient/lib-node");
-const { DePoolContract } = require("./DePoolContract.js");
 const {
     signerNone,
     TonClient,
+    AggregationFn,
+    SortDirection,
 } = require("@tonclient/core");
+const { DePoolContract } = require("./DePoolContract.js");
+
 TonClient.useBinaryLibrary(libNode);
 
 async function printDePool(client, address) {
@@ -115,12 +118,15 @@ async function main(client) {
     ];
 
     // Count all known DePool contracts
-    const dePoolCount = (await client.net.query({
-        query: "query{aggregateAccounts(filter: {code_hash: {in: " + JSON.stringify(dePoolCodeHashes) + "}})}"
-    }))
-        .result
-        .data
-        .aggregateAccounts[0];
+    const dePoolCount = (await client.net.aggregate_collection({
+        collection: "accounts",
+        filter: {
+            code_hash: {
+                in: dePoolCodeHashes
+            },
+        },
+        fields: [ { field: "id", fn: AggregationFn.COUNT } ]
+    })).values[0];
 
     console.log("DePool Count:", dePoolCount);
 
@@ -141,7 +147,7 @@ async function main(client) {
                 }
             },
             result: "id",
-            order: [{path: "id", direction: "ASC"}],
+            order: [{ path: "id", direction: SortDirection.ASC }],
         })).result;
         for (let i = 0; i < dePools.length; i++) {
             const id = dePools[i].id;
