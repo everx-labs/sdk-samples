@@ -132,7 +132,7 @@ async function main(client) {
 
     // Query list of all known DePool contracts in main.ton.dev
     // There is impossible to get more than 50 records using single request, so we request in loop by portions,
-    // using field `id` as record number (sorting by this field).
+    // using field `id` (address) as record number (sorting by this field).
     let lastId = "";
     let dePools;
     do {
