@@ -263,7 +263,28 @@ module.exports = {
                     "inputs": [
                     ],
                     "outputs": [
-                        {"components":[{"name":"id","type":"uint64"},{"name":"supposedElectedAt","type":"uint32"},{"name":"unfreeze","type":"uint32"},{"name":"stakeHeldFor","type":"uint32"},{"name":"vsetHashInElectionPhase","type":"uint256"},{"name":"step","type":"uint8"},{"name":"completionReason","type":"uint8"},{"name":"stake","type":"uint64"},{"name":"recoveredStake","type":"uint64"},{"name":"unused","type":"uint64"},{"name":"isValidatorStakeCompleted","type":"bool"},{"name":"participantReward","type":"uint64"},{"name":"participantQty","type":"uint32"},{"name":"validatorStake","type":"uint64"},{"name":"validatorRemainingStake","type":"uint64"},{"name":"handledStakesAndRewards","type":"uint64"}],"name":"rounds","type":"map(uint64,tuple)"}
+                        {
+                            "components": [
+                                {"name":"id","type":"uint64"},
+                                {"name":"supposedElectedAt","type":"uint32"},
+                                {"name":"unfreeze","type":"uint32"},
+                                {"name":"stakeHeldFor","type":"uint32"},
+                                {"name":"vsetHashInElectionPhase","type":"uint256"},
+                                {"name":"step","type":"uint8"},
+                                {"name":"completionReason","type":"uint8"},
+                                {"name":"stake","type":"uint64"},
+                                {"name":"recoveredStake","type":"uint64"},
+                                {"name":"unused","type":"uint64"},
+                                {"name":"isValidatorStakeCompleted","type":"bool"},
+                                {"name":"participantReward","type":"uint64"},
+                                {"name":"participantQty","type":"uint32"},
+                                {"name":"validatorStake","type":"uint64"},
+                                {"name":"validatorRemainingStake","type":"uint64"},
+                                {"name":"handledStakesAndRewards","type":"uint64"}
+                            ],
+                            "name":"rounds",
+                            "type":"map(uint64,tuple)"
+                        }
                     ]
                 }
             ],
