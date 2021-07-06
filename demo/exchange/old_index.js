@@ -22,12 +22,26 @@ const { libNode } = require("@tonclient/lib-node");
 const { Account } = require("@tonclient/appkit");
 const { TonClient, signerKeys } = require("@tonclient/core");
 const { SafeMultisigContract } = require("./contracts");
+const { TransferIterator } = require("./lib/transfers");
 const { Shard } = require("./lib/sharding");
 
 TonClient.useBinaryLibrary(libNode);
 
 function seconds(ms) {
     return Math.round(ms / 1000);
+}
+
+/**
+ * Prints transfer details.
+ *
+ * @param {Transfer} transfer
+ */
+function printTransfer(transfer) {
+    if (transfer.isDeposit) {
+        console.log(`Account ${transfer.account} deposits ${transfer.value} from ${transfer.counterparty} at ${transfer.time}`);
+    } else {
+        console.log(`Account ${transfer.account} withdraws ${transfer.value} to ${transfer.counterparty} at ${transfer.time}`);
+    }
 }
 
 /**
@@ -45,13 +59,73 @@ function printTransactionTransfer(transaction, transfer) {
 }
 
 /**
- * Prints all transaction transfers details.
+ * Demonstrates how to iterate 100 transfers since the specified time.
+ *
+ * Also this example demonstrates how to suspend iteration
+ * and then resume it from the suspension point.
+ *
+ */
+async function iterateTransfers(client) {
+    const startTime = seconds(new Date(2021, 4, 27, 0).getTime());
+
+    // Starts transfer iterator from the specific time.
+    //
+    // Also we can specify shard filter.
+    // Shard filter is a bitmask for the first high bits of the account address.
+    // This can significantly reduce time ans loading factor for the data retrieval.
+    // You can scale transfer iterator by starting several processes with several
+    // shard filters.
+    //
+    // In addition to the shard filter you can optionally specify a list of accounts address you
+    // are interested in.
+    //
+    // Transfer iterator will return only transfers related to accounts
+    // located in shards that satisfy the shard filter and included into the account filter.
+    // If you specify an empty shard filter and empty account filter,
+    // you will iterate all transfers for all accounts since the specified time.
+    //
+    const transfers = await TransferIterator.start(
+        client,
+        {
+            startBlockTime: startTime,
+            shard: Shard.zero(),
+        },
+        [],
+    );
+
+    // Reads first 100 transfers and print their details
+    for (let i = 0; i < 100; i += 1) {
+        printTransfer(await transfers.next());
+    }
+
+    // We can suspend current iteration and get suspended state
+    const suspended = transfers.suspend();
+
+    // Suspended state is just a plain object so you can
+    // safely serialize it into file and use it later to resume
+    // iteration.
+
+    console.log("\n====================== Resume");
+
+    // Creates new iterator that will continue iteration from
+    // the previously suspended state.
+    const resumed = await TransferIterator.resume(client, [], suspended);
+    for (let i = 0; i < 40; i += 1) {
+        printTransfer(await resumed.next());
+    }
+}
+
+/**
  *
  * @param {Transaction} transaction
  */
 function printTransfers(transaction) {
     for (const transfer of transaction.transfers) {
-        printTransactionTransfer(transaction, transfer);
+        if (transfer.isDeposit) {
+            console.log(`Account ${transaction.account_addr} deposits ${transfer.value} from ${transfer.counterparty} at ${transaction.now}`);
+        } else {
+            console.log(`Account ${transaction.account_addr} withdraws ${transfer.value} to ${transfer.counterparty} at ${transaction.now}`);
+        }
     }
 }
 
@@ -100,78 +174,6 @@ async function depositAccount(address, amount, client) {
         flags: 1,
         payload: "",
     });
-}
-
-/**
- * Demonstrates how to iterate 100 transactions since the specified time.
- *
- * Also this example demonstrates how to suspend iteration
- * and then resume it from the suspension point.
- *
- */
-async function iterateTransactions(client) {
-    const startTime = seconds(new Date(2021, 4, 27, 0).getTime());
-
-    // Starts transfer iterator from the specific time.
-    //
-    // Also we can specify shard filter.
-    // Shard filter is a bitmask for the first high bits of the account address.
-    // This can significantly reduce time ans loading factor for the data retrieval.
-    // You can scale transfer iterator by starting several processes with several
-    // shard filters.
-    //
-    // In addition to the shard filter you can optionally specify a list of accounts address you
-    // are interested in.
-    //
-    // Transfer iterator will return only transfers related to accounts
-    // located in shards that satisfy the shard filter and included into the account filter.
-    // If you specify an empty shard filter and empty account filter,
-    // you will iterate all transfers for all accounts since the specified time.
-    //
-    const iterator = await client.net.create_transaction_iterator({
-        start_time: startTime,
-        include_transfers: true,
-    });
-
-    let resume_state = null;
-
-    // Reads first 100 transfers and print their details
-    for (let i = 0; i < 100; i += 1) {
-        const next = await client.net.iterator_next({
-            iterator: iterator.handle,
-            limit: 10,
-            return_resume_state: true,
-        });
-        for (const transaction of next.items) {
-            printTransfers(transaction);
-        }
-        resume_state = next.resume_state;
-        if (!next.has_more) {
-            break;
-        }
-    }
-    await client.net.remove_iterator(iterator);
-
-    // Suspended state is just a plain object so you can
-    // safely serialize it into file and use it later to resume
-    // iteration.
-
-    console.log("\n====================== Resume");
-
-    // Creates new iterator that will continue iteration from
-    // the previously suspended state.
-    const resumed = await client.net.resume_transaction_iterator({
-        resume_state,
-    });
-    for (let i = 0; i < 40; i += 1) {
-        const next = await client.net.iterator_next({
-            iterator: resumed.handle,
-        });
-        for (const transaction of next.items) {
-            printTransfers(transaction);
-        }
-    }
-    await client.net.remove_iterator(resumed);
 }
 
 /**
@@ -246,26 +248,24 @@ async function main(client) {
     // Wait for 5 sec to finalize all transactions
     await new Promise(resolve => setTimeout(resolve, 5000));
 
-    const shard = Shard.fromAddress(walletAddress).toHexString();
-    // Iterate transfers using core
-    const iterator = await client.net.create_transaction_iterator({
-        start_time: startBlockTime,
-        end_time: seconds(Date.now()),
-        shard_filter: [shard],
-        accounts_filter: [walletAddress],
-        include_transfers: true,
-    });
-    let has_more = true;
-    while (has_more) {
-        const next = await client.net.iterator_next({
-            iterator: iterator.handle,
-        });
-        for (const transaction of next.items) {
-            printTransfers(transaction);
+    // Create transfer iterator
+    // this iterator will iterate only blocks containing
+    // our wallet account updates and transactions
+    const transfers = await TransferIterator.start(
+        client,
+        {
+            startBlockTime,
+            endBlockTime: seconds(Date.now()),
+            shard: Shard.fromAddress(walletAddress),
+        },
+        [walletAddress],
+    );
+    while (!transfers.eof()) {
+        const transfer = await transfers.next();
+        if (transfer) {
+            printTransfer(transfer);
         }
-        has_more = next.has_more;
     }
-    await client.net.remove_iterator(iterator);
 }
 
 
