@@ -1,10 +1,8 @@
 const { Account } = require("@tonclient/appkit");
+const { TonClient, signerKeys } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
-const { HelloContract } = require("./HelloContract.js");
-const {
-    signerKeys,
-    TonClient,
-} = require("@tonclient/core");
+
+const { HelloWallet } = require("./HelloWallet.js")
 
 // Link the platform-dependable TON-SDK binary with the target Application in Typescript
 // This is a Node.js project, so we link the application with `libNode` binary
@@ -15,13 +13,16 @@ const {
 TonClient.useBinaryLibrary(libNode);
 
 /**
+ *
  * @param client {TonClient}
  * @returns {Promise<void>}
  */
 async function main(client) {
     // Generate an ed25519 key pair for new account
-    const helloAcc = new Account(HelloContract, {
-        signer: signerKeys(await TonClient.default.crypto.generate_random_sign_keys()),
+    const keys = await TonClient.default.crypto.generate_random_sign_keys();
+
+    const helloAcc = new Account(HelloWallet, {
+        signer: signerKeys(keys),
         client,
     });
 
@@ -36,9 +37,7 @@ async function main(client) {
 
     // Call `touch` function
     let response = await helloAcc.run("touch", {});
-
     console.log(`Contract run transaction with output ${response.decoded.output}, ${response.transaction.id}`);
-
 
     // Read local variable `timestamp` with a get method `getTimestamp`
     // This can be done with `runLocal` function. The execution of runLocal is performed off-chain and does not 
@@ -46,14 +45,27 @@ async function main(client) {
     response = await helloAcc.runLocal("getTimestamp", {});
     console.log("Contract reacted to your getTimestamp:", response.decoded.output)
 
+    // Send some money to the random address
+    const randomAddress = 
+        "0:" + 
+        Buffer.from(
+            (await client.crypto.generate_random_bytes({length: 32})).bytes,
+            "base64"
+        ).toString("hex");
+    response = await helloAcc.run("sendValue", {
+        dest: randomAddress,
+        amount: 100_000_000, // 0.1 token
+        bounce: true,
+    });
+    console.log("Contract reacted to your sendValue, target address will recieve:", response.fees.total_output);
 }
 
 (async () => {
     const client = new TonClient({
         network: {
             // Local TON OS SE instance URL here
-            endpoints: ["http://localhost"],
-        },
+            endpoints: ["http://localhost"]
+        }
     });
     try {
         console.log("Hello localhost TON!");
