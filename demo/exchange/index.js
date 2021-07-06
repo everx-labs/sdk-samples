@@ -77,6 +77,67 @@ async function ensureGiver(client) {
 }
 
 /**
+ *
+ * @param {Account} account
+ * @param {string} functionName
+ * @param {Object} input
+ * @return {Promise<void>}
+ */
+async function runAndWaitForTransactionTree(account, functionName, input) {
+    const runResult = await account.run(functionName, input);
+    for (const boc of runResult.out_messages) {
+        const messageId = (await account.client.boc.get_boc_hash({ boc })).hash;
+        await account.client.net.query_transaction_tree({
+            in_msg: messageId,
+        });
+    }
+
+}
+
+/**
+ * Sends some tokens from msig wallet to specified address.
+ *
+ * @param {Account} wallet
+ * @param {string} address
+ * @param {number} amount
+ * @returns {Promise<void>}
+ */
+async function walletSend(wallet, address, amount) {
+    await runAndWaitForTransactionTree(wallet, "sendTransaction", {
+        dest: address,
+        value: amount,
+        bounce: false,
+        flags: 1,
+        payload: "",
+    });
+}
+
+/**
+ * Sends some tokens from msig wallet to specified address.
+ * This function uses two staged multisignature features.
+ * First calls `submitTransaction` then calls `confirmTransaction`.
+ *
+ * @param {Account} wallet
+ * @param {string} address
+ * @param {number} amount
+ * @returns {Promise<void>}
+ */
+async function walletSubmit(wallet, address, amount) {
+    /** @type {ResultOfProcessMessage} */
+    const result = await wallet.run("submitTransaction", {
+        dest: address,
+        value: amount,
+        bounce: false,
+        allBalance: false,
+        payload: "",
+    });
+    const transId = result.decoded.output.transId;
+    await runAndWaitForTransactionTree(wallet, "confirmTransaction", {
+        transactionId: transId,
+    });
+}
+
+/**
  * Topup an account for deploy operation.
  *
  * We need an account which can be used to deposit other accounts.
@@ -89,17 +150,10 @@ async function ensureGiver(client) {
  * @param {string} address
  * @param {number} amount
  * @param {TonClient} client
- * @returns {Promise<void>}
+ * @returns {Promise<ResultOfProcessMessage>}
  */
 async function depositAccount(address, amount, client) {
-    const giver = await ensureGiver(client);
-    await giver.run("sendTransaction", {
-        dest: address,
-        value: amount,
-        bounce: false,
-        flags: 1,
-        payload: "",
-    });
+    await walletSend(await ensureGiver(client), address, amount);
 }
 
 /**
@@ -179,6 +233,8 @@ async function iterateTransactions(client) {
  * deposits some values to it,
  * withdraw some value from it
  * and then read all transfers related to this account
+ *
+ * @param {TonClient} client
  */
 async function main(client) {
     const giver = await ensureGiver(client);
@@ -226,25 +282,11 @@ async function main(client) {
 
     const giverAddress = await giver.getAddress();
     console.log("Withdrawing 2 tokens...");
-    await wallet.run("sendTransaction", {
-        dest: giverAddress,
-        value: 2000000000,
-        bounce: false,
-        flags: 1,
-        payload: "",
-    });
+    await walletSubmit(wallet, giverAddress, 2000000000);
 
     // Now we perform withdraw operation. Let's withdraw 3 tokens
     console.log("Withdrawing 3 tokens...");
-    await wallet.run("sendTransaction", {
-        dest: giverAddress,
-        value: 3000000000,
-        bounce: false,
-        flags: 1, /// when using flag 1 forward fees are charged from the sender, not the recipient
-        payload: "",
-    });
-    // Wait for 5 sec to finalize all transactions
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await walletSubmit(wallet, giverAddress, 3000000000);
 
     const shard = Shard.fromAddress(walletAddress).toHexString();
     // Iterate transfers using core
