@@ -4,7 +4,9 @@ import {
     Alert
 } from 'react-native';
 
-import NfcCardModule from 'ton-nfc-client';
+import {NfcCardModuleWrapper} from 'ton-nfc-client';
+
+const nfcWrapper = new NfcCardModuleWrapper();
 
 printResults = (error, result) => {
     if (error != null) {
@@ -51,198 +53,221 @@ showError = (error) => {
     );
 }
 
-export default class NfcWrapper extends Component {
+export default class NfcWrapper {
 
     /* CoinManager commands */
 
     getSeVersion() {
-        NfcCardModule.getSeVersion()
-            .then((result) => showResponse("SE version : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.getSeVersion()
+            .then((result) => showResponse("SE version : " + result.message)).catch((e) => showError(e.message))
     }
 
     getCsn() {
-        NfcCardModule.getCsn()
+        nfcWrapper.getCsn()
             .then((result) =>{ 
                 console.log(result)
-                showResponse("CSN (SEID, Secure Element Id) : " + result)
+                showResponse("CSN (SEID, Secure Element Id) : " + result.message)
             }).catch((e) => showError(e.message))
     }
 
     getDeviceLabel() {
-        NfcCardModule.getDeviceLabel()
-            .then((result) => showResponse("Device label : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.getDeviceLabel()
+            .then((result) => showResponse("Device label : " + result.message)).catch((e) => showError(e.message))
     }
 
     setDeviceLabel(label) {
-        NfcCardModule.setDeviceLabel(label)
-            .then((result) => showResponse("Set Device label status: " + result)).catch((e) => showError(e.message))
+        nfcWrapper.setDeviceLabel(label)
+            .then((result) => showResponse("Set Device label status: " + result.message)).catch((e) => showError(e.message))
     }
 
     getMaxPinTries() {
-       NfcCardModule.getMaxPinTries()
-            .then((result) => showResponse("Maximum Pin tries : " + result)).catch((e) => showError(e.message))
+        //console.log(nfcWrapper);
+      //  const result = await nfcWrapper.getMaxPinTries();
+      nfcWrapper.getMaxPinTries()
+            .then((result) => {
+                showResponse("!Maximum Pin tries : " + result.message)
+        }).catch((e) => showError(e.message))
+      /* NfcCardModule.getMaxPinTries()
+            .then((result) => showResponse("Maximum Pin tries : " + result)).catch((e) => showError(e.message))*/
     }
 
     getRemainingPinTries() {
-        NfcCardModule.getRemainingPinTries()
-            .then((result) => showResponse("Remainig Pin tries : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.getRemainingPinTries()
+            .then((result) => showResponse("Remainig Pin tries : " + result.message)).catch((e) => showError(e.message))
     }
 
     getRootKeyStatus() {
-        NfcCardModule.getRootKeyStatus()
-            .then((result) => showResponse("Root key status : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.getRootKeyStatus()
+            .then((result) => showResponse("Root key status : " + result.message)).catch((e) => showError(e.message))
     }
 
     getAvailableMemory() {
-        NfcCardModule.getAvailableMemory()
+        nfcWrapper.getAvailableMemory()
             .then((result) => {
-                console.log(result)
-                showResponse("Available card's memory : " + result)
+                console.log(result.message)
+                showResponse("Available card's memory : " + result.message)
             }).catch((e) => showError(e.message))
     }
 
     getAppsList() {
-        NfcCardModule.getAppsList().then((result) => {
+        nfcWrapper.getAppsList().then((result) => {
             console.log(result)
-            showResponse("Applet AIDs list : " + result)
+            showResponse("Applet AIDs list : " + result.message)
     }).catch((e) => showError(e.message))
     }
 
     generateSeed(pin) {
-        NfcCardModule.generateSeed(pin).then((result) => showResponse("Generate seed status : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.generateSeed(pin).then((result) => showResponse("Generate seed status : " + result.message)).catch((e) => showError(e.message))
     }
 
     resetWallet() {
-        NfcCardModule.resetWallet().then((result) => showResponse("Reset wallet status : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.resetWallet().then((result) => showResponse("Reset wallet status : " + result.message)).catch((e) => showError(e.message))
     }
 
     changePin(oldPin, newPin) {
-        NfcCardModule.changePin(
+        nfcWrapper.changePin(
             oldPin,
-            newPin).then((result) => showResponse("Change Pin status : " + result)).catch((e) => showError(e.message))
+            newPin).then((result) => showResponse("Change Pin status : " + result.message)).catch((e) => showError(e.message))
     }
 
     /* Commands to maintain keys for hmac */
 
     selectKeyForHmac(serialNumber) {
-        NfcCardModule.selectKeyForHmac(serialNumber)
-            .then((result) => showResponse("Select key for hmac status : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.selectKeyForHmac(serialNumber)
+            .then((result) => showResponse("Select key for hmac status : " + result.message)).catch((e) => showError(e.message))
     }
 
     createKeyForHmac(authenticationPassword, commonSecret, serialNumber) {
-        NfcCardModule.createKeyForHmac(authenticationPassword, commonSecret, serialNumber)
-            .then((result) => showResponse("Create key for hmac status : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.createKeyForHmac(authenticationPassword, commonSecret, serialNumber)
+            .then((result) => showResponse("Create key for hmac status : " + result.message)).catch((e) => showError(e.message))
     }
 
     getCurrentSerialNumber() {
-        NfcCardModule.getCurrentSerialNumber()
-            .then((result) => showResponse("Current selected serial number : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.getCurrentSerialNumber()
+            .then((result) => showResponse("Current selected serial number : " + result.message)).catch((e) => showError(e.message))
     }
 
     getAllSerialNumbers() {
-        NfcCardModule.getAllSerialNumbers()
-            .then((result) => showResponse("All serial numbers currently supported by NFC module : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.getAllSerialNumbers()
+            .then((result) => showResponse("All serial numbers currently supported by NFC module : " + result.message)).catch((e) => showError(e.message))
     }
 
     isKeyForHmacExist(serialNumber) {
-        NfcCardModule.isKeyForHmacExist(serialNumber)
-            .then((result) => showResponse("Does key for hmac exist : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.isKeyForHmacExist(serialNumber)
+            .then((result) => showResponse("Does key for hmac exist : " + result.message)).catch((e) => showError(e.message))
     }
 
     deleteKeyForHmac(serialNumber) {
-        NfcCardModule.deleteKeyForHmac(serialNumber)
-            .then((result) => showResponse("Delete key for hmac status : " + result)).catch((e) => showError(e.message))
+        nfcWrapper.deleteKeyForHmac(serialNumber)
+            .then((result) => showResponse("Delete key for hmac status : " + result.message)).catch((e) => showError(e.message))
     }
 
     /* Card activation commands (TonWalletApplet) */
 
 
     turnOnWallet(newPin, authenticationPassword, commonSecret, initialVector) {
-        NfcCardModule.turnOnWallet(
+        nfcWrapper.turnOnWallet(
             newPin,
             authenticationPassword,
             commonSecret,
             initialVector).then((result) => {
-                console.log(result)
-                showResponse("TonWalletApplet state : " + result)
+                console.log(result.message)
+                showResponse("TonWalletApplet state : " + result.message)
         }).catch((e) => showError(e.message))
     }
 
+    turnOnWallet(authenticationPassword, commonSecret, initialVector) {
+        nfcWrapper.turnOnWallet(
+            authenticationPassword,
+            commonSecret,
+            initialVector).then((result) => {
+                console.log(result.message)
+                showResponse("TonWalletApplet state : " + result.message)
+        }).catch((e) => showError(e.message))
+    }
+
+    getHashes() {
+        nfcWrapper.getHashOfEncryptedPassword().then((result) => {
+            console.log(result.message)
+            showResponse("Hashes : " + result.message)
+    }).catch((e) => showError(e.message))
+    }
+
     getHashOfEncryptedPassword() {
-        NfcCardModule.getHashOfEncryptedPassword().then((result) => {
-            console.log(result)
-            showResponse("Hash of encrypted password : " + result)
+        nfcWrapper.getHashOfEncryptedPassword().then((result) => {
+            console.log(result.message)
+            showResponse("Hash of encrypted password : " + result.message)
     }).catch((e) => showError(e.message))
     }
 
     getHashOfEncryptedCommonSecret() {
-        NfcCardModule.getHashOfEncryptedCommonSecret().then((result) => {
-            console.log(result)
-            showResponse("Hash of encrypted common secret : " + result)
+        nfcWrapper.getHashOfEncryptedCommonSecret().then((result) => {
+            console.log(result.message)
+            showResponse("Hash of encrypted common secret : " + result.message)
     }).catch((e) => showError(e.message))
     }
 
     /* Common stuff (TonWalletApplet)  */
 
     getTonAppletState(){
-        NfcCardModule.getTonAppletState()
+        nfcWrapper.getTonAppletState()
             .then((result) => {
-                console.log(result)
-                showResponse("TonWallet applet state: " + result)
+                console.log(result.message)
+                showResponse("TonWallet applet state: " + result.message)
             })
             .catch((e) => showError(e.message))
     }
 
     getSerialNumber(){
-        NfcCardModule.getSerialNumber()
-            .then((result) => showResponse("Serial number: " + result))
+        nfcWrapper.getSerialNumber()
+            .then((result) => showResponse("Serial number: " + result.message))
             .catch((e) => showError(e.message))
     }
 
     /* Recovery data stuff (TonWalletApplet)  */
 
     addRecoveryData(recoveryData){
-        NfcCardModule.addRecoveryData(recoveryData)
-            .then((result) => showResponse("Recovery Data: " + result))
+        nfcWrapper.addRecoveryData(recoveryData)
+            .then((result) => showResponse("Recovery Data: " + result.message))
             .catch((e) => showError(e.message))
     }
 
     getRecoveryData(){
-        NfcCardModule.getRecoveryData()
-            .then((result) => showResponse("Recovery Data: " + result))
+        nfcWrapper.getRecoveryData()
+            .then((result) => showResponse("Recovery Data: " + result.message))
             .catch((e) => showError(e.message))
     }
 
     getRecoveryDataHash(){
-        NfcCardModule.getRecoveryDataHash()
+        nfcWrapper.getRecoveryDataHash()
             .then((result) => {
-                console.log(result)
-                showResponse("Recovery Data Hash: " + result)
+                console.log(result.message)
+                showResponse("Recovery Data Hash: " + result.message)
             })
             .catch((e) => showError(e.message))
     }
 
     getRecoveryDataLen(){
-        NfcCardModule.getRecoveryDataLen()
+        nfcWrapper.getRecoveryDataLen()
             .then((result) => {
-                console.log(result)
-                showResponse("Recovery Data Length: " + result)
+                console.log(result.message)
+                showResponse("Recovery Data Length: " + result.message)
             })
             .catch((e) => showError(e.message))
     }
 
     isRecoveryDataSet(){
-        NfcCardModule.isRecoveryDataSet()
+        nfcWrapper.isRecoveryDataSet()
             .then((result) => {
                 console.log(result)
-                showResponse("isRecoveryDataSet flag: " + result)
+                showResponse("isRecoveryDataSet flag: " + result.message)
             })
             .catch((e) => showError(e.message))
     }
 
     resetRecoveryData(){
-        NfcCardModule.resetRecoveryData()
-            .then((result) => showResponse("Reset recovery data status: " + result))
+        nfcWrapper.resetRecoveryData()
+            .then((result) => showResponse("Reset recovery data status: " + result.message))
             .catch((e) => showError(e.message))
     }
 
@@ -258,7 +283,7 @@ export default class NfcWrapper extends Component {
         var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
         console.log("Encrypted recovery data : " +encryptedHex);
 
-        return NfcCardModule.addRecoveryData(encryptedHex)
+        return nfcWrapper.addRecoveryData(encryptedHex)
             /*.then((result) => {
                 showResponse("Add Recovery Data: " + result)
                 console.log("Add Recovery Data: " + result)
@@ -273,26 +298,26 @@ export default class NfcWrapper extends Component {
     /* TonWalletApplet commands (ed25519 related) */
 
     /* verifyDefaultPin(){
-         NfcCardModule.verifyDefaultPin()
+         nfcWrapper.verifyDefaultPin()
              .then((result) => showResponse("verifyDefaultPin result: " + result))
              .catch((e) => showError(e.message))
      }*/
 
 
     getPublicKeyForDefaultPath(){
-        NfcCardModule.getPublicKeyForDefaultPath()
+        nfcWrapper.getPublicKeyForDefaultPath()
             .then((result) => {
-                console.log(result)
-                showResponse("Public key for default HD path m/44'/396'/0'/0'/0' : " + result)
+                console.log(result.message)
+                showResponse("Public key for default HD path m/44'/396'/0'/0'/0' : " + result.message)
             })
             .catch((e) => showError(e.message))
     }
 
     async verifyPin(pin) {
         try {
-            let result = await NfcCardModule.verifyPin(pin);
-            console.log(result)
-            showResponse("verifyPin result: " + result)
+            let result = await nfcWrapper.verifyPin(pin);
+            console.log(result.message)
+            showResponse("verifyPin result: " + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -300,19 +325,19 @@ export default class NfcWrapper extends Component {
     }
 
     getPublicKey(hdIndex) {
-        NfcCardModule.getPublicKey(hdIndex)
+        nfcWrapper.getPublicKey(hdIndex)
             .then((result) => {
-                console.log(result)
-                showResponse("Public key for HD path m/44'/396'/0'/0'/" + hdIndex + "' : " + result)
+                console.log(result.message)
+                showResponse("Public key for HD path m/44'/396'/0'/0'/" + hdIndex + "' : " + result.message)
             })
             .catch((e) => showError(e.message))
     }
 
     async signForDefaultHdPath(dataForSigning) {
         try {
-            let result = await NfcCardModule.signForDefaultHdPath(dataForSigning)
-            console.log(result)
-            showResponse("Signature : " + result)
+            let result = await nfcWrapper.signForDefaultHdPath(dataForSigning)
+            console.log(result.message)
+            showResponse("Signature : " + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -321,9 +346,9 @@ export default class NfcWrapper extends Component {
 
     async sign(dataForSigning, hdIndex) {
         try {
-            let result = await NfcCardModule.sign(dataForSigning, hdIndex)
-            console.log(result)
-            showResponse("Signature : " + result)
+            let result = await nfcWrapper.sign(dataForSigning, hdIndex)
+            console.log(result.message)
+            showResponse("Signature : " + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -332,9 +357,9 @@ export default class NfcWrapper extends Component {
 
     async verifyPinAndSignForDefaultHdPath(dataForSigning, pin) {
         try {
-            let result = await NfcCardModule.verifyPinAndSignForDefaultHdPath(dataForSigning, pin)
-            console.log(result)
-            showResponse("Signature : " + result)
+            let result = await nfcWrapper.verifyPinAndSignForDefaultHdPath(dataForSigning, pin)
+            console.log(result.message)
+            showResponse("Signature : " + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -343,9 +368,9 @@ export default class NfcWrapper extends Component {
 
     async verifyPinAndSign(dataForSigning, hdIndex, pin) {
         try {
-            let result = await NfcCardModule.verifyPinAndSign(dataForSigning, hdIndex, pin)
-            console.log(result)
-            showResponse("Signature : " + result)
+            let result = await nfcWrapper.verifyPinAndSign(dataForSigning, hdIndex, pin)
+            console.log(result.message)
+            showResponse("Signature : " + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -354,10 +379,21 @@ export default class NfcWrapper extends Component {
 
     /* Keychain commands */
 
+    async getHmac(index){
+        try {
+            let result = await nfcWrapper.getHmac(index);
+            showResponse("Key hmac :" + result.hmac + ", key length = " + result.length)
+        }
+        catch (e) {
+            showError(e.message)
+        }
+    }
+
+
     async resetKeyChain(){
         try {
-            let result = await NfcCardModule.resetKeyChain();
-            showResponse("resetKeyChain status :" + result)
+            let result = await nfcWrapper.resetKeyChain();
+            showResponse("resetKeyChain status :" + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -366,9 +402,9 @@ export default class NfcWrapper extends Component {
 
     async getKeyChainDataAboutAllKeys(){
         try {
-            let result = await NfcCardModule.getKeyChainDataAboutAllKeys();
+            let result = await nfcWrapper.getKeyChainDataAboutAllKeys();
             console.log(result)
-            showResponse("getKeyChainDataAboutAllKeys status :" + result)
+            showResponse("getKeyChainDataAboutAllKeys status :" + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -377,11 +413,9 @@ export default class NfcWrapper extends Component {
 
     async getKeyChainInfo(){
         try {
-            let result = await NfcCardModule.getKeyChainInfo();
-            var obj = JSON.parse(result);
-            console.log(result)
-            showResponse("KeyChain info: Number of keys = " +  obj.numberOfKeys + ", Occupied size = "
-                    + obj.occupiedSize + ", Free size = "  + obj.freeSize);
+            let result = await nfcWrapper.getKeyChainInfo();
+            showResponse("KeyChain info: Number of keys = " +  result.numberOfKeys + ", Occupied size = "
+                    + result.occupiedSize + ", Free size = "  + result.freeSize);
         }
         catch (e) {
             showError(e.message)
@@ -390,9 +424,9 @@ export default class NfcWrapper extends Component {
 
     async getNumberOfKeys(){
         try {
-            let result = await NfcCardModule.getNumberOfKeys();
-            console.log(result)
-            showResponse("getKeyChainDataAboutAllKeys status :" + result)
+            let result = await nfcWrapper.getNumberOfKeys();
+            console.log(result.message)
+            showResponse("getKeyChainDataAboutAllKeys status :" + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -401,9 +435,9 @@ export default class NfcWrapper extends Component {
 
     async getOccupiedStorageSize(){
         try {
-            let result = await NfcCardModule.getOccupiedStorageSize();
-            console.log(result)
-            showResponse("getOccupiedStorageSize status :" + result)
+            let result = await nfcWrapper.getOccupiedStorageSize();
+            console.log(result.message)
+            showResponse("getOccupiedStorageSize status :" + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -412,9 +446,9 @@ export default class NfcWrapper extends Component {
 
     async getFreeStorageSize(){
         try {
-            let result = await NfcCardModule.getFreeStorageSize();
-            console.log(result)
-            showResponse("getFreeStorageSize status :" + result)
+            let result = await nfcWrapper.getFreeStorageSize();
+            console.log(result.message)
+            showResponse("getFreeStorageSize status :" + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -423,9 +457,9 @@ export default class NfcWrapper extends Component {
 
     async getKeyFromKeyChain(keyHmac){
         try {
-            let result = await NfcCardModule.getKeyFromKeyChain(keyHmac);
-            console.log(result)
-            showResponse("Key : " + result)
+            let result = await nfcWrapper.getKeyFromKeyChain(keyHmac);
+            console.log(result.message)
+            showResponse("Key : " + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -434,8 +468,8 @@ export default class NfcWrapper extends Component {
 
     async addKeyIntoKeyChain(newKey){
         try {
-            let result = await NfcCardModule.addKeyIntoKeyChain(newKey);
-            showResponse("Add key status (hmac of new key) : "  + result)
+            let result = await nfcWrapper.addKeyIntoKeyChain(newKey);
+            showResponse("Add key status (hmac of new key) : "  + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -443,19 +477,19 @@ export default class NfcWrapper extends Component {
     }
 
     /*  deleteKeyFromKeyChain(keyHmac){
-          NfcCardModule.deleteKeyFromKeyChain(keyHmac).then((result) => showResponse("Delete key status (number of remained keys) : " + result))
+          nfcWrapper.deleteKeyFromKeyChain(keyHmac).then((result) => showResponse("Delete key status (number of remained keys) : " + result))
               .catch((e) => showError(e.message))
       }
 
       finishDeleteKeyFromKeyChainAfterInterruption(keyHmac){
-          NfcCardModule.finishDeleteKeyFromKeyChainAfterInterruption(keyHmac).then((result) => showResponse("Finish Delete key status after interruption (number of remained keys) : " + result))
+          nfcWrapper.finishDeleteKeyFromKeyChainAfterInterruption(keyHmac).then((result) => showResponse("Finish Delete key status after interruption (number of remained keys) : " + result))
               .catch((e) => showError(e.message))
       }*/
 
     async changeKeyInKeyChain(newKey, oldKeyHmac){
         try {
-            let result = await NfcCardModule.changeKeyInKeyChain(newKey, oldKeyHmac);
-            showResponse("Change key status (hmac of new key) : "  + result)
+            let result = await nfcWrapper.changeKeyInKeyChain(newKey, oldKeyHmac);
+            showResponse("Change key status (hmac of new key) : "  + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -464,9 +498,9 @@ export default class NfcWrapper extends Component {
 
     async getIndexAndLenOfKeyInKeyChain(keyHmac){
         try {
-            let result = await NfcCardModule.getIndexAndLenOfKeyInKeyChain(keyHmac);
+            let result = await nfcWrapper.getIndexAndLenOfKeyInKeyChain(keyHmac);
             console.log(result)
-            showResponse("getIndexAndLenOfKeyInKeyChain response : " + result)
+            showResponse("getIndexAndLenOfKeyInKeyChain response : " + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -475,8 +509,8 @@ export default class NfcWrapper extends Component {
 
     async checkAvailableVolForNewKey(keySize){
         try {
-            let result = await NfcCardModule.checkAvailableVolForNewKey(keySize);
-            showResponse("checkAvailableVolForNewKey response : "  + result)
+            let result = await nfcWrapper.checkAvailableVolForNewKey(keySize);
+            showResponse("checkAvailableVolForNewKey response : "  + result.message)
         }
         catch (e) {
             showError(e.message)
@@ -485,8 +519,8 @@ export default class NfcWrapper extends Component {
 
     async checkKeyHmacConsistency(keyHmac){
         try {
-            let result = await NfcCardModule.checkKeyHmacConsistency(keyHmac);
-            showResponse("checkKeyHmacConsistency response : "  + result)
+            let result = await nfcWrapper.checkKeyHmacConsistency(keyHmac);
+            showResponse("checkKeyHmacConsistency response : "  + result.message)
         }
         catch (e) {
             showError(e.message)
