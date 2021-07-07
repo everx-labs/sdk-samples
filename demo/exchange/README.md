@@ -24,5 +24,6 @@ See the list of supported networks and endpoints here https://docs.ton.dev/86757
 
 ```sh
 npm i
-node index privateKey
+node index giverAddress giverPrivateKey
 ```
+Note: giver must be the multisig wallet.

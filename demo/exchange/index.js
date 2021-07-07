@@ -71,9 +71,11 @@ let _giver = null;
 
 async function ensureGiver(client) {
     if (!_giver) {
-        const secret = process.argv[2];
-        if (!secret) {
-            console.log("USE: node index <safe-msig-sign-key>");
+        const address = process.argv[2];
+        const secret = process.argv[3];
+        if (!address || !secret) {
+            console.log("USE: node index <giver-address> <giver-secret-key>");
+            console.log("Giver must be the safe multisig wallet");
             process.exit(1);
         }
         _giver = new Account(SafeMultisigContract, {
