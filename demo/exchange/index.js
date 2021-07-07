@@ -1,21 +1,21 @@
 /**
  *  In this example we demonstrate how to integrate Free TON into an exchange backend.
- * 
+ *
  * It covers such use-cases as:
- * 
+ *
  * - wallet deploy
  * - wallet deposit
  * - wallet withdraw
  * - sequential blockchain deposits and withdraws reading
  * - sequential wallet deposits and withdraws reading
- * 
- * To run this sample you need to have a multisig wallet with positive balance, already deployed to the Developer Network. 
+ *
+ * To run this sample you need to have a multisig wallet with positive balance, already deployed to the Developer Network.
  * Specify its private key and address at the launch. It will be used to pay for deploy operation.
- * 
+ *
  * Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
- * 
+ *
  * To migrate from Developer Network to Free TON you need to update the endpoints specified in TonClient configuration to Free TON endpoints.
- * 
+ *
  * See the list of supported networks and endpoints here https://docs.ton.dev/86757ecb2/p/85c869-networks
  * */
 
@@ -73,8 +73,8 @@ let _giver = null;
 /**
  * Initializes Giver Account that will be used to topup other accounts before deploy.
  *
- * Safemultisig wallet is used. If you want to use another contract as Giver -  
- * read more about how to add a contract to a project here 
+ * Safemultisig wallet is used. If you want to use another contract as Giver -
+ * read more about how to add a contract to a project here
  * https://docs.ton.dev/86757ecb2/p/07f1a5-add-contract-to-your-app-/b/462f33
  *
  */
@@ -114,7 +114,7 @@ async function runAndWaitForRecipientTransactions(account, functionName, input) 
     // In Free TON blockchain, transfer consists of 2 transactions (because the blockchain is asynchronous):
     //  1. Sender sends tokens - this transaction is returned by `Run` method
     //  2. Recipient receives tokens - this transaction can be caught with `query_transaction_tree method`
-    // Read more about transactions and messages here 
+    // Read more about transactions and messages here
     // https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/20b3af
     for (const messageId of runResult.transaction.out_msgs) {
         const tree = await account.client.net.query_transaction_tree({
@@ -145,14 +145,14 @@ async function walletSend(wallet, address, amount) {
 
 /**
  * Withdraws some tokens from Multisig wallet to a specified address.
- * 
- * In case of 1 custodian `submitTransaction` method performs full withdraw operation. 
- * 
+ *
+ * In case of 1 custodian `submitTransaction` method performs full withdraw operation.
+ *
  * In case of several custodians, `submitTransaction` creates a transaction inside the wallet
- * for other custodians to confirm. 
- * Other costodians need to invoke  `confirmTransaction` method for confirmation. 
+ * for other custodians to confirm.
+ * Other costodians need to invoke  `confirmTransaction` method for confirmation.
  * Once enough custodians confirm the transaction it will be withdrawed.
- * Read more how to work with multisig here 
+ * Read more how to work with multisig here
  * https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
  *
  * @param {Account} wallet
@@ -327,15 +327,12 @@ async function main(client) {
     console.log("Withdrawing 3 tokens...");
     await walletWithdraw(wallet, giverAddress, 3000000000);
 
-    const shard = shardFromAddress(walletAddress);
-
     // Iterate transfers
     // See the api reference documentation here
     // https://tonlabs.github.io/ton-client-js/classes/netmodule.html#create_transaction_iterator
     const iterator = await client.net.create_transaction_iterator({
         start_time: startBlockTime,
         end_time: seconds(Date.now()),
-        shard_filter: [shard],
         accounts_filter: [walletAddress],
         include_transfers: true,
     });
