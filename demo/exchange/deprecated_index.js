@@ -50,6 +50,11 @@ function printTransactionTransfer(transaction, transfer) {
  *
  * Also this example demonstrates how to suspend iteration
  * and then resume it from the suspension point.
+ * 
+ * See Reference documentation
+ * https://tonlabs.github.io/ton-client-js/classes/netmodule.html#create_transaction_iterator
+ * https://tonlabs.github.io/ton-client-js/classes/netmodule.html#resume_transaction_iterator
+ * https://tonlabs.github.io/ton-client-js/classes/netmodule.html#remove_iterator
  *
  */
 async function iterateTransfers(client) {
