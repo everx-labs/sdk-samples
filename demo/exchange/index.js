@@ -22,13 +22,25 @@ const { libNode } = require("@tonclient/lib-node");
 const { Account } = require("@tonclient/appkit");
 const { TonClient, signerKeys } = require("@tonclient/core");
 const { SafeMultisigContract } = require("./contracts");
-const { Shard } = require("./lib/sharding");
 
 TonClient.useBinaryLibrary(libNode);
 
 function seconds(ms) {
     return Math.round(ms / 1000);
 }
+
+/**
+ *
+ * @param {string} address
+ * @return {string}
+ */
+function shardFromAddress(address) {
+    const colonIndex = address.indexOf(":");
+    const workchainId = colonIndex >= 0 ? Number(address.substr(0, colonIndex)) : 0;
+    const accountId = colonIndex >= 0 ? address.substr(colonIndex + 1) : address;
+    return `${workchainId}:${accountId.substr(0, 15)}8`;
+}
+
 
 /**
  * Prints transaction transfer details.
@@ -81,17 +93,18 @@ async function ensureGiver(client) {
  * @param {Account} account
  * @param {string} functionName
  * @param {Object} input
- * @return {Promise<void>}
+ * @return {Promise<Transaction[]>}
  */
-async function runAndWaitForTransactionTree(account, functionName, input) {
+async function runAndWaitForRecipientTransactions(account, functionName, input) {
     const runResult = await account.run(functionName, input);
-    for (const boc of runResult.out_messages) {
-        const messageId = (await account.client.boc.get_boc_hash({ boc })).hash;
-        await account.client.net.query_transaction_tree({
+    const transactions = [];
+    for (const messageId of runResult.transaction.out_msgs) {
+        const tree = await account.client.net.query_transaction_tree({
             in_msg: messageId,
         });
+        transactions.push(...tree.transactions);
     }
-
+    return transactions;
 }
 
 /**
@@ -103,7 +116,7 @@ async function runAndWaitForTransactionTree(account, functionName, input) {
  * @returns {Promise<void>}
  */
 async function walletSend(wallet, address, amount) {
-    await runAndWaitForTransactionTree(wallet, "sendTransaction", {
+    await runAndWaitForRecipientTransactions(wallet, "sendTransaction", {
         dest: address,
         value: amount,
         bounce: false,
@@ -122,19 +135,17 @@ async function walletSend(wallet, address, amount) {
  * @param {number} amount
  * @returns {Promise<void>}
  */
-async function walletSubmit(wallet, address, amount) {
-    /** @type {ResultOfProcessMessage} */
-    const result = await wallet.run("submitTransaction", {
+async function walletWithdraw(wallet, address, amount) {
+    const transactions = await runAndWaitForRecipientTransactions(wallet, "submitTransaction", {
         dest: address,
         value: amount,
         bounce: false,
         allBalance: false,
         payload: "",
     });
-    const transId = result.decoded.output.transId;
-    await runAndWaitForTransactionTree(wallet, "confirmTransaction", {
-        transactionId: transId,
-    });
+    if (transactions.length > 0) {
+        console.log(`Recipient received transfer. The recipient's transaction is: ${transactions[0].id}`);
+    }
 }
 
 /**
@@ -282,13 +293,14 @@ async function main(client) {
 
     const giverAddress = await giver.getAddress();
     console.log("Withdrawing 2 tokens...");
-    await walletSubmit(wallet, giverAddress, 2000000000);
+    await walletWithdraw(wallet, giverAddress, 2000000000);
 
     // Now we perform withdraw operation. Let's withdraw 3 tokens
     console.log("Withdrawing 3 tokens...");
-    await walletSubmit(wallet, giverAddress, 3000000000);
+    await walletWithdraw(wallet, giverAddress, 3000000000);
 
-    const shard = Shard.fromAddress(walletAddress).toHexString();
+    const shard = shardFromAddress(walletAddress);
+
     // Iterate transfers using core
     const iterator = await client.net.create_transaction_iterator({
         start_time: startBlockTime,
