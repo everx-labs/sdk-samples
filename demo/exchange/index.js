@@ -31,19 +31,6 @@ function seconds(ms) {
 }
 
 /**
- *
- * @param {string} address
- * @return {string}
- */
-function shardFromAddress(address) {
-    const colonIndex = address.indexOf(":");
-    const workchainId = colonIndex >= 0 ? Number(address.substr(0, colonIndex)) : 0;
-    const accountId = colonIndex >= 0 ? address.substr(colonIndex + 1) : address;
-    return `${workchainId}:${accountId.substr(0, 15)}8`;
-}
-
-
-/**
  * Prints transaction transfer details.
  *
  * @param {Transaction} transaction
