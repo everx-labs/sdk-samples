@@ -1,21 +1,22 @@
 /**
- * This sample demonstrates how to perform subsequent blockchain deposits or withdraws reading.
- * You can read either all blockchain transfers, or transfers of specified accounts.
- *
- * Also, for convenience, this sample includes the steps of wallet deploy, deposit and withdraw.
- *
- * To run this sample you need to have a multisig wallet with positive balance,
- * already deployed to the Developer Network. Specify its private key at the launch
- *
- * `node index privateKey`
- *
- * Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisighttps://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
- *
- * To migrate to Free TON you need to update the endpoints specified in TonClient configuration
- * to Free TON endpoints.
- *
+ *  In this example we demonstrate how to integrate Free TON into an exchange backend.
+ * 
+ * It covers such use-cases as:
+ * 
+ * - wallet deploy
+ * - wallet deposit
+ * - wallet withdraw
+ * - sequential blockchain deposits and withdraws reading
+ * - sequential wallet deposits and withdraws reading
+ * 
+ * To run this sample you need to have a multisig wallet with positive balance, already deployed to the Developer Network. 
+ * Specify its private key at the launch. It will be used to pay for deploy operation.
+ * 
+ * Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
+ * 
+ * To migrate from Developer Network to Free TON you need to update the endpoints specified in TonClient configuration to Free TON endpoints.
+ * 
  * See the list of supported networks and endpoints here https://docs.ton.dev/86757ecb2/p/85c869-networks
- *
  * */
 
 const { libNode } = require("@tonclient/lib-node");
@@ -69,6 +70,14 @@ function printTransfers(transaction) {
 
 let _giver = null;
 
+/**
+ * Initializes Giver Account that will be used to topup other accounts before deploy.
+ *
+ * Safemultisig wallet is used. If you want to use another contract as Giver -  
+ * read more about how to add a contract to a project here 
+ * https://docs.ton.dev/86757ecb2/p/07f1a5-add-contract-to-your-app-/b/462f33
+ *
+ */
 async function ensureGiver(client) {
     if (!_giver) {
         const address = process.argv[2];
@@ -100,6 +109,13 @@ async function ensureGiver(client) {
 async function runAndWaitForRecipientTransactions(account, functionName, input) {
     const runResult = await account.run(functionName, input);
     const transactions = [];
+
+    // This step is only required if you want to know when the recipent actually receives their tokens.
+    // In Free TON blockchain, transfer consists of 2 transactions (because the blockchain is asynchronous):
+    //  1. Sender sends tokens - this transaction is returned by `Run` method
+    //  2. Recipient receives tokens - this transaction can be caught with `query_transaction_tree method`
+    // Read more about transactions and messages here 
+    // https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/20b3af
     for (const messageId of runResult.transaction.out_msgs) {
         const tree = await account.client.net.query_transaction_tree({
             in_msg: messageId,
@@ -128,9 +144,16 @@ async function walletSend(wallet, address, amount) {
 }
 
 /**
- * Sends some tokens from msig wallet to specified address.
- * This function uses two staged multisignature features.
- * First calls `submitTransaction` then calls `confirmTransaction`.
+ * Withdraws some tokens from Multisig wallet to a specified address.
+ * 
+ * In case of 1 custodian `submitTransaction` method performs full withdraw operation. 
+ * 
+ * In case of several custodians, `submitTransaction` creates a transaction inside the wallet
+ * for other custodians to confirm. 
+ * Other costodians need to invoke  `confirmTransaction` method for confirmation. 
+ * Once enough custodians confirm the transaction it will be withdrawed.
+ * Read more how to work with multisig here 
+ * https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
  *
  * @param {Account} wallet
  * @param {string} address
@@ -154,7 +177,7 @@ async function walletWithdraw(wallet, address, amount) {
  * Topup an account for deploy operation.
  *
  * We need an account which can be used to deposit other accounts.
- * Usually it is called "giver".
+ * We call it "giver".
  *
  * This sample uses already deployed multisig wallet with positive balance as a giver.
  *
@@ -243,7 +266,7 @@ async function iterateTransactions(client) {
 
 /**
  * Demonstrates how to create wallet account,
- * deposits some values to it,
+ * deposit some value to it,
  * withdraw some value from it
  * and then read all transfers related to this account
  *
@@ -258,6 +281,7 @@ async function main(client) {
 
     // In this example we will deploy safeMultisig wallet.
     // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
+
     // The first step - initialize new account object with ABI,
     // target network (client) and signer (previously generated key pair)
     const wallet = new Account(SafeMultisigContract, {
@@ -286,24 +310,28 @@ async function main(client) {
         },
     });
 
-    // Lets make a couple deposits
+    // Lets make a couple of deposits
     console.log("Depositing 6 token...");
     await depositAccount(walletAddress, 6000000000, client);
 
     console.log("Depositing 7 tokens...");
     await depositAccount(walletAddress, 7000000000, client);
 
+
+    // Let's make a couple of withdraws from our wallet to Giver wallet
     const giverAddress = await giver.getAddress();
+
     console.log("Withdrawing 2 tokens...");
     await walletWithdraw(wallet, giverAddress, 2000000000);
 
-    // Now we perform withdraw operation. Let's withdraw 3 tokens
     console.log("Withdrawing 3 tokens...");
     await walletWithdraw(wallet, giverAddress, 3000000000);
 
     const shard = shardFromAddress(walletAddress);
 
-    // Iterate transfers using core
+    // Iterate transfers
+    // See the api reference documentation here
+    // https://tonlabs.github.io/ton-client-js/classes/netmodule.html#create_transaction_iterator
     const iterator = await client.net.create_transaction_iterator({
         start_time: startBlockTime,
         end_time: seconds(Date.now()),
@@ -313,6 +341,7 @@ async function main(client) {
     });
     let has_more = true;
     while (has_more) {
+        // https://tonlabs.github.io/ton-client-js/classes/netmodule.html#iterator_next
         const next = await client.net.iterator_next({
             iterator: iterator.handle,
         });
@@ -321,6 +350,7 @@ async function main(client) {
         }
         has_more = next.has_more;
     }
+    // https://tonlabs.github.io/ton-client-js/classes/netmodule.html#remove_iterator
     await client.net.remove_iterator(iterator);
 }
 
@@ -328,9 +358,9 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            // To migrate to Free TON network, specify its endpoints here
+            // To migrate from Developer Network to Free TON network, specify its endpoints here
             // https://docs.ton.dev/86757ecb2/p/85c869-networks
-            endpoints: ["net1.ton.dev", "net5.ton.dev"],
+            endpoints: ["net1.ton.dev", "net5.ton.dev"], // Developer Network endpoints
         },
     });
     try {
