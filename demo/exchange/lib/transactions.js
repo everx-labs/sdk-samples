@@ -13,6 +13,7 @@ const { queryByIds } = require("./blocks");
  *      },
  *      in_message: ?Message,
  *      out_messages: Message[],
+ *      transfers: TransactionTransfer[],
  *  }} Transaction
  */
 
@@ -48,6 +49,16 @@ const { queryByIds } = require("./blocks");
  *      counterparty: string,
  *      time: number,
  *  }} Transfer
+ */
+
+/**
+ *  @typedef {{
+ *      message: string,
+ *      isDeposit: boolean,
+ *      isBounced: boolean,
+ *      value: string,
+ *      counterparty: string,
+ *  }} TransactionTransfer
  */
 
 /**

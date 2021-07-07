@@ -33,6 +33,19 @@ function hexToBits(hex) {
 
 /**
  *
+ * @param {string} bits
+ * @return {string}
+ */
+function bitsToHex(bits) {
+    let hex = "";
+    for (let i = 0; i < bits.length; i += 4) {
+        hex += Number.parseInt(bits.substr(i, 4), 2).toString(16);
+    }
+    return hex.padEnd(16, "0");
+}
+
+/**
+ *
  * @param {string} s
  * @return {{
  *      workchainId: number,
@@ -65,6 +78,10 @@ class Shard {
     }
 
 
+    static zero() {
+        return new Shard(0, "");
+    }
+
     /**
      *
      * @param {string} s
@@ -75,12 +92,12 @@ class Shard {
         return new Shard(workchainId, tail);
     }
 
-    static zero() {
-        return new Shard(0, "");
-    }
-
     toString() {
         return `${this.workchainId}:${this.prefixBits}`;
+    }
+
+    toHexString() {
+        return `${this.workchainId}:${bitsToHex(this.prefixBits)}`;
     }
 
     clone() {
@@ -90,7 +107,7 @@ class Shard {
     static fromDescr(descr) {
         return new Shard(
             Number(descr.workchain_id),
-            trimEndZeros(hexToBits(trimEndZeros(descr.shard))).slice(0, -1),
+            trimEndZeros(hexToBits(descr.shard.padStart(16, "0"))).slice(0, -1),
         );
     }
 
@@ -101,10 +118,10 @@ class Shard {
      */
     static fromAddress(address) {
         const { workchainId, tail } = parseWorkchainIdPrefix(address);
-        const accountIdHead = tail.substr(0, 64 / 4 + 1);
+        const accountIdHead = tail.substr(0, 15);
         return new Shard(
             workchainId,
-            hexToBits(accountIdHead).substr(0, 64),
+            hexToBits(accountIdHead).substr(0, 60),
         );
     }
 
