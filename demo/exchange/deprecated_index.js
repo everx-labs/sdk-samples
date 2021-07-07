@@ -1,20 +1,7 @@
 /**
- * This sample demonstrates how to perform subsequent blockchain deposits or withdraws reading.
- * You can read either all blockchain transfers, or transfers of specified accounts.
- *
- * Also, for convenience, this sample includes the steps of wallet deploy, deposit and withdraw.
- *
- * To run this sample you need to have a multisig wallet with positive balance,
- * already deployed to the Developer Network. Specify its private key at the launch
- *
- * `node index privateKey`
- *
- * Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisighttps://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
- *
- * To migrate to Free TON you need to update the endpoints specified in TonClient configuration
- * to Free TON endpoints.
- *
- * See the list of supported networks and endpoints here https://docs.ton.dev/86757ecb2/p/85c869-networks
+ * This is a deprecated sample that used a prototype of transaction iterator 
+ * that was later moved to the core library.
+ * See index.js file. This file will be deleted soon. 
  *
  * */
 
