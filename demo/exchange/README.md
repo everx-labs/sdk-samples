@@ -10,12 +10,12 @@ It covers such use-cases as:
 - sequential wallet deposits and withdraws reading
 
 To run this sample you need to have a multisig wallet with positive balance,
-already deployed to the [Developer Network](https://docs.ton.dev/86757ecb2/p/85c869-networks). Specify its private key at the launch.
+already deployed to the [Developer Network](https://docs.ton.dev/86757ecb2/p/85c869-networks). Specify its private key and address at the launch.
 It will be used to pay for deploy operation. 
 
 Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
 
-**To migrate to Free TON you need to update the endpoints specified in TonClient configuration
+**To migrate from Developer Network to Free TON you need to update the endpoints specified in TonClient configuration
 to Free TON endpoints.**
 
 See the list of supported networks and endpoints here https://docs.ton.dev/86757ecb2/p/85c869-networks
@@ -24,5 +24,6 @@ See the list of supported networks and endpoints here https://docs.ton.dev/86757
 
 ```sh
 npm i
-node index privateKey
+node index giverAddress giverPrivateKey
 ```
+Note: giver must be the multisig wallet.
