@@ -10,7 +10,7 @@
  * - sequential wallet deposits and withdraws reading
  * 
  * To run this sample you need to have a multisig wallet with positive balance, already deployed to the Developer Network. 
- * Specify its private key at the launch. It will be used to pay for deploy operation.
+ * Specify its private key and address at the launch. It will be used to pay for deploy operation.
  * 
  * Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
  * 
