@@ -4,7 +4,7 @@ In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js)
 
 ## Prerequisite
 
-* Node.js >= [12.x installed](https://nodejs.org)
+* Node.js >= [14.x installed](https://nodejs.org)
 
 
 ## Install packages & run:
