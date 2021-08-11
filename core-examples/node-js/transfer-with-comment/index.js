@@ -1,18 +1,17 @@
 // This sample shows how to attach a comment to a multisig transfer
 // and decode it
 // Before running this sample deploy multisig wallet to net.ton.dev and place your keys in
-// the project root folder into keys.json file
-
+// the project root folder into keys.json file and multisig account address to address.txt file
 
 const { TonClient, signerNone, abiContract } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
 const fs = require("fs");
 const path = require("path");
 const keyPairFile = path.join(__dirname, "keys.json");
-
+const addressFile = path.join(__dirname, "address.txt");
 const transferAbi = require("./transfer.abi.json");
-const address = "0:25938dfd4c4a9622acdb7180ac0774d61d161eb310403b6bb9506caeaba136da";
-const recipient = "0:acad9bed05bbf1223de0c9c7865d5f34d488487e941f76e888b19640ced190cf";
+
+const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a6312490415";
 
 const multisigContractPackage = {
     // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
@@ -20,7 +19,7 @@ const multisigContractPackage = {
     // Compiled smart contract file
     tvcInBase64: fs.readFileSync(
         "../../../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc").toString(
-        "base64"),
+            "base64"),
 };
 
 (async () => {
@@ -29,7 +28,7 @@ const multisigContractPackage = {
         const tonClient = new TonClient({
             network: {
                 //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
-                endpoints: ["net1.ton.dev","net5.ton.dev"],
+                endpoints: ["net1.ton.dev", "net5.ton.dev"],
                 message_retries_count: 3,
             },
             abi: {
@@ -38,8 +37,15 @@ const multisigContractPackage = {
         });
 
         if (!fs.existsSync(keyPairFile)) {
-            console.log("Please create keys.json file in project root folder  with multisig keys");
+            console.log("Please create keys.json file in project root folder with multisig keys");
             process.exit(1);
+        }
+        let address;
+        if (!fs.existsSync(addressFile)) {
+            console.log("Please create address.txt file in project root folder with multisig address");
+            process.exit(1);
+        } else {
+            address = fs.readFileSync(addressFile, "utf8")
         }
 
         const keyPair = JSON.parse(fs.readFileSync(keyPairFile, "utf8"));
