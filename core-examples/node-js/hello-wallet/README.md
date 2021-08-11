@@ -1,14 +1,13 @@
-# NodeJS SDK HelloWallet example
+# NodeJS SDK Hello example
 
-In this example we deploy solidity contract HelloWallet.sol to [TON OS SE](https://docs.ton.dev/86757ecb2/p/19d886-ton-os-se) (local blockchain), run its on-chain method and run its get-method.
-After observation of this demo you will understand how to create and deploy a contract, how to call its methods on-chain (without and with parameters), how to call its get methods locally.
-[See the detailed sample explanation.](https://docs.ton.dev/86757ecb2/p/33b76d-quick-start/t/214f93)
+In this example we deploy solidity contract Hello.sol to [TON OS SE](https://docs.ton.dev/86757ecb2/p/19d886-ton-os-se) (local blockchain), run its on-chain method (without and with parameters) and run its get-method.
 
 ## Prerequisite
 
 * Node.js >= [14.x installed](https://nodejs.org)
 * [Docker](https://docs.docker.com/desktop/#download-and-install) installed and running
 * [TONDEV CLI](https://docs.ton.dev/86757ecb2/p/179e51-tondev)
+
 
 ## Preparation
 
@@ -25,6 +24,6 @@ See other available [TON OS SE management options in TONDEV](https://docs.ton.de
 ## Install packages & run:
 
 ```sh
-npm i
-npm start
+npm install
+node index.js
 ```
