@@ -6,7 +6,7 @@ After observation of this demo you will understand how to create and deploy a co
 
 ## Prerequisite
 
-* Node.js >= [12.x installed](https://nodejs.org)
+* Node.js >= [14.x installed](https://nodejs.org)
 * [Docker](https://docs.docker.com/desktop/#download-and-install) installed and running
 * [TONDEV CLI](https://docs.ton.dev/86757ecb2/p/179e51-tondev)
 

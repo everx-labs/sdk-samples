@@ -6,7 +6,7 @@ It uses  [ton-nfc-client](https://github.com/tonlabs/ton-nfc-client) to handle N
 
 ## Prerequisite
 
-* Node.js >= [12.x installed](https://nodejs.org)
+* Node.js >= [14.x installed](https://nodejs.org)
 
 ### For Android
 * Java SE Development Kit (JDK) > =1.8

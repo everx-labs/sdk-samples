@@ -4,7 +4,7 @@ In this example we demostrate how to transfer tokens from one contract to anothe
 
 ## Prerequisite
 
-* Node.js >= [12.x installed](https://nodejs.org)
+* Node.js >= [14.x installed](https://nodejs.org)
 
 
 ## Install packages & run:
