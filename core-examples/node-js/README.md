@@ -18,7 +18,7 @@
   
 - **[query_transaction_tree](./query_transaction_tree/)** In this example you will learn how to query transaction tree, triggered by the specified message.
 
-- **[**listen-and-decode](./listen-and-decode/)** In this example we deploy "hello world" contract, subscribe for and decode its messages (including events).
+- **[listen-and-decode](./listen-and-decode/)** In this example we deploy "hello world" contract, subscribe for and decode its messages (including events).
 
 - **[subscription](./subscription/)** In this example we use multisig wallet contract to send tokens from one wallet to another. You will learn how to subscribe to the new transactions and messages of an account.
   
