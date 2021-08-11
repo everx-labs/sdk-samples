@@ -15,20 +15,17 @@ If it helped you, please give it a star:)
   Or explore a more complex [Web application imitating p2p exchange](/demo/simple-web-app).
 
 - Explore new features. 
-  We constantly update the repository with samples that use new features.   
-  Find these samples in [examples](/examples) folder.
+  We constantly update the repository with samples that use new SDK features.   
 
 To get a deeper understanding dive into [SDK guides](https://docs.ton.dev/86757ecb2/p/783f9d-about-sdk) where you can find extensive explanations and descriptions of each step of DApp development on Free TON.
 
 # Repository structure
-`best practices` In this folder we will post samples demonstating best practices of implementation of some use cases
 
-`demo` folder contains demo samples that can be used as a quick start and also can be installed via [TONDEV](https://github.com/tonlabs/tondev).
+`demo` folder contains demo samples that can be used as a quick start and also can be installed via [TONDEV](https://github.com/tonlabs/tondev#install-demo-project) .
 
-`examples` folder contains samples demonstrating different sdk features using high-level SDK functions and is constantly replenished with samples with new sdk features. 
-See news about new samples [here](https://docs.ton.dev/86757ecb2/p/6553fc-api-and-sdk)
+`core_examples` folder contains samples demonstrating different core SDK functionality and is constantly replenished with samples with new core sdk features. At the moment only [@tonclient/core](https://github.com/tonlabs/ton-client-js) JS package samples are present. If you need Rust samples, leave us an issue and we will provide you with it.
 
-`low level` folder contains samples working on low-level sdk functions, which may be useful to implement some complex use-cases.
+`appkit_examples` folder contains samples that use [AppKit - Free TON Javascript Application Kit](https://github.com/tonlabs/appkit-js) - package that is built over the [@tonclient/core](https://tonlabs.github.io/ton-client-js/) package and purposed to simplify writing applications on Free TON
 
 `nfc_card` folder contains examples of projects working with NFC Security Card using React-Native, Swift and Android SDKs.
 
@@ -43,8 +40,8 @@ git submodule update
 
 # Full Documentation 
 * [SDK guides](https://docs.ton.dev/86757ecb2/p/783f9d-about-sdk)
-* [SDK API Reference](https://github.com/tonlabs/TON-SDK/blob/master/docs/modules.md)
-* [Local Blockchain TONOS SE](https://docs.ton.dev/86757ecb2/p/19d886-ton-os-se)
+* [JavaScript API Reference](https://tonlabs.github.io/ton-client-js/)
+* [Local Blockchain TONOS SE](https://github.com/tonlabs/tonos-se)
 * [GraphQL API documentation](https://docs.ton.dev/86757ecb2/p/793337-ton-os-api)
 
 ## Source code
