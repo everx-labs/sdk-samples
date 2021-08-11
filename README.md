@@ -11,8 +11,8 @@ If it helped you, please give it a star:)
 # Why you may need this repository?
 
 - If you want to create your own DApp in Free TON, then SDK samples is a good place to start.  
-  You can start with the very simple [hello application](/demo/hello) in Node.js.
-  Or explore a more complex [Web application imitating p2p exchange](/demo/simple-web-app).
+  You can start with the very simple [hello application](/demo/hello-wallet) in Node.js.
+  Or explore a more complex [Web application imitating p2p exchange](/demo/web_p2p_exchange).
 
 - Explore new features. 
   We constantly update the repository with samples that use new SDK features.   
