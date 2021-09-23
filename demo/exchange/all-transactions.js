@@ -10,10 +10,11 @@ const { internalQueryTransactionsWithTransfers } = require("./transactions");
  * Note that the most recent API data can be present in an inconsistent
  * state. Usually this data relates to the last minute. The older
  * API data is always in consistent state.
- * 
- * Therefore, not to miss any data while reading you can specify the `endTime` option in correspondint methods.
+ *
+ * Therefore, not to miss any data while reading you can specify the `endTime`
+ * option in corresponding methods.
  * Two minutes before now is enough to not miss anything.
- * 
+ *
  * We are currently working on a new feature to allow reliable recent data reading,
  * as soon as it is ready, there will be an announcement and this sample will be updated.
  *
@@ -34,7 +35,7 @@ async function queryAllTransactions(
     }
 
     // transactions are sorted by [time of creation, account, logical time of account(lt)]
-    // so, to paginate, we need to use this filter: 
+    // so, to paginate, we need to use this filter:
     const filter = !after
         ? { now: { ge: startTime } }
         : {
