@@ -6,8 +6,8 @@
  * - wallet deploy
  * - wallet deposit
  * - wallet withdraw
- * - sequential blockchain deposits and withdraws reading
- * - sequential wallet deposits and withdraws reading
+ * - sequential blockchain transactions reading
+ * - sequential wallet transactions reading
  *
  * To run this sample you need to have a multisig wallet with positive balance, already deployed to the Developer Network.
  * Specify its private key and address at the launch. It will be used to pay for deploy operation.
@@ -66,6 +66,8 @@ function printTransfers(transaction) {
  */
 async function main(client) {
 
+    // configures the specified multisig wallet as a wallet to sponsor deploy operation
+    // read more about deploy and other basic consepts here https://ton.dev/faq/blockchain-basic
     const giver = await ensureGiver(client);
 
     // Generate a key pair for a wallet
@@ -82,8 +84,8 @@ async function main(client) {
         signer: signerKeys(walletKeys),
     });
 
-    // Calculate wallet address so that we can sponsor it before deploy
-    // https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/359040
+    // Calculate wallet address so that we can sponsor it before deploy.
+    // Read more about deploy and other basic consepts here https://ton.dev/faq/blockchain-basic
     const walletAddress = await wallet.getAddress();
 
     const startBlockTime = seconds(Date.now());
@@ -120,11 +122,12 @@ async function main(client) {
     console.log("Withdrawing 3 tokens...");
     await walletWithdraw(wallet, giverAddress, 3000000000);
 
-    // Set time upper bound 2 minutes before now – to avoid eventually consistency.
+    
 
-    console.log(`Transfers for ${walletAddress} account since ${startBlockTime}`);
+    console.log(`Transactions for ${walletAddress} account since ${startBlockTime}`);
     let result = await queryAccountTransactions(client, walletAddress, {
         startTime: startBlockTime,
+        // endTime: endBlockTime, // You can set time upper boundary @endTime to 2 minutes before now – to avoid data eventually consistency.
     });
     const countLimit = 200;
     let count = 0;
@@ -138,7 +141,12 @@ async function main(client) {
         });
     }
 
-    console.log(`Transfers for all accounts since ${startBlockTime}`);
+    // Now let's iterate all transactions
+    // Please, notice that we have added upper limit boundary so that we eliminate gaps in read data
+    // due to data eventual consistency.
+    // Currently we are working on a feature that will allow reliable reading of data in realtime (up until current moment in time)
+    // Watch our for announcement. This sample will also be refactored after the feature is released. 
+    console.log(`Transactions of all 0-workchain accounts since ${startBlockTime}`);
     result = await queryAllTransactions(client, {
         startTime: startBlockTime,
     });

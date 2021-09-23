@@ -12,12 +12,15 @@ const emptyResult = {
  * To query next portion specify `after` option equals to the `last` field
  * of the previous result.
  *
- * Note that the most fresh data in database can be presented in inconsistent
- * state. Usually it is data related to the last minute. The older
- * data in database is always in consistent state.
- *
- * To avoid inconsistent data you can specify the `endTime` option.
- * The two minutes before now is enough.
+ * Note that the most recent API data can be present in an inconsistent
+ * state. Usually this data relates to the last minute. The older
+ * API data is always in consistent state.
+ * 
+ * Therefore, not to miss any data while reading you can specify the `endTime` option in correspondint methods.
+ * Two minutes before now is enough to not miss anything.
+ * 
+ * We are currently working on a new feature to allow reliable recent data reading,
+ * as soon as it is ready, there will be an announcement and this sample will be updated.
  *
  * @param {TonClient} client
  * @param {string} accountAddress
