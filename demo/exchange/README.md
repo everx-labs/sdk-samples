@@ -6,8 +6,22 @@ It covers such use-cases as:
 - wallet deploy 
 - wallet deposit
 - wallet withdraw
-- sequential blockchain deposits and withdraws reading
-- sequential wallet deposits and withdraws reading
+- sequential blockchain transactions reading
+- sequential wallet transactions reading
+
+**Attention!**
+Note that the most recent API data can be present in an inconsistent
+state. Usually this data relates to the last minute. The older
+API data is always in consistent state.
+ 
+Therefore, not to miss any data while reading you can specify the `endTime` option in correspondint methods.
+Two minutes before now is enough to not miss anything.
+
+We are currently working on a new feature to allow reliable recent data reading,
+as soon as it is ready, there will be an announcement and this sample will be updated.
+
+
+## How to run the sample?
 
 To run this sample you need to have a multisig wallet with positive balance,
 already deployed to the [Developer Network](https://docs.ton.dev/86757ecb2/p/85c869-networks). Specify its private key and address at the launch.
@@ -26,4 +40,4 @@ See the list of supported networks and endpoints here https://docs.ton.dev/86757
 npm i
 node index giverAddress giverPrivateKey
 ```
-Note: giver must be the multisig wallet.
+**Note: giver must be the multisig wallet.**
