@@ -5,6 +5,9 @@
  *      lt: number,
  *      account_addr: string,
  *      balance_delta: string,
+ *      orig_status: number,
+ *      end_status: number,
+ *      aborted: boolean,
  *      bounce: {
  *          bounce_type: number,
  *      },
@@ -21,6 +24,7 @@
  *      msg_type: number,
  *      src: string,
  *      dst: string,
+ *      bounce: boolean,
  *      dst_transaction: Transaction,
  *  }} Message
  */
@@ -69,14 +73,19 @@ const TRANSACTION_FIELDS = `
     lt
     balance_delta(format:DEC)
     bounce { bounce_type }
+    orig_status
+    end_status
+    aborted
     in_message { 
         value(format:DEC)
         msg_type
+        bounce
         src
     } 
     out_messages {
         value(format:DEC)
         msg_type
+        bounce
         dst
     }
 `;

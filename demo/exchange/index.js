@@ -67,7 +67,7 @@ function printTransfers(transaction) {
 async function main(client) {
 
     // configures the specified multisig wallet as a wallet to sponsor deploy operation
-    // read more about deploy and other basic consepts here https://ton.dev/faq/blockchain-basic
+    // read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
     const giver = await ensureGiver(client);
 
     // Generate a key pair for a wallet
@@ -85,7 +85,7 @@ async function main(client) {
     });
 
     // Calculate wallet address so that we can sponsor it before deploy.
-    // Read more about deploy and other basic consepts here https://ton.dev/faq/blockchain-basic
+    // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
     const walletAddress = await wallet.getAddress();
 
     const startBlockTime = seconds(Date.now());
@@ -122,7 +122,6 @@ async function main(client) {
     console.log("Withdrawing 3 tokens...");
     await walletWithdraw(wallet, giverAddress, 3000000000);
 
-    
 
     console.log(`Transactions for ${walletAddress} account since ${startBlockTime}`);
     let result = await queryAccountTransactions(client, walletAddress, {
@@ -142,13 +141,18 @@ async function main(client) {
     }
 
     // Now let's iterate all transactions
+    //
     // Please, notice that we have added upper limit boundary so that we eliminate gaps in read data
     // due to data eventual consistency.
-    // Currently we are working on a feature that will allow reliable reading of data in realtime (up until current moment in time)
-    // Watch our for announcement. This sample will also be refactored after the feature is released. 
+    //
+    // Currently we are working on a feature that will allow reliable reading of data in realtime
+    // (up until current moment in time)
+    //
+    // Watch our for announcement. This sample will also be refactored after the feature is released.
     console.log(`Transactions of all 0-workchain accounts since ${startBlockTime}`);
     result = await queryAllTransactions(client, {
         startTime: startBlockTime,
+        endTime: seconds(Date.now()) - 20,
     });
     count = 0;
     while (count < countLimit && result.transactions.length > 0) {
@@ -158,6 +162,7 @@ async function main(client) {
         }
         result = await queryAllTransactions(client, {
             after: result.last,
+            endTime: seconds(Date.now()) - 20,
         });
     }
 }
