@@ -39,6 +39,29 @@
  *  }} Transfer
  */
 
+/**
+ * @typedef {{
+ *      now: number,
+ *      account_addr: string,
+ *      lt: number,
+ * } | {}} QueryTransactionsCursor
+ */
+
+/**
+ * @typedef {{
+ *     startTime?: number,
+ *     endTime?: number,
+ *     after?: QueryTransactionsCursor,
+ * }} QueryTransactionsOptions
+ */
+
+/**
+ * @typedef {{
+ *     transactions: Transaction[],
+ *     last: QueryTransactionsCursor,
+ * }} QueryTransactionsResult
+ */
+
 const TRANSACTION_FIELDS = `
     id
     account_addr
@@ -103,6 +126,10 @@ const BounceType = {
     Ok: 2,
 };
 
+function seconds(ms) {
+    return Math.round(ms / 1000);
+}
+
 /**
  * Internal function user in query_first_transactions
  * and query_next_transactions
@@ -110,183 +137,40 @@ const BounceType = {
  * @param {TonClient} client
  * @param {object} filter
  * @param {string} order
- * @returns {Promise<Transaction[]>}
+ * @param {number} [endTime]
+ * @returns {Promise<QueryTransactionsResult>}
  */
-async function internal_query_transactions_with_transfers(
+async function internalQueryTransactionsWithTransfers(
     client,
     filter,
     order,
+    endTime,
 ) {
-    const transactions = (await client.net.query_collection({
+    let transactions = (await client.net.query_collection({
         collection: "transactions",
         result: TRANSACTION_FIELDS,
         filter,
         order: order.split(" ").map(x => ({ path: x, direction: "ASC" })),
     })).result;
+    if (endTime) {
+        transactions = transactions.filter(x => x.now < endTime);
+    }
     transactions.forEach(x => x.transfers = getTransfersFromTransaction(x));
-    return transactions;
-}
-
-/**
- * @typedef {{
- *      time: number,
- *      address: string,
- *      lt: number,
- * } | {}} QueryTransactionsCursor
- */
-
-/**
- * @typedef {{
- *     accountAddress?: string,
- *     startTime?: number,
- *     avoidInconsistentTime?: number,
- *     after?: QueryTransactionsCursor,
- * }} QueryTransactionsOptions
- */
-
-/**
- * @typedef {{
- *     transactions: Transaction[],
- *     last: QueryTransactionsCursor,
- * }} QueryTransactionsResult
- */
-
-/**
- * Query first portion of the transactions since startTime.
- *
- * Note that the most fresh data in database can be presented in inconsistent
- * state. Usually it is data related to the last minute. The older
- * data in database always in consistent state.
- *
- * To avoid inconsistent data you can specify the inconsistentTimeRange in seconds.
- * The two minutes is enough.
- *
- * Optionally you can specify an account address to query
- * only this account transactions.
- *
- * If you omit accountAddress then transactions for all
- * accounts are returned.
- *
- * @param {TonClient} client
- * @param {QueryTransactionsOptions} options Consistency lag in seconds
- * @returns {Promise<QueryTransactionsResult>}
- */
-async function query_transactions(
-    client,
-    options,
-) {
-    const { accountAddress, startTime, after } = options;
-    let params;
-    if (after && !after.lt) {
-        params = undefined;
-    } else if (accountAddress && !after) {
-        params = firstByAccount(accountAddress, startTime);
-    } else if (accountAddress && after) {
-        params = nextByAccount(accountAddress, after);
-    } else if (!accountAddress && !after) {
-        params = firstAllAccounts(startTime);
-    } else {
-        params = nextAllAccounts(after);
-    }
-
-    if (!params) {
-        return {
-            transactions: [],
-            last: {},
-        }
-    }
-
-    if (options.avoidInconsistentTime) {
-        if (filter.now) {
-            filter.now.le = options.avoidInconsistentTime;
-        } else {
-            filter.now = { le: options.avoidInconsistentTime };
-        }
-    }
-
-    const transactions = await internal_query_transactions_with_transfers(
-        client,
-        params.filter,
-        params.orderBy,
-    );
-
     const last = transactions.length > 0 ? transactions[transactions.length - 1] : undefined;
     return {
         transactions,
         last: last
             ? {
-                time: last.now,
-                address: last.account_addr,
+                now: last.now,
+                account_addr: last.account_addr,
                 lt: last.lt,
             }
-            : {}
+            : {},
     };
 }
 
-async function firstByAccount(accountAddress, startTime) {
-    const first = (await client.net.query_collection({
-        collection: "transactions",
-        filter: {
-            account_addr: { eq: accountAddress },
-            now: { ge: startTime },
-        },
-        order: [
-            { path: "now", direction: "ASC" },
-            { path: "account_addr", direction: "ASC" },
-            { path: "lt", direction: "ASC" },
-        ],
-        result: "lt",
-        limit: 1,
-    })).result[0];
-    if (!first) {
-        return undefined;
-    }
-    return {
-        filter: {
-            account_addr: { eq: accountAddress },
-            lt: { ge: first.lt },
-        },
-        orderBy: "account_addr now",
-    };
-}
-
-function nextByAccount(accountAddress, after) {
-    return {
-        filter: {
-            account_addr: { eq: accountAddress },
-            lt: { gt: after.lt },
-        },
-        orderBy: "account_addr lt now"
-    };
-
-}
-
-function firstAllAccounts(startTime) {
-    return {
-        filter: { now: { ge: startTime } },
-        orderBy: "now account_addr lt",
-    };
-}
-
-function nextAllAccounts(after) {
-    return {
-        filter: {
-            now: { gt: after.time },
-            OR: {
-                now: { eq: after.time },
-                account_addr: { gt: after.address },
-                OR: {
-                    now: { eq: after.time },
-                    account_addr: { eq: after.account_addr },
-                    lt: { gt: after.lt },
-                },
-            },
-        },
-        orderBy: "now account_addr lt",
-    };
-
-}
 
 module.exports = {
-    query_transactions
+    seconds,
+    internalQueryTransactionsWithTransfers,
 };

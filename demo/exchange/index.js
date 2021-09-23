@@ -20,15 +20,15 @@
  * */
 
 const { libNode } = require("@tonclient/lib-node");
-const { TonClient } = require("@tonclient/core");
-const { ensureGiver } = require("./wallet");
-const { query_transactions } = require("./transactions");
+const { TonClient, signerKeys } = require("@tonclient/core");
+const { ensureGiver, depositAccount, walletWithdraw } = require("./wallet");
+const { seconds } = require("./transactions");
+const { Account } = require("@tonclient/appkit");
+const { SafeMultisigContract } = require("./contracts");
+const { queryAccountTransactions } = require("./account-transactions");
+const { queryAllTransactions } = require("./all-transactions");
 
 TonClient.useBinaryLibrary(libNode);
-
-function seconds(ms) {
-    return Math.round(ms / 1000);
-}
 
 /**
  * Prints transaction transfer details.
@@ -65,93 +65,90 @@ function printTransfers(transaction) {
  * @param {TonClient} client
  */
 async function main(client) {
+
     const giver = await ensureGiver(client);
-    /*
-        // Generate a key pair for a wallet
-        console.log("Generate new wallet keys");
-        const walletKeys = await client.crypto.generate_random_sign_keys();
 
-        // In this example we will deploy safeMultisig wallet.
-        // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
+    // Generate a key pair for a wallet
+    console.log("Generate new wallet keys");
+    const walletKeys = await client.crypto.generate_random_sign_keys();
 
-        // The first step - initialize new account object with ABI,
-        // target network (client) and signer (previously generated key pair)
-        const wallet = new Account(SafeMultisigContract, {
-            client,
-            signer: signerKeys(walletKeys),
-        });
+    // In this example we will deploy safeMultisig wallet.
+    // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
 
-        // Calculate wallet address so that we can sponsor it before deploy
-        // https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/359040
-        const walletAddress = await wallet.getAddress();
+    // The first step - initialize new account object with ABI,
+    // target network (client) and signer (previously generated key pair)
+    const wallet = new Account(SafeMultisigContract, {
+        client,
+        signer: signerKeys(walletKeys),
+    });
 
-        const startBlockTime = seconds(Date.now());
+    // Calculate wallet address so that we can sponsor it before deploy
+    // https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/359040
+    const walletAddress = await wallet.getAddress();
 
-        // Prepay contract before deploy.
-        console.log(`Sending deploy fee to new wallet at ${walletAddress}`);
-        await depositAccount(walletAddress, 10000000000, client);
+    const startBlockTime = seconds(Date.now());
 
-        console.log(`Deploying new wallet at ${walletAddress}`);
-        // Now lets deploy safeMultisig wallet
-        // Here we specify 1 custodian and 1 reqConfirms
-        // but in real life there can be many custodians as well and more than 1 required confirmations
-        await wallet.deploy({
-            initInput: {
-                owners: [`0x${walletKeys.public}`], // constructor parameters of multisig
-                reqConfirms: 1,
-            },
-        });
+    // Prepay contract before deploy.
+    console.log(`Sending deploy fee to new wallet at ${walletAddress}`);
+    await depositAccount(walletAddress, 10000000000, client);
 
-        // Lets make a couple of deposits
-        console.log("Depositing 6 token...");
-        await depositAccount(walletAddress, 6000000000, client);
+    console.log(`Deploying new wallet at ${walletAddress}`);
+    // Now lets deploy safeMultisig wallet
+    // Here we specify 1 custodian and 1 reqConfirms
+    // but in real life there can be many custodians as well and more than 1 required confirmations
+    await wallet.deploy({
+        initInput: {
+            owners: [`0x${walletKeys.public}`], // constructor parameters of multisig
+            reqConfirms: 1,
+        },
+    });
 
-        console.log("Depositing 7 tokens...");
-        await depositAccount(walletAddress, 7000000000, client);
+    // Lets make a couple of deposits
+    console.log("Depositing 6 token...");
+    await depositAccount(walletAddress, 6000000000, client);
+
+    console.log("Depositing 7 tokens...");
+    await depositAccount(walletAddress, 7000000000, client);
 
 
-        // Let's make a couple of withdraws from our wallet to Giver wallet
-        const giverAddress = await giver.getAddress();
+    // Let's make a couple of withdraws from our wallet to Giver wallet
+    const giverAddress = await giver.getAddress();
 
-        console.log("Withdrawing 2 tokens...");
-        await walletWithdraw(wallet, giverAddress, 2000000000);
+    console.log("Withdrawing 2 tokens...");
+    await walletWithdraw(wallet, giverAddress, 2000000000);
 
-        console.log("Withdrawing 3 tokens...");
-        await walletWithdraw(wallet, giverAddress, 3000000000);
+    console.log("Withdrawing 3 tokens...");
+    await walletWithdraw(wallet, giverAddress, 3000000000);
 
-        // Set time upper bound 2 minutes before now – to avoid eventually consistency.
-    */
-    const walletAddress = "0:d7ef18c1efe6f87f08f0fa07d49876ef12e0e706f272c4692e5fc81cb6ca062a";
-    const startBlockTime = 1632220284;
+    // Set time upper bound 2 minutes before now – to avoid eventually consistency.
+
     console.log(`Transfers for ${walletAddress} account since ${startBlockTime}`);
-    let result = await query_transactions(client, {
-        accountAddress: walletAddress,
+    let result = await queryAccountTransactions(client, walletAddress, {
         startTime: startBlockTime,
     });
-    while (result.transactions.length > 0) {
+    const countLimit = 200;
+    let count = 0;
+    while (count < countLimit && result.transactions.length > 0) {
         for (const transaction of result.transactions) {
             printTransfers(transaction);
+            count += 1;
         }
-        result = await query_transactions(client, {
-            accountAddress: walletAddress,
+        result = await queryAccountTransactions(client, walletAddress, {
             after: result.last,
         });
     }
 
     console.log(`Transfers for all accounts since ${startBlockTime}`);
-    result = await query_transactions(client, {
+    result = await queryAllTransactions(client, {
         startTime: startBlockTime,
     });
-    let count = 0;
-    while (result.transactions.length > 0) {
+    count = 0;
+    while (count < countLimit && result.transactions.length > 0) {
         for (const transaction of result.transactions) {
             printTransfers(transaction);
+            count += 1;
         }
-        count += result.transactions.length;
-        if (count > 100) {
-            break;
-        }
-        result = await query_transactions(client, {
+        result = await queryAllTransactions(client, {
             after: result.last,
         });
     }
