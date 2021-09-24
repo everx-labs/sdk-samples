@@ -17,10 +17,6 @@ const { internalQueryTransactionsWithTransfers } = require("./transactions");
  *
  * We are currently working on a new feature to allow reliable recent data reading,
  * as soon as it is ready, there will be an announcement and this sample will be updated.
- *
- * @param {TonClient} client
- * @param {QueryTransactionsOptions} options Consistency lag in seconds
- * @returns {Promise<QueryTransactionsResult>}
  */
 async function queryAllTransactions(
     client,

@@ -22,11 +22,6 @@ const emptyResult = {
  *
  * We are currently working on a new feature to allow reliable recent data reading,
  * as soon as it is ready, there will be an announcement and this sample will be updated.
- *
- * @param {TonClient} client
- * @param {string} accountAddress
- * @param {QueryTransactionsOptions} options
- * @returns {Promise<QueryTransactionsResult>}
  */
 async function queryAccountTransactions(
     client,
