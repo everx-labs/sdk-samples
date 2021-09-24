@@ -1,6 +1,5 @@
 {
     "dependencies": {
-        "@tonclient/appkit": "^0.1",
         "@tonclient/core": "^1",
         "@tonclient/lib-node": "^1"
     }
