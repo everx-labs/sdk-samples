@@ -59,8 +59,8 @@ function printTransfers(transaction) {
  */
 async function main(client) {
 
-    // configures the specified multisig wallet as a wallet to sponsor deploy operation
-    // read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
+    // Сonfigures the specified multisig wallet as a wallet to sponsor deploy operation
+    // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
     const giver = await ensureGiver(client);
 
     // Generate a key pair for a wallet
@@ -71,18 +71,19 @@ async function main(client) {
     // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
 
     // The first step - initialize new account object with ABI,
-    // target network (client) and signer (previously generated key pair)
+    // target network (client) and signer (previously generated key pair) and 
+    // calculate future wallet address
     const wallet = await getAccount(client, SafeMultisigContract, signerKeys(walletKeys));
 
-    // Calculate wallet address so that we can sponsor it before deploy.
+    // Get future wallet address so that we can sponsor it before deploy.
     // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
     const walletAddress = wallet.address;
 
     const startBlockTime = seconds(Date.now());
 
     // Prepay contract before deploy.
-    console.log(`Sending deploy fee to new wallet at ${walletAddress}`);
-    await depositAccount(walletAddress, 10000000000, client);
+    console.log(`Sending deploy fee from giver wallet ${giver.address} to the new wallet at ${walletAddress}`);
+    await depositAccount(walletAddress, 1000000000, client);
 
     console.log(`Deploying new wallet at ${walletAddress}`);
     // Now lets deploy safeMultisig wallet
@@ -94,27 +95,47 @@ async function main(client) {
     });
 
     // Lets make a couple of deposits
-    console.log("Depositing 6 token...");
-    await depositAccount(walletAddress, 6000000000, client);
+    console.log("Depositing 1 token...");
+    await depositAccount(walletAddress, 2000000000, client);
 
-    console.log("Depositing 7 tokens...");
-    await depositAccount(walletAddress, 7000000000, client);
+    console.log("Depositing 2 tokens...");
+    await depositAccount(walletAddress, 3000000000, client);
 
 
     // Let's make a couple of withdraws from our wallet to Giver wallet
     const giverAddress = await giver.address;
 
     console.log("Withdrawing 2 tokens...");
-    await walletWithdraw(wallet, giverAddress, 2000000000);
+    await walletWithdraw(wallet, giverAddress, 1000000000);
 
     console.log("Withdrawing 3 tokens...");
-    await walletWithdraw(wallet, giverAddress, 3000000000);
+    await walletWithdraw(wallet, giverAddress, 2000000000);
 
+
+    // And here we retrieve all the wallet's transactions since the specified time
+    //
+    // Attention!
+    // Note that the most recent API data can be present in an inconsistent
+    // state. 
+    // This means that if you paginate the data up till the current moment, there is a chance you will miss some of it.
+    //
+    // This happens due to sharded blockchain topology and no logical order of data inserts across
+    // multiple shardchains (data inside 1 shardshain can be easily sorted, but not across them all) which can split and merge, and also due to additional upfront support of high
+    // TPS for future demands.
+    // Usually this data relates to the last minute. The older API data is always in consistent state.
+    //
+    // Therefore, not to miss any data while reading you can specify the `endTime` = (now + 2 minutes) option in correspondint methods.
+    // Two minutes before now is enough not to miss anything.
+    //
+    // We are currently working on a new coursor field to allow reliable recent data pagination,
+    // as soon as it is ready, there will be an announcement and this sample will be updated.
+    // This is a high priority feature for us right now. 
 
     console.log(`Transactions for ${walletAddress} account since ${startBlockTime}`);
     let result = await queryAccountTransactions(client, walletAddress, {
         startTime: startBlockTime,
-        // endTime: endBlockTime, // You can set time upper boundary @endTime to 2 minutes before now – to avoid data eventually consistency.
+        // endTime: endBlockTime,     // You can set an upper time boundary @endTime to 2 minutes before now – to avoid data eventually consistency.
+
     });
     const countLimit = 200;
     let count = 0;
@@ -133,14 +154,13 @@ async function main(client) {
     // Please, notice that we have added upper limit boundary so that we eliminate gaps in read data
     // due to data eventual consistency.
     //
-    // Currently we are working on a feature that will allow reliable reading of data in realtime
-    // (up until current moment in time)
+    // Currently we are working on a feature that will allow reliable reading of recent data
     //
-    // Watch our for announcement. This sample will also be refactored after the feature is released.
-    console.log(`Transactions of all 0-workchain accounts since ${startBlockTime}`);
+    // Watch out for announcements. This sample will also be refactored after the feature is released.
+    console.log(`Transactions of all accounts since ${startBlockTime}`);
     result = await queryAllTransactions(client, {
         startTime: startBlockTime,
-        endTime: seconds(Date.now()) - 20,
+        endTime: seconds(Date.now()) - 20, // we use 20 so that we catch the transactions generated in this sample. Replace with 120.
     });
     count = 0;
     while (count < countLimit && result.transactions.length > 0) {
@@ -150,7 +170,7 @@ async function main(client) {
         }
         result = await queryAllTransactions(client, {
             after: result.last,
-            endTime: seconds(Date.now()) - 20,
+            endTime: seconds(Date.now()) - 20, // we use 20 so that we catch the transactions generated in this sample. Replace with 120.
         });
     }
 }
@@ -159,7 +179,8 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            // To migrate from Developer Network to Free TON network, specify its endpoints here
+            // If you use DApp Server, specify its URL here the same way.
+            // If you want to work with public Free TON API - specify its endpoints 
             // https://docs.ton.dev/86757ecb2/p/85c869-networks
             endpoints: ["net1.ton.dev", "net5.ton.dev"], // Developer Network endpoints
         },

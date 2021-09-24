@@ -5,6 +5,9 @@ let _giver = null;
 
 async function getAccount(client, contract, signer) {
     const abi = abiContract(contract.abi);
+
+    // Let's create deploy message to calculate future contract address
+    // We do not use `call_set` parameter here because it does not affect address calculation
     const address = (await client.abi.encode_message({
         abi,
         signer: signer,
@@ -68,6 +71,7 @@ async function ensureGiver(client) {
             secret,
         }),
     );
+    _giver.address = address;
     return _giver;
 }
 
@@ -92,7 +96,7 @@ async function runAndWaitForRecipientTransactions(account, functionName, input) 
     //  1. Sender sends tokens - this transaction is returned by `Run` method
     //  2. Recipient receives tokens - this transaction can be caught with `query_transaction_tree method`
     // Read more about transactions and messages here
-    // https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/20b3af
+    // https://ton.dev/faq/blockchain-basic
     for (const messageId of runResult.transaction.out_msgs) {
         const tree = await account.client.net.query_transaction_tree({
             in_msg: messageId,
