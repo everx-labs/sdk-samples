@@ -21,9 +21,9 @@
 
 const { libNode } = require("@tonclient/lib-node");
 const { TonClient, signerKeys } = require("@tonclient/core");
-const { ensureGiver, depositAccount, walletWithdraw } = require("./wallet");
+const { ensureGiver, depositAccount, walletWithdraw, getAccount, deployAccount } = require(
+    "./wallet");
 const { seconds } = require("./transactions");
-const { Account } = require("@tonclient/appkit");
 const { SafeMultisigContract } = require("./contracts");
 const { queryAccountTransactions } = require("./account-transactions");
 const { queryAllTransactions } = require("./all-transactions");
@@ -32,9 +32,6 @@ TonClient.useBinaryLibrary(libNode);
 
 /**
  * Prints transaction transfer details.
- *
- * @param {Transaction} transaction
- * @param {Transfer} transfer
  */
 function printTransactionTransfer(transaction, transfer) {
     if (transfer.isDeposit) {
@@ -46,8 +43,6 @@ function printTransactionTransfer(transaction, transfer) {
 
 /**
  * Prints all transaction transfers details.
- *
- * @param {Transaction} transaction
  */
 function printTransfers(transaction) {
     for (const transfer of transaction.transfers) {
@@ -61,8 +56,6 @@ function printTransfers(transaction) {
  * deposit some value to it,
  * withdraw some value from it
  * and then read all transfers related to this account
- *
- * @param {TonClient} client
  */
 async function main(client) {
 
@@ -79,14 +72,11 @@ async function main(client) {
 
     // The first step - initialize new account object with ABI,
     // target network (client) and signer (previously generated key pair)
-    const wallet = new Account(SafeMultisigContract, {
-        client,
-        signer: signerKeys(walletKeys),
-    });
+    const wallet = await getAccount(client, SafeMultisigContract, signerKeys(walletKeys));
 
     // Calculate wallet address so that we can sponsor it before deploy.
     // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
-    const walletAddress = await wallet.getAddress();
+    const walletAddress = wallet.address;
 
     const startBlockTime = seconds(Date.now());
 
@@ -98,11 +88,9 @@ async function main(client) {
     // Now lets deploy safeMultisig wallet
     // Here we specify 1 custodian and 1 reqConfirms
     // but in real life there can be many custodians as well and more than 1 required confirmations
-    await wallet.deploy({
-        initInput: {
-            owners: [`0x${walletKeys.public}`], // constructor parameters of multisig
-            reqConfirms: 1,
-        },
+    await deployAccount(wallet,  {
+        owners: [`0x${walletKeys.public}`], // constructor parameters of multisig
+        reqConfirms: 1,
     });
 
     // Lets make a couple of deposits
@@ -114,7 +102,7 @@ async function main(client) {
 
 
     // Let's make a couple of withdraws from our wallet to Giver wallet
-    const giverAddress = await giver.getAddress();
+    const giverAddress = await giver.address;
 
     console.log("Withdrawing 2 tokens...");
     await walletWithdraw(wallet, giverAddress, 2000000000);

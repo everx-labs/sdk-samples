@@ -1,7 +1,45 @@
-const { Account } = require("@tonclient/appkit");
 const { SafeMultisigContract } = require("./contracts");
-const { signerKeys } = require("@tonclient/core");
+const { signerKeys, abiContract } = require("@tonclient/core");
+
 let _giver = null;
+
+async function getAccount(client, contract, signer) {
+    const abi = abiContract(contract.abi);
+    const address = (await client.abi.encode_message({
+        abi,
+        signer: signer,
+        deploy_set: {
+            tvc: contract.tvc,
+        },
+    })).address;
+    return {
+        client,
+        address,
+        abi,
+        tvc: contract.tvc,
+        signer,
+    };
+}
+
+async function deployAccount(
+    account,
+    constructorInput,
+) {
+    return await account.client.processing.process_message({
+        message_encode_params: {
+            abi: account.abi,
+            signer: account.signer,
+            deploy_set: {
+                tvc: account.tvc,
+            },
+            call_set: {
+                function_name: "constructor",
+                input: constructorInput,
+            },
+        },
+        send_events: false,
+    });
+}
 
 /**
  * Initializes Giver Account that will be used to topup other accounts before deploy.
@@ -9,38 +47,44 @@ let _giver = null;
  * SafeMultisig wallet is used. If you want to use another contract as Giver -
  * read more about how to add a contract to a project here
  * https://docs.ton.dev/86757ecb2/p/07f1a5-add-contract-to-your-app-/b/462f33
- *
  */
 async function ensureGiver(client) {
-    if (!_giver) {
-        const address = process.argv[2];
-        const secret = process.argv[3];
-        if (!address || !secret) {
-            console.log("USE: node index <giver-address> <giver-secret-key>");
-            console.log("Giver must be the safe multisig wallet");
-            process.exit(1);
-        }
-        _giver = new Account(SafeMultisigContract, {
-            client,
-            signer: signerKeys({
-                public: (await client.crypto.nacl_sign_keypair_from_secret_key({ secret }))
-                    .secret.substr(64),
-                secret,
-            }),
-        });
+    if (_giver) {
+        return _giver;
     }
+    const address = process.argv[2];
+    const secret = process.argv[3];
+    if (!address || !secret) {
+        console.log("USE: node index <giver-address> <giver-secret-key>");
+        console.log("Giver must be the safe multisig wallet");
+        process.exit(1);
+    }
+    _giver = await getAccount(
+        client,
+        SafeMultisigContract,
+        signerKeys({
+            public: (await client.crypto.nacl_sign_keypair_from_secret_key({ secret }))
+                .secret.substr(64),
+            secret,
+        }),
+    );
     return _giver;
 }
 
-/**
- *
- * @param {Account} account
- * @param {string} functionName
- * @param {Object} input
- * @return {Promise<Transaction[]>}
- */
 async function runAndWaitForRecipientTransactions(account, functionName, input) {
-    const runResult = await account.run(functionName, input);
+    const runResult = await account.client.processing.process_message({
+        message_encode_params: {
+            address: account.address,
+            abi: account.abi,
+            signer: account.signer,
+            call_set: {
+                function_name: functionName,
+                input,
+            },
+        },
+        send_events: false,
+    });
+
     const transactions = [];
 
     // This step is only required if you want to know when the recipient actually receives their tokens.
@@ -60,11 +104,6 @@ async function runAndWaitForRecipientTransactions(account, functionName, input) 
 
 /**
  * Sends some tokens from msig wallet to specified address.
- *
- * @param {Account} wallet
- * @param {string} address
- * @param {number} amount
- * @returns {Promise<void>}
  */
 async function walletSend(wallet, address, amount) {
     await runAndWaitForRecipientTransactions(wallet, "sendTransaction", {
@@ -87,11 +126,6 @@ async function walletSend(wallet, address, amount) {
  * Once enough custodians confirm the transaction it will be withdrawn.
  * Read more how to work with multisig here
  * https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
- *
- * @param {Account} wallet
- * @param {string} address
- * @param {number} amount
- * @returns {Promise<void>}
  */
 async function walletWithdraw(wallet, address, amount) {
     const transactions = await runAndWaitForRecipientTransactions(wallet, "submitTransaction", {
@@ -115,11 +149,6 @@ async function walletWithdraw(wallet, address, amount) {
  * This sample uses already deployed multisig wallet with positive balance as a giver.
  *
  * In production you can use any other contract that can transfer funds, as a giver.
- *
- * @param {string} address
- * @param {number} amount
- * @param {TonClient} client
- * @returns {Promise<void>}
  */
 async function depositAccount(address, amount, client) {
     await walletSend(await ensureGiver(client), address, amount);
@@ -127,8 +156,8 @@ async function depositAccount(address, amount, client) {
 
 module.exports = {
     ensureGiver,
+    getAccount,
+    deployAccount,
     depositAccount,
-    runAndWaitForRecipientTransactions,
     walletWithdraw,
-    walletSend
 };
