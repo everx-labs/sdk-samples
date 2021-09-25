@@ -71,19 +71,18 @@ async function main(client) {
     // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
 
     // The first step - initialize new account object with ABI,
-    // target network (client) and signer (previously generated key pair) and 
-    // calculate future wallet address
-    const wallet = await getAccount(client, SafeMultisigContract, signerKeys(walletKeys));
-
-    // Get future wallet address so that we can sponsor it before deploy.
+    // target network (client) and previously generated key pair (signer) and 
+    // calculate future wallet address so that we can sponsor it before deploy.
     // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
+    const wallet = await getAccount(client, SafeMultisigContract, signerKeys(walletKeys));
     const walletAddress = wallet.address;
 
+    // Save timestamp before we send the first transaction. We will need it later
     const startBlockTime = seconds(Date.now());
 
     // Prepay contract before deploy.
     console.log(`Sending deploy fee from giver wallet ${giver.address} to the new wallet at ${walletAddress}`);
-    await depositAccount(walletAddress, 1000000000, client);
+    await depositAccount(walletAddress, 2000000000, client);
 
     console.log(`Deploying new wallet at ${walletAddress}`);
     // Now lets deploy safeMultisig wallet
@@ -94,23 +93,16 @@ async function main(client) {
         reqConfirms: 1,
     });
 
-    // Lets make a couple of deposits
-    console.log("Depositing 1 token...");
+    // Lets make a deposit
+    console.log("Depositing 2 tokens...");
     await depositAccount(walletAddress, 2000000000, client);
 
-    console.log("Depositing 2 tokens...");
-    await depositAccount(walletAddress, 3000000000, client);
 
-
-    // Let's make a couple of withdraws from our wallet to Giver wallet
+    // Let's make a withdraw from our wallet to Giver wallet
     const giverAddress = await giver.address;
 
-    console.log("Withdrawing 2 tokens...");
+    console.log(`Withdrawing 2 tokens from ${wallet.walletAddress} to ${giverAddress}...`);
     await walletWithdraw(wallet, giverAddress, 1000000000);
-
-    console.log("Withdrawing 3 tokens...");
-    await walletWithdraw(wallet, giverAddress, 2000000000);
-
 
     // And here we retrieve all the wallet's transactions since the specified time
     //
@@ -120,11 +112,10 @@ async function main(client) {
     // This means that if you paginate the data up till the current moment, there is a chance you will miss some of it.
     //
     // This happens due to sharded blockchain topology and no logical order of data inserts across
-    // multiple shardchains (data inside 1 shardshain can be easily sorted, but not across them all) which can split and merge, and also due to additional upfront support of high
-    // TPS for future demands.
+    // multiple shardchains (data inside 1 shardshain can be easily sorted, but not across them all) which can split and merge
     // Usually this data relates to the last minute. The older API data is always in consistent state.
     //
-    // Therefore, not to miss any data while reading you can specify the `endTime` = (now + 2 minutes) option in correspondint methods.
+    // Therefore, not to miss any data while reading you can specify the `endTime` = (now - 2 minutes) option in correspondint methods.
     // Two minutes before now is enough not to miss anything.
     //
     // We are currently working on a new coursor field to allow reliable recent data pagination,

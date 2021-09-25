@@ -18,10 +18,7 @@ const emptyResult = {
  *
  * Therefore, not to miss any data while reading you can specify the `endTime`
  * option in corresponding methods.
- * Two minutes before now is enough to not miss anything.
- *
- * We are currently working on a new feature to allow reliable recent data reading,
- * as soon as it is ready, there will be an announcement and this sample will be updated.
+ * Two minutes before now is enough not to miss anything.
  */
 async function queryAccountTransactions(
     client,
