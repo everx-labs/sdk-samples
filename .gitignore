@@ -134,3 +134,5 @@ local.properties
 *.d.ts.map
 *.js.map
 /examples/transfer-with-comment/keys.json
+keyPair.json
+seedPhrase.json
