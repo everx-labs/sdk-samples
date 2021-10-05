@@ -9,7 +9,6 @@ const path = require('path')
  */
 const value = 10_000_000_000
 const destAddress = '0:7a867df1edb6654e142376a05fc380f121d24190a1d164f9784bf7c5f7d5521e'
-// const server_address = 'https://net.ton.dev'
 const endpoints = ["net1.ton.dev", "net5.ton.dev"]
 const msigKeysFileName = 'msig.keys.json'
 const msigAbiFileName = 'SafeMultisigWallet.abi.json'

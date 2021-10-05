@@ -1,0 +1,22 @@
+# Insert this query into playground to get the first transaction within the specified time range
+
+query{
+  transactions(filter:{
+    account_addr:{
+      eq:"-1:3333333333333333333333333333333333333333333333333333333333333333"
+    }
+    now:{
+        ge: 1633355388
+    }
+  }
+  limit: 1
+  orderBy:[{path:"now",
+    direction:ASC}
+  ]
+
+  )
+  {
+    id
+    lt
+  }
+}
