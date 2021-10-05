@@ -61,7 +61,7 @@ async function main(client) {
 
 (async () => {
     const client = new TonClient({
-        network: {endpoints: ["main.ton.dev"]},
+        network: {endpoints: ["main2.ton.dev","main3.ton.dev","main4.ton.dev"]},
     });
     try {
         await main(client);
