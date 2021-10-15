@@ -1,0 +1,22 @@
+# Insert this query into playground and paginate by
+
+query{
+  transactions(filter:{
+    account_addr:{
+      eq:"-1:7777777777777777777777777777777777777777777777777777777777777777"
+    }
+    lt:{
+  	  lt:"0xf202f8addc1"
+    }
+    
+  }
+  orderBy:[{path:"lt",
+    direction:DESC}
+  ]
+
+  )
+  {
+    id
+    lt
+  }
+}

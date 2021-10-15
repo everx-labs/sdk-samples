@@ -21,7 +21,6 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
     TonClient.useBinaryLibrary(libNode);
     const client = new TonClient({
         network: {
-            // server_address:'net.ton.dev',
             endpoints: ["net1.ton.dev", "net5.ton.dev"],
             message_retries_count: 0, // default = 5
         },
