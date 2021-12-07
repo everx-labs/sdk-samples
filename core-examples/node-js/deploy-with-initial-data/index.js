@@ -136,11 +136,16 @@ async function main(client) {
         abi,
         deploy_set: {
             tvc: fs.readFileSync('./Timestamp.tvc', "base64"),
+
+            // initial data encoding - please note that this parameters are declared as 'static' in Solidity
             initial_data: {
                 'timestamp': 12345678,
             },
         },
+
         call_set: {
+            // in Solidity `constructor` must be the first method to call on deploy. 
+            // If there is no constructor in the contract, it should still be called.
             function_name: 'constructor',
             input: {}
         },
