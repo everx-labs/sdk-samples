@@ -45,6 +45,10 @@ const ABI = abiContract({
 
     try {
         // Decode initial data and initial public key from a given contract's data
+        // **Attention!** Initial data exists only in state_init(tvc or state_init produced my any other means) 
+        // of a contract before it was deployed. 
+        // To get initial_data you can decode state_init with decode_tvc function, or construct it with `encode_init_data`.
+        // You CAN NOT download initial data of a contract from Graphql API.
         const decodedData = await client.abi.decode_initial_data({
             abi: ABI,
             data: "te6ccgEBBwEARwABAcABAgPPoAQCAQFIAwAWc29tZSBzdHJpbmcCASAGBQADHuAAQQiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIoA==",
