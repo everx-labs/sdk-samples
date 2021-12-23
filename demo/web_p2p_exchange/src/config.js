@@ -23,7 +23,7 @@ const GIVER_SECRET_KEY = '172af540e43a524763dd53b26a066d472a97c4de37d54981705645
 /*
  * Change the following value if the offer contract has been modified and recompiled
  */
-const OFFER_CONTRACT_CODE_HASH = 'd4f02afd27b2dac96acf3b21cde89fdb390ff18a35bc8fbff8fa87434f61f06f'
+const OFFER_CONTRACT_CODE_HASH = '4b26ce76f147ba3b033451b94299efe2f4e5cc31003117720ffc08e2031ae50e'
 
 const WALLET_INITIAL_VALUE = 20 * 1e9 // Buyer and Seller wallets will be deployed with this balance
 
