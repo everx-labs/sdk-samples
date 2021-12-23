@@ -48,16 +48,16 @@ const client = new TonClient({
 
         // Execute `touch` method for newly deployed Hello wallet contract
         // Remember the logical time of the generated transaction
-        let tnxLt = await touchWallet(walletAddress);
+        let transLt = await touchWallet(walletAddress);
 
         // You can run contract's get methods locally
-        await executeGetTimeLocally(walletAddress, tnxLt);
+        await executeGetTimeLocally(walletAddress, transLt);
 
         // Send some tokens from Hello wallet to a random account
         // Remember the logical time of the generated transaction
         const destAddress = await genRandomAddress();
-        tnxLt = await sendValue(walletAddress, destAddress, 100_000_000, walletKeys);
-        await waitForAccountUpdate(destAddress, tnxLt);
+        transLt = await sendValue(walletAddress, destAddress, 100_000_000, walletKeys);
+        await waitForAccountUpdate(destAddress, transLt);
 
         console.log('Normal exit');
         process.exit(0);
@@ -172,14 +172,14 @@ async function touchWallet(address) {
     return lt;
 }
 
-async function waitForAccountUpdate(address, txnId) {
+async function waitForAccountUpdate(address, transLt) {
     console.log('Waiting for account update');
     const startTime = Date.now();
     const account = await client.net.wait_for_collection({
         collection: 'accounts',
         filter: {
             id: { eq: address },
-            last_trans_lt: { gt: txnId },
+            last_trans_lt: { gt: transLt },
         },
         result: 'boc',
     });
@@ -188,7 +188,7 @@ async function waitForAccountUpdate(address, txnId) {
     return account;
 }
 
-async function executeGetTimeLocally(address, tnxId) {
+async function executeGetTimeLocally(address, transLt) {
     // Execute the get method `getTimestamp` on the latest account's state
     // This can be managed in 3 steps:
     // 1. Download the latest Account State (BOC)
@@ -198,7 +198,7 @@ async function executeGetTimeLocally(address, tnxId) {
     // Download the latest state (BOC)
     // See more info about query method here:
     // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
-    const account = await waitForAccountUpdate(address, tnxId).then(({ result }) => result.boc);
+    const account = await waitForAccountUpdate(address, transLt).then(({ result }) => result.boc);
 
     // Encode the message with `getTimestamp` call
     const { message } = await client.abi.encode_message({
