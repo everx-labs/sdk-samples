@@ -172,6 +172,13 @@ async function touchWallet(address) {
     return lt;
 }
 
+
+// Sometimes it is needed to execute getmethods after on-chain calls.
+// This means that the downloaded account state should have the changes made by the on-chain call. 
+// To ensure it, we need to remember the transaction lt (logical time) of the last call
+// and then wait for the account state to have lt > the transaction lt. 
+// Note that account.last_trans_lt is always bigger than transaction.lt because this field stores the end lt of transaction interval
+// For more information about transaction lt interval read TON Blockchain spec https://test.ton.org/tblkch.pdf P. 4.2.1
 async function waitForAccountUpdate(address, transLt) {
     console.log('Waiting for account update');
     const startTime = Date.now();
@@ -191,13 +198,13 @@ async function waitForAccountUpdate(address, transLt) {
 async function executeGetTimeLocally(address, transLt) {
     // Execute the get method `getTimestamp` on the latest account's state
     // This can be managed in 3 steps:
-    // 1. Download the latest Account State (BOC)
+    // 1. Download the latest Account State (BOC) 
     // 2. Encode message
     // 3. Execute the message locally on the downloaded state
 
     // Download the latest state (BOC)
-    // See more info about query method here:
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
+    // See more info about wait_for_collection method here:
+    // https://tonlabs.gitbook.io/ton-sdk/reference/types-and-methods/mod_net#wait_for_collection
     const account = await waitForAccountUpdate(address, transLt).then(({ result }) => result.boc);
 
     // Encode the message with `getTimestamp` call
