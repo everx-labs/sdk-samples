@@ -1,4 +1,4 @@
-const { TonClient, abiContract, signerKeys, signerNone } = require("@tonclient/core");
+const { TonClient, abiContract, signerKeys } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
 // ABI and imageBase64 of a binary HelloWallet contract
 const { HelloWallet } = require('./HelloWallet.js');
@@ -82,11 +82,13 @@ async function getTokensFromGiver(client, account, amount) {
 
     // Make additional checks to ensure success:
     if (transactionTree.transactions.length !== 2) {
-        throw `Something went wrong during requesting funds from the Giver: there must be 2 transactions, but actual count is ${transactionTree.transactions.length}`;
+        throw "Something went wrong during requesting funds from the Giver: there must be 2 transactions, "
+            + `but actual count is ${transactionTree.transactions.length}`;
     }
 
     if (transactionTree.transactions[1].account_addr !== account) {
-        throw "Something went wrong during requesting funds from the Giver: 2nd transaction's account address must be " + account;
+        throw "Something went wrong during requesting funds from the Giver: 2nd transaction's account address must be "
+            + account;
     }
 }
 
@@ -102,7 +104,8 @@ async function main(client) {
     const helloKeys = await client.crypto.generate_random_sign_keys();
     
     // Prepare parameters for deploy message encoding
-    // See more info about `encode_message` method parameters here https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#encode_message
+    // See more info about `encode_message` method parameters here
+    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#encode_message
     const deployOptions = {
         abi,
         deploy_set: {
@@ -160,7 +163,11 @@ async function main(client) {
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. Check your connection. If you are using TON OS SE, make sure that you have started TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(
+                "Network is inaccessible. Check your connection. If you are using TON OS SE, make sure that you have"
+                + " started TON OS SE using `tondev se start`.\n If you run SE on another port or ip, replace"
+                + " http://localhost endpoint with http://localhost:port or http://ip:port in index.js file."
+            );
         } else {
             console.error(error);
         }
