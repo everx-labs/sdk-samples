@@ -21,3 +21,5 @@
 - **[signingBox](./signingBox/)** In this example we demonstrate how to avoid passing your keys to the library by using signingBox interface.
 
 - **[transfer-with-comment](./transfer-with-comment/)** - This sample shows how to attach a comment to a multisig transfer and decode it (like Surf does).
+
+- **[custom-giver](./custom-giver/)** - In this example we configure AppKit to use our own Giver.
