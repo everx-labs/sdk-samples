@@ -11,5 +11,8 @@
     "dependencies": {
         "@tonclient/core": "^1",
         "@tonclient/lib-node": "^1"
+    },
+    "devDependencies": {
+        "eslint": "^8.5.0"
     }
 }
