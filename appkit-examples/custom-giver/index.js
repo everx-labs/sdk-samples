@@ -111,7 +111,7 @@ async function main(client) {
     // In order to implement giver's logics, we must implement `AccountGiver` interface
     const giver = {
         address: giverAddress,
-        sendTo: async (address, value) => await giverSendTo(address, value),
+        sendTo: async (address, value) => giverSendTo(address, value),
     };
 
     // Set Giver for a client
@@ -120,7 +120,7 @@ async function main(client) {
     // Test 1. Create test `HelloWallet` contract in order to test deployment using configured Giver
 
     // Generate an ed25519 key pair for new account
-    const helloAccKeys = await TonClient.default.crypto.generate_random_sign_keys();
+    const helloAccKeys = await client.crypto.generate_random_sign_keys();
 
     // Create test contract
     const helloAcc = new Account(HelloWallet, {
@@ -137,7 +137,7 @@ async function main(client) {
 
     // Test 2. Just send funds from the Giver to a random address
 
-    const helloAcc2Keys = await TonClient.default.crypto.generate_random_sign_keys();
+    const helloAcc2Keys = await client.crypto.generate_random_sign_keys();
 
     const helloAcc2 = new Account(HelloWallet, {
         signer: signerKeys(helloAcc2Keys),
@@ -194,6 +194,6 @@ async function main(client) {
         } else {
             console.error(error);
         }
+        process.exit(1);
     }
-    client.close();
 })();
