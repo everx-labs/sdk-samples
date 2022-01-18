@@ -39,3 +39,5 @@
 - **[cache](./cache/)** - In this example you will learn how to use cached account BOC in tvm.run_tvm method to increase speed of tvm execution.
 
 - **[custom-giver](./custom-giver/)** - In this example you will learn how to use your own Giver in the core SDK.
+- 
+- **[blockchain-statistics](./blockchain-statistics)** - In this example you will learn how to obtain simple blockchain statistics.
