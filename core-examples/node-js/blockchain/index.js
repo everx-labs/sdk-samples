@@ -1,32 +1,45 @@
 const { TonClient } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@tonclient/lib-node")
 
-(async () => {
+;(async () => {
     try {
         // Link the platform-dependable TON-SDK binary with the target Application in Typescript
-        // This is a Node.js project, so we link the application with `libNode` binary 
+        // This is a Node.js project, so we link the application with `libNode` binary
         // from `@tonclient/lib-node` package
         // If you want to use this code on other platforms, such as Web or React-Native,
         // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
         // (see README in  https://github.com/tonlabs/ton-client-js )
         TonClient.useBinaryLibrary(libNode);
-        client = new TonClient({
+        const client = new TonClient({
             network: {
-                endpoints: ["main.ton.dev"]
-            }
+                endpoints: ["main.ton.dev"],
+            },
         });
 
         // Get last key-block:
-        let result = (await client.net.query({
-            query: '{blockchain {key_blocks(last: 1) {' +
-                'edges {node {id seq_no hash file_hash}}}}}'
-        }));
 
-        console.log(`Last key-block:`)
+        let result = await client.net.query({
+            query: `{
+                      blockchain {
+                        key_blocks(last: 1) {
+                          edges {
+                            node {
+                              id
+                              seq_no
+                              hash
+                              file_hash
+                            }
+                          }
+                        }
+                      }
+                    }`,
+        });
+
+        console.log("Last key-block:");
         const keyBlock = result.result.data.blockchain.key_blocks.edges[0].node;
-        console.log('seq_no:', keyBlock.seq_no)
-        console.log('hash:', keyBlock.hash)
-        console.log('file_hash:', keyBlock.file_hash)
+        console.log("seq_no:", keyBlock.seq_no);
+        console.log("hash:", keyBlock.hash);
+        console.log("file_hash:", keyBlock.file_hash);
 
         /*
             Sample output:
@@ -38,16 +51,36 @@ const { libNode } = require("@tonclient/lib-node");
          */
 
         // Get workchain blocks for the last key-block:
-        result = (await client.net.query({
-            query: `{blockchain {workchain_blocks(master_seq_no: {start: ${keyBlock.seq_no} end: ${keyBlock.seq_no + 1}}) {` +
-                'edges {node {workchain_id shard seq_no hash file_hash}}}}}'
-        }));
+        result = await client.net.query({
+            query: `{
+                      blockchain {
+                        workchain_blocks(
+                          master_seq_no: { 
+                            start: ${keyBlock.seq_no},
+                            end: ${keyBlock.seq_no + 1}
+                          }
+                        ) {
+                          edges {
+                            node {
+                              workchain_id
+                              shard
+                              seq_no
+                              hash
+                              file_hash
+                            }
+                          }
+                        }
+                      }
+                    }`,
+        });
 
-        console.log(`\nWorkchain blocks for the key-block with seq_no = ${keyBlock.seq_no}:`)
+        console.log(`\nWorkchain blocks for the key-block with seq_no = ${keyBlock.seq_no}:`);
 
-        for (block of result.result.data.blockchain.workchain_blocks.edges) {
+        for (const block of result.result.data.blockchain.workchain_blocks.edges) {
             const blockNode = block.node;
-            console.log(`${blockNode.workchain_id}:${blockNode.shard}:${blockNode.seq_no}, hash: ${blockNode.hash}, file_hash: ${blockNode.file_hash}`)
+            console.log(
+                `${blockNode.workchain_id}:${blockNode.shard}:${blockNode.seq_no}, hash: ${blockNode.hash}, file_hash: ${blockNode.file_hash}`,
+            );
         }
 
         /*
@@ -75,16 +108,34 @@ const { libNode } = require("@tonclient/lib-node");
          */
 
         // Get workchain transactions with amount more than 1 token for the last key-block:
-        result = (await client.net.query({
-            query: `{blockchain {workchain_transactions(master_seq_no: {start: ${keyBlock.seq_no} end: ${keyBlock.seq_no + 1}} min_balance_delta: 1000000000) {` +
-                'edges {node {now_string balance_delta(format: DEC) aborted}}}}}'
-        }));
+        result = await client.net.query({
+            query: `{ 
+                   blockchain {
+                     workchain_transactions(
+                       master_seq_no: {start: ${keyBlock.seq_no} end: ${keyBlock.seq_no + 1}}
+                       min_balance_delta: 1000000000
+                     ) {
+                       edges {
+                         node {
+                           now_string
+                           balance_delta(format: DEC) 
+                           aborted
+                         }
+                       }
+                     }
+                   }
+                 }`,
+        });
 
-        console.log(`\nWorkchain transactions for the key-block with seq_no = ${keyBlock.seq_no} and value more than 1 token:`)
+        console.log(
+            `\nWorkchain transactions for the key-block with seq_no = ${keyBlock.seq_no} and value more than 1 token:`,
+        );
 
-        for (transaction of result.result.data.blockchain.workchain_transactions.edges) {
+        for (const transaction of result.result.data.blockchain.workchain_transactions.edges) {
             const trans = transaction.node;
-            console.log(`${trans.now_string}, balance change: ${trans.balance_delta}, aborted: ${trans.aborted}`)
+            console.log(
+                `${trans.now_string}, balance change: ${trans.balance_delta}, aborted: ${trans.aborted}`,
+            );
         }
 
         /*
@@ -95,16 +146,33 @@ const { libNode } = require("@tonclient/lib-node");
          */
 
         // Get elector transactions for the last key-block:
-        result = (await client.net.query({
-            query: `{blockchain {account_transactions(master_seq_no: {start: ${keyBlock.seq_no} end: ${keyBlock.seq_no + 1}} account_address: "-1:3333333333333333333333333333333333333333333333333333333333333333") {` +
-                'edges {node {now_string account_addr balance_delta(format: DEC) aborted}}}}}'
-        }));
+        result = await client.net.query({
+            query: `{ 
+                 blockchain {
+                   account_transactions(
+                     master_seq_no: {start: ${keyBlock.seq_no} end: ${keyBlock.seq_no + 1}}
+                     account_address: "-1:3333333333333333333333333333333333333333333333333333333333333333"
+                 ) {
+                   edges {
+                     node {
+                       now_string
+                       account_addr
+                       balance_delta(format: DEC)
+                       aborted
+                     }
+                   }
+                 }
+               }
+             }`,
+        });
 
-        console.log(`\nElector transactions for the key-block with seq_no = ${keyBlock.seq_no}:`)
+        console.log(`\nElector transactions for the key-block with seq_no = ${keyBlock.seq_no}:`);
 
-        for (transaction of result.result.data.blockchain.account_transactions.edges) {
+        for (const transaction of result.result.data.blockchain.account_transactions.edges) {
             const trans = transaction.node;
-            console.log(`${trans.now_string}, account: ${trans.account_addr}, balance change: ${trans.balance_delta}, aborted: ${trans.aborted}`)
+            console.log(
+                `${trans.now_string}, account: ${trans.account_addr}, balance change: ${trans.balance_delta}, aborted: ${trans.aborted}`,
+            );
         }
 
         /*
@@ -118,9 +186,10 @@ const { libNode } = require("@tonclient/lib-node");
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible.`);
+            console.error("Network is inaccessible.");
         } else {
             console.error(error);
         }
+        process.exit(1);
     }
 })();
