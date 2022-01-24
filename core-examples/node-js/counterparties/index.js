@@ -10,7 +10,7 @@ const { libNode } = require("@tonclient/lib-node");
         // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
         // (see README in  https://github.com/tonlabs/ton-client-js )
         TonClient.useBinaryLibrary(libNode);
-        client = new TonClient({
+        const client = new TonClient({
             network: {
                 endpoints: ["main.ton.dev"]
             }
@@ -19,19 +19,28 @@ const { libNode } = require("@tonclient/lib-node");
         // Get first 5 counterparties:
         const N = 5;
         let result = (await client.net.query({
-            query: '{' +
-                `counterparties(account: "-1:3333333333333333333333333333333333333333333333333333333333333333", first: ${N})` +
-                '{account counterparty last_message_at last_message_is_reverse last_message_value(format: DEC)}}'
+            query: `{
+                        counterparties(
+                            account: "-1:3333333333333333333333333333333333333333333333333333333333333333"
+                            first: ${N}
+                        ) {
+                            account
+                            counterparty
+                            last_message_at
+                            last_message_is_reverse
+                            last_message_value(format: DEC)
+                        }
+                    }`
         }));
 
-        console.log(`First ${N} counterparties of the Elector address:`)
+        console.log(`First ${N} counterparties of the Elector address:`);
         for (const counterparty of result.result.data.counterparties) {
             console.log(
                 `${counterparty.counterparty}:`,
-                (counterparty.last_message_is_reverse ? '-' : '')
+                (counterparty.last_message_is_reverse ? "-" : "")
                 + counterparty.last_message_value,
-                'nanotokens',
-                'at',
+                "nanotokens",
+                "at",
                 new Date(counterparty.last_message_at * 1000).toLocaleString()
             );
         }
@@ -50,7 +59,7 @@ const { libNode } = require("@tonclient/lib-node");
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible.`);
+            console.error("Network is inaccessible.");
         } else {
             console.error(error);
         }
