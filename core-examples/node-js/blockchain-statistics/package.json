@@ -13,6 +13,6 @@
         "@tonclient/lib-node": "^1"
     },
     "devDependencies": {
-        "eslint": "^8.5.0"
+        "eslint": "^8.7.0"
     }
 }
