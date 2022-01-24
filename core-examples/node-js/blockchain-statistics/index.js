@@ -10,20 +10,54 @@ const { libNode } = require("@tonclient/lib-node");
         // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
         // (see README in  https://github.com/tonlabs/ton-client-js )
         TonClient.useBinaryLibrary(libNode);
-        client = new TonClient({
+        const client = new TonClient({
             network: {
                 endpoints: ["main.ton.dev"]
             }
         });
 
         let result = (await client.net.query({
-            query: '{ statistics { version' +
-                ' blocks { totalCount countByCurrentValidators ratePerSecond ratePerSecond }' +
-                ' messages { totalCount ratePerSecond }' +
-                ' transactions { totalOrdinaryCount lastDayOrdinaryCount ratePerSecond }' +
-                ' accounts { totalCount totalSupply amountOnGivers circulatingSupply lastDayCount accountTypesCount }' +
-                ' validators { totalCount lastCycleCountDelta totalStaked rewardsPer30Days apr }' +
-                ' depools { activeDepoolCount activeParticipantsCount totalRewards totalStaked }}}'
+            query: `{ 
+                        statistics { 
+                            version
+                            blocks { 
+                                totalCount
+                                countByCurrentValidators
+                                ratePerSecond
+                                ratePerSecond
+                            }
+                            messages {
+                                totalCount
+                                ratePerSecond
+                            }
+                            transactions {
+                                totalOrdinaryCount
+                                lastDayOrdinaryCount
+                                ratePerSecond
+                            }
+                            accounts {
+                                totalCount
+                                totalSupply
+                                amountOnGivers
+                                circulatingSupply
+                                lastDayCount
+                                accountTypesCount
+                            }
+                            validators {
+                                totalCount
+                                lastCycleCountDelta
+                                totalStaked
+                                rewardsPer30Days
+                                apr
+                            }
+                            depools {
+                                activeDepoolCount
+                                activeParticipantsCount
+                                totalRewards
+                                totalStaked
+                            }
+                        }
+                    }`
         }));
 
         console.log(result.result.data.statistics);
@@ -71,7 +105,7 @@ const { libNode } = require("@tonclient/lib-node");
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible.`);
+            console.error("Network is inaccessible.");
         } else {
             console.error(error);
         }
