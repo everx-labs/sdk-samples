@@ -12,7 +12,13 @@ const { libNode } = require("@tonclient/lib-node");
         TonClient.useBinaryLibrary(libNode);
         const client = new TonClient({
             network: {
-                endpoints: ["main.ton.dev"]
+                endpoints: [
+                    "eri01.main.everos.dev",
+                    "gra01.main.everos.dev",
+                    "gra02.main.everos.dev",
+                    "lim01.main.everos.dev",
+                    "rbx01.main.everos.dev",
+                ],
             }
         });
 
