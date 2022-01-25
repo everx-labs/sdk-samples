@@ -4,7 +4,11 @@ const config = {
     pass: 'integration',
     networks: {
         ton: {
-            servers: ['https://net.ton.dev/' /*'https://cinet.tonlabs.io'*/],
+            servers: [
+                "eri01.net.everos.dev",
+                "rbx01.net.everos.dev",
+                "gra01.net.everos.dev",
+            ],
             log_verbose: false,
             messageRetriesCount: 3 ,
             messageExpirationTimeout: 20000

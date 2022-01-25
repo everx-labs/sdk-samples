@@ -23,7 +23,15 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 TonClient.useBinaryLibrary(libNode);
 
 (async () => {
-    const client = new TonClient({ network: { endpoints: ["net1.ton.dev", "net5.ton.dev"] } });
+    const client = new TonClient({
+        network: {
+            endpoints: [
+                "eri01.net.everos.dev",
+                "rbx01.net.everos.dev",
+                "gra01.net.everos.dev",
+            ]
+        }
+    });
     try {
         if (!fs.existsSync(keyPairFile)) {
             console.log("Please use preparation.js to generate key pair and seed phrase");
@@ -54,7 +62,7 @@ TonClient.useBinaryLibrary(libNode);
 
         // Balance is stored as HEX so we need to convert it.
         if (info.acc_type === ACCOUNT_TYPE_UNINITIALIZED && BigInt(info.balance) <= BigInt(CONTRACT_REQUIRED_DEPLOY_TOKENS)) {
-            console.log(`Balance of ${address} is too low for deploy to net.ton.dev`);
+            console.log(`Balance of ${address} is too low for deploy to DevNet`);
             process.exit(1);
         }
 

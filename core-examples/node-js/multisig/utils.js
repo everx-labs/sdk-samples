@@ -85,7 +85,11 @@ function getPreparedSigner() {
 }
 
 module.exports = {
-    networkEndpoints: ["net1.ton.dev", "net5.ton.dev"],
+    networkEndpoints: [
+        "eri01.net.everos.dev",
+        "rbx01.net.everos.dev",
+        "gra01.net.everos.dev",
+    ],
     SafeMultisigContract: loadContract("safemultisig/SafeMultisigWallet"),
     prepareSignerWithRandomKeys,
     getPreparedSigner,
