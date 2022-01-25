@@ -12,16 +12,52 @@ const { libNode } = require("@tonclient/lib-node")
         TonClient.useBinaryLibrary(libNode);
         const client = new TonClient({
             network: {
-                endpoints: ["main.ton.dev"],
+                endpoints: [
+                    "eri01.main.everos.dev",
+                    "gra01.main.everos.dev",
+                    "gra02.main.everos.dev",
+                    "lim01.main.everos.dev",
+                    "rbx01.main.everos.dev",
+                ],
             },
         });
 
-        // Get last key-block:
-
+        // Get masterchain `seq_no` range for the last 3 days:
+        const days = 3;
+        const now = Math.trunc(Date.now() / 1000);
         let result = await client.net.query({
             query: `{
                       blockchain {
-                        key_blocks(last: 1) {
+                        master_seq_no_range(
+                            time_start: ${now - days * 24 * 60 * 60}
+                            time_end: ${now}
+                        ) {
+                            start
+                            end
+                        }
+                      }
+                    }`,
+        });
+
+        const range = result.result.data.blockchain.master_seq_no_range;
+        console.log(`Masterchain seq_no range for the last ${days} days: [${range.start}..${range.end}]`);
+
+        /*
+            Sample output:
+
+            Masterchain seq_no range for the last 3 days: [14158087..14241248]
+         */
+
+        // Get the first key-block for the last 3 days:
+        result = await client.net.query({
+            query: `{
+                      blockchain {
+                        key_blocks(
+                            seq_no: {
+                                start: ${range.start}
+                                end: ${range.end}
+                            }
+                            first: 1) {
                           edges {
                             node {
                               id
@@ -35,7 +71,7 @@ const { libNode } = require("@tonclient/lib-node")
                     }`,
         });
 
-        console.log("Last key-block:");
+        console.log(`\nFist key-block for the last ${days} days:`);
         const keyBlock = result.result.data.blockchain.key_blocks.edges[0].node;
         console.log("seq_no:", keyBlock.seq_no);
         console.log("hash:", keyBlock.hash);
@@ -44,10 +80,10 @@ const { libNode } = require("@tonclient/lib-node")
         /*
             Sample output:
 
-            Last key-block:
-            seq_no: 14078870
-            hash: e33b0843d217f5e3ecdfd220cf5652ab774a168cc8f29eb53381d53ccdca7f79
-            file_hash: 24187972626ebf5f33015b3017412f362cbe96d840fd5d7d71a8afa6f8c34c37
+            Fist key-block for the last 3 days:
+            seq_no: 14159649
+            hash: 434a19f25cb0061a71d8bfcdecf43f5d074be8680e0cbdaa49c4f78079fe0748
+            file_hash: 9e5a1b6a6dc8f0b58dee7d5b91d6cf3e66a88e3b91c09f18403e3be9d477f4bf
          */
 
         // Get workchain blocks for the last key-block:
@@ -86,25 +122,30 @@ const { libNode } = require("@tonclient/lib-node")
         /*
             Sample output:
 
-            Workchain blocks for the key-block with seq_no: 14078870
-            0:1800000000000000:20440973, hash: 8d90a4123e8dec06ef2d40e289c5c29be72879e7664d727ae585b0285ef54f0d, file_hash: 145faac5c33176b11791eb8e01c9ddb7391743e1e3a705ebdde1a10d4e8ad841
-            0:5800000000000000:20448865, hash: bbbd1619cf8b235a9e4b0e8b1e8439a75f71fbd2d40fcca027afd4854642cf66, file_hash: 1219f0cc184eb8980263ffde45920b1edfd8c1e1e382d4dfdf2f1ce4f78fe558
-            0:6800000000000000:20480153, hash: 9760c6d4368bf4a03432b3e5a1cf0a794db3de37ba9034bdf8d6de84cff2c317, file_hash: e53fe4a2e8de836fba77edad025d24c33d36239746ad2298d8a38c68ab10dbb9
-            0:a800000000000000:20494441, hash: 92ec22b2c9633a3cf130927f9256a801762689bcf822f2ec952bbe8c6e2f3bb8, file_hash: 235909f480455ec115a200fa7b5c91d95ab94099076c00137a012caef605bde9
-            0:0800000000000000:20494984, hash: 79b1036f47c69922018b81c14b6ba5c61d04b294d7853c5b952fbefba3f393db, file_hash: ed296fd5cdf48419cabb82e70495f440544172056edc6aa96d2ec212c12c9cbb
-            0:2800000000000000:20496070, hash: 12f634d2ae7432402c327666473e90d392ecdd58839a54402b3ec14de6c79f55, file_hash: f3fe27a331abe702a77103dd858e1e895ba586e347991ef1633ae1ff3f681135
-            0:f800000000000000:20496396, hash: 49e2d51fb6ee3901aa572947bdfbdc45166e1db8d2dff0ce9beba29780b7b1e9, file_hash: 8d6406cf8170b4f8ecbaf2c89168e0deeaa7ce4bc7f0dda8951af790dc14b25c
-            0:8800000000000000:20497839, hash: f3f107dbc46a696849c0487284491ce9d0e6c934152da94542334fd7e4ee7275, file_hash: bf64f068d738c31750c6a25ba446f5293a00581605d3b7f73f8e6a48443b4689
-            0:3800000000000000:20498191, hash: 82128dcb7ace37b99add2ca2f3a747b4106f9ab5430e2856b605b2b24875518f, file_hash: a43d2adac81cf352afee438520f0d2d95d8d7c0edef57b070fdba0e8a5041e17
-            0:9800000000000000:20498687, hash: 1ee4e103de4934fea4d97b3d4936b0ae226437889a47c6a3f5ad3674201d08a5, file_hash: 188da068f3d46767d30629b48cdde0af3d609a29198a16a3b3a87521c5b484f0
-            0:d800000000000000:20499438, hash: 5810b5065d57d4534e254d461529d744d982fb4b97e56f2cb4ac7bc412445029, file_hash: 7f7011d166c0c521ad13b4e757764163676290c2ef40f453867fcdd753ca84b8
-            0:d800000000000000:20499439, hash: f2b0386d1699dc167c7a7604bd79e226d576e2edae992d51f3660ce1fd2fe288, file_hash: 25f2c0ca57f5530b5bb21ee3d2b694d614c1fb72c0cae7ea3d9f83933433e72b
-            0:4800000000000000:20500772, hash: 76c97935b0a45570f16e5390f1a80eaba10421ca1c534251d1e8728d353d5729, file_hash: f91b5bd95eb6c7e03c1bf9a8d2d1267297e3dab5e3c2bc741a519dde9b7f62d6
-            0:7800000000000000:20500821, hash: 39f6584c35391cda72ac73fff9927dc7d97d46e4029833b14cedef40b3901fbb, file_hash: 7a71242a7f7a662ac8ef9b733bd2bb171db15bd2d79b78c06c372f9b5664ef2f
-            0:c800000000000000:20502821, hash: fb3139397119f8239cbd424625104ab76de839de7e44cd84f754c70ee059efca, file_hash: bbe4b4cbb582056927dfb3b5a9e34f5dda67bef9c02418df5d0727ba8c7f9a6d
-            0:b800000000000000:20505618, hash: 2fff6ad7a5268450ad4181d273615024b7f537e9aa1515da0d97c36bea698750, file_hash: 1a8dd37701740827306a3709fe72e187251662d20ec80abb33c48c3231f6b264
-            0:e800000000000000:20506918, hash: 432c86eeb58a610ccef970b9a877ea02652559804bd255460a87ca88a986e317, file_hash: 53649e01d025ff4b613b063c42a248fda3b9e78277c26142ce7ba367839bacb8
-            -1:8000000000000000:14078870, hash: e33b0843d217f5e3ecdfd220cf5652ab774a168cc8f29eb53381d53ccdca7f79, file_hash: 24187972626ebf5f33015b3017412f362cbe96d840fd5d7d71a8afa6f8c34c37
+            Workchain blocks for the key-block with seq_no = 14159649:
+            0:1800000000000000:20531085, hash: fd1bb08ae03a45ba83a72d2a7c7af72e897d557b2b1bd438d690ad5c64fd9a49, file_hash: 3318f2373b3ef2cd45fa55a734838a03b969607f5e5d141388d1c4a234c99cb4
+            0:1800000000000000:20531086, hash: 2d65e9eedc28e72f960ce2d5451ad7defa8dfcf740ca1b2d17bad07d5c198ea4, file_hash: f02bb8ebe4abc66352f301ef55d0715df47a23fe6093009a6cbd77a4585ac696
+            0:5800000000000000:20539059, hash: 390d90f019ee94ef59c3f9dc6f96ee02000ebd6cceba888401017ac6528d027a, file_hash: 2e6b1ab3e22228656b95e436b9c97f3b48a8bddbe6be134628be2136abcffb20
+            0:5800000000000000:20539060, hash: c87c2582efc88cd377180e98655905cdb1ffc8c9a404e5e1650717d9a5462097, file_hash: 6edb57a512e39b6bcc909dd6c6cd513015295a09857c3db0b56ca6c595f9e47e
+            0:6800000000000000:20570373, hash: d0df4087fd67a8df3697fc236547c91835bccdcc9046d8712611db0962ad1a0f, file_hash: 6a35c2774c5b175cd795d102c2521ff602c4043ebe777d52b4f12effc0d88c95
+            0:a800000000000000:20584663, hash: d863926d1d8be71ff38d6ff9aea4e8cc2c713bd8fe3e820356b6b915996fcf06, file_hash: bc75298d14087d5fddbed3fe935168eb1864a076dec9bbcc4e96b9c45414a765
+            0:0800000000000000:20585179, hash: de95c41692cbe203e149659c9b747b78f00b05b6089a5cb105ff02355bb7cded, file_hash: 0d3260512abd6725529ddc04a1d5b4fdab8cd843acf827bdccff606323674f1c
+            0:2800000000000000:20586353, hash: 10936c511a836e53bdb287285b71961fec2c3efb3d3bb7025385917fba5bfed7, file_hash: 09c261aaa262bd7dc2fbfcfe4a802dabeced2c75af10c2acb6e70edad0e6f864
+            0:f800000000000000:20586443, hash: a5f4b0cbecbc89b18b8ed9c44214eab81d056a20668f8fa77f76ef0dcd9595a8, file_hash: 0405c4277bf4b3237679ee61086052081d63041c225cdefcdfcf36bfe26f0e2a
+            0:8800000000000000:20587996, hash: fe7ed440ede03501032f1e3c41737f5cb93322568fef2beb5d59ca64281c06a0, file_hash: c059bc3035c2aa6b2683b255a9e289f8c9d57514ff4fd8faf5224bd565debc6b
+            0:8800000000000000:20587997, hash: a7fb62f6353db06bbb6559bb63cb897d1cbe45fb118b399c36bc4dd658a223b7, file_hash: 8258a50350642f57a69bd8cbf5a930c6a99fd5046fb69c6c830ae756792fa67c
+            0:3800000000000000:20588497, hash: 23ddc4ade5476be591ae1d2e49e3415a09550c9b87a12921694b32b92b5b8592, file_hash: abc07ff56ac31f51354af78dbbfa0be0d748ff4033fed8ac76e13d44c5921166
+            0:9800000000000000:20588872, hash: 32c3659f3df0a767f1a9bad2e5c376f2ff3aacf10ae57d5540e449567a14c87b, file_hash: a85cc8aa05284fe7d889673331ef9e5851a34c9f12ec0430797756e76473f87d
+            0:9800000000000000:20588873, hash: 1488246cf729eb7f34fd316eb705373c6dd55c50fb5221bdd8678db7f07d9cc5, file_hash: 8cb67cd7c152da3891a707273fd6a8463d6f7540f8868d4b19d5e36d38938200
+            0:d800000000000000:20589596, hash: 551a2dd1c29246a8b5be36f5007b96e3612cde78ccdac232c30abd57b9130985, file_hash: 16fc1e38467ff132ae9bb5a2ecad700de1a9280a437eabac14bf5f6b9c64a779
+            0:d800000000000000:20589597, hash: c34a6f559cdc762010257d8378818e9798dd3bc1ca212fe4ee727ce6faf45a78, file_hash: 08a38b77f83b43b15c7158edeadf4496337316d4ea587e32c38042527f83e67a
+            0:4800000000000000:20590985, hash: 84036418e04bd3b673b6cd7ed8a1a3470e66d3fa8ca0e1a17511f944ef9d5925, file_hash: dea5fa932b69817e747b5222cade7883333830343bfd37ed115bdb2f80bb67e3
+            0:4800000000000000:20590986, hash: 674ce5b8df74e0f333e16202e35cf7dc0de9f00179917d6f44d7da1c8e321cee, file_hash: 3b825ae5fcb79a5993aba86c0feb918e95eca3317c4c571554870dcde0484f54
+            0:7800000000000000:20591210, hash: 091e6e6d3e181d5d49ea76617963dfa37279315efe23a75ce07891eaef33e768, file_hash: 460a2dfce13335e877a07c0f61ea8d6192b68b4dddf924d9597c8ae8345b4267
+            0:b800000000000000:20595790, hash: ac833950d2663773e249ab67ecdf0dcd71c0cda9d5c4b80bc569c01a4a179f97, file_hash: 5b63a2d7be91ecd47cccec90cf1fceff5ca6ec5ea3ea4ab1b77cb9959ff29ef1
+            0:e800000000000000:20597119, hash: 86534cfad139a413ead25070b261b3beff862cdf20c0a7b2862adde7b1603013, file_hash: cdd2130b73a8b65ab4044ed155bdb1d6fe2a0fa6c335bcfdaaac3337380d0b85
+            0:e800000000000000:20597120, hash: ce03ef324c7dffe7cb9869d0148d38454a06e57f358a585aa47810a0d56f6ee5, file_hash: afb1168e277c52a32e5a49e897615900aa884c1021a92a447643db505326c284
+            -1:8000000000000000:14159649, hash: 434a19f25cb0061a71d8bfcdecf43f5d074be8680e0cbdaa49c4f78079fe0748, file_hash: 9e5a1b6a6dc8f0b58dee7d5b91d6cf3e66a88e3b91c09f18403e3be9d477f4bf
          */
 
         // Get workchain transactions with amount more than 1 token for the last key-block:
@@ -141,8 +182,8 @@ const { libNode } = require("@tonclient/lib-node")
         /*
             Sample output:
 
-            Workchain transactions for the key-block with seq_no = 14078870 and value more than 1 token:
-            2022-01-19 18:20:36.000, balance change: 2762500000, aborted: false
+            Workchain transactions for the key-block with seq_no = 14159649 and value more than 1 token:
+            2022-01-22 16:53:08.000, balance change: 3075000000, aborted: false
          */
 
         // Get elector transactions for the last key-block:
@@ -178,9 +219,9 @@ const { libNode } = require("@tonclient/lib-node")
         /*
             Sample output:
 
-            Elector transactions for the key-block with seq_no = 14078870:
-            2022-01-19 18:20:36.000, account: -1:3333333333333333333333333333333333333333333333333333333333333333, balance change: 0, aborted: false
-            2022-01-19 18:20:36.000, account: -1:3333333333333333333333333333333333333333333333333333333333333333, balance change: 2762500000, aborted: false
+            Elector transactions for the key-block with seq_no = 14159649:
+            2022-01-22 16:53:08.000, account: -1:3333333333333333333333333333333333333333333333333333333333333333, balance change: -1073741824, aborted: false
+            2022-01-22 16:53:08.000, account: -1:3333333333333333333333333333333333333333333333333333333333333333, balance change: 3075000000, aborted: false
          */
 
         process.exit(0);
