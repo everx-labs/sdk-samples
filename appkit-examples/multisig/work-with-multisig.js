@@ -21,7 +21,11 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
     const client = new TonClient({
         network: {
             //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
-            endpoints: ["net1.ton.dev", "net5.ton.dev"],
+            endpoints: [
+                "eri01.net.everos.dev",
+                "rbx01.net.everos.dev",
+                "gra01.net.everos.dev",
+            ],
             message_retries_count: 3,
             message_processing_timeout: 60000,
             network_retries_count: 2,

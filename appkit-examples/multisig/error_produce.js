@@ -21,7 +21,11 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
     TonClient.useBinaryLibrary(libNode);
     const client = new TonClient({
         network: {
-            endpoints: ["net1.ton.dev", "net5.ton.dev"],
+            endpoints: [
+                "eri01.net.everos.dev",
+                "rbx01.net.everos.dev",
+                "gra01.net.everos.dev",
+            ],
             message_retries_count: 0, // default = 5
         },
         abi: {
