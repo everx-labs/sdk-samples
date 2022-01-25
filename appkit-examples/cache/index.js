@@ -61,7 +61,15 @@ async function main(client) {
 
 (async () => {
     const client = new TonClient({
-        network: {endpoints: ["main2.ton.dev","main3.ton.dev","main4.ton.dev"]},
+        network: {
+            endpoints: [
+                "eri01.main.everos.dev",
+                "gra01.main.everos.dev",
+                "gra02.main.everos.dev",
+                "lim01.main.everos.dev",
+                "rbx01.main.everos.dev",
+            ]
+        },
     });
     try {
         await main(client);
