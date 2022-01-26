@@ -1,5 +1,5 @@
 /**
- *  In this example we demonstrate how to integrate Free TON into an exchange backend.
+ *  In this example we demonstrate how to integrate EVER OS into an exchange backend.
  *
  * It covers such use-cases as:
  *
@@ -14,7 +14,7 @@
  *
  * Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
  *
- * To migrate from Developer Network to Free TON you need to update the endpoints specified in TonClient configuration to Free TON endpoints.
+ * To migrate from Developer Network to Everscale you need to update the endpoints specified in TonClient configuration to Free TON endpoints.
  *
  * See the list of supported networks and endpoints here https://docs.ton.dev/86757ecb2/p/85c869-networks
  * */
@@ -171,9 +171,14 @@ async function main(client) {
     const client = new TonClient({
         network: {
             // If you use DApp Server, specify its URL here the same way.
-            // If you want to work with public Free TON API - specify its endpoints 
+            // If you want to work with public EVER OS API - specify its endpoints 
             // https://docs.ton.dev/86757ecb2/p/85c869-networks
-            endpoints: ["net1.ton.dev", "net5.ton.dev"], // Developer Network endpoints
+            // Developer Network endpoints:
+            endpoints: [
+                "eri01.net.everos.dev",
+                "rbx01.net.everos.dev",
+                "gra01.net.everos.dev",
+            ],
         },
     });
     try {

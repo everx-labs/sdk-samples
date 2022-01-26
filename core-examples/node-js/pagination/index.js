@@ -21,7 +21,11 @@ let client;
         client = new TonClient({
             network: {
                 // Local node URL.
-                endpoints: ["net1.ton.dev","net5.ton.dev"]
+                endpoints: [
+                    "eri01.net.everos.dev",
+                    "rbx01.net.everos.dev",
+                    "gra01.net.everos.dev",
+                ]
             }
         });
 

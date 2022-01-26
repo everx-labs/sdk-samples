@@ -7,7 +7,13 @@ TonClient.useBinaryLibrary(libNode);
     const client = new TonClient({
         network: {
             // Blockchain node URL 
-            endpoints: ["https://main.ton.dev"]
+            endpoints: [
+                "eri01.main.everos.dev",
+                "gra01.main.everos.dev",
+                "gra02.main.everos.dev",
+                "lim01.main.everos.dev",
+                "rbx01.main.everos.dev",
+            ]
         }
     });
     try {

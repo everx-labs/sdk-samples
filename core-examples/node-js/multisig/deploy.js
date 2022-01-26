@@ -63,7 +63,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
             result: "acc_type balance code",
         })).result;
         if (result.length === 0) {
-            console.log(`You need to transfer at least 0.5 tokens for deploy to ${address} to net.ton.dev.`);
+            console.log(`You need to transfer at least 0.5 tokens for deploy to ${address} to DevNet.`);
             process.exit(1);
         }
 
@@ -75,7 +75,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
         // Balance is stored as HEX so we need to convert it.
         if (result[0].acc_type === ACCOUNT_TYPE_UNINITIALIZED && BigInt(result[0].balance) <= BigInt(
             CONTRACT_REQUIRED_DEPLOY_TOKENS)) {
-            console.log(`Balance of ${address} is too low for deploy to net.ton.dev`);
+            console.log(`Balance of ${address} is too low for deploy to DevNet`);
             process.exit(1);
         }
 
