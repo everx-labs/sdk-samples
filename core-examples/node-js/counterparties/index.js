@@ -69,5 +69,6 @@ const { libNode } = require("@tonclient/lib-node");
         } else {
             console.error(error);
         }
+        process.exit(1);
     }
 })();
