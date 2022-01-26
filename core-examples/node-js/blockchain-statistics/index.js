@@ -22,7 +22,7 @@ const { libNode } = require("@tonclient/lib-node");
             }
         });
 
-        let result = (await client.net.query({
+        const result = (await client.net.query({
             query: `{ 
                         statistics { 
                             version
@@ -115,5 +115,6 @@ const { libNode } = require("@tonclient/lib-node");
         } else {
             console.error(error);
         }
+        process.exit(1);
     }
 })();
