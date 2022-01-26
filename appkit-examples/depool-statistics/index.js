@@ -164,7 +164,13 @@ async function main(client) {
     const client = new TonClient({
         network: {
             /// https://docs.ton.dev/86757ecb2/p/85c869-networks
-            endpoints: ["main2.ton.dev", "main3.ton.dev", "main4.ton.dev"],
+            endpoints: [
+                "eri01.main.everos.dev",
+                "gra01.main.everos.dev",
+                "gra02.main.everos.dev",
+                "lim01.main.everos.dev",
+                "rbx01.main.everos.dev",
+            ],
         },
     });
     try {
