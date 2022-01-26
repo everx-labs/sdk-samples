@@ -92,7 +92,7 @@ async function runAndWaitForRecipientTransactions(account, functionName, input) 
     const transactions = [];
 
     // This step is only required if you want to know when the recipient actually receives their tokens.
-    // In Free TON blockchain, transfer consists of 2 transactions (because the blockchain is asynchronous):
+    // In Everscale blockchain, transfer consists of 2 transactions (because the blockchain is asynchronous):
     //  1. Sender sends tokens - this transaction is returned by `Run` method
     //  2. Recipient receives tokens - this transaction can be caught with `query_transaction_tree method`
     // Read more about transactions and messages here
