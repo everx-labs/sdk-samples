@@ -8,9 +8,9 @@ const {
     builderOpCell,
     builderOpCellBoc,
     builderOpBitString,
+    builderOpAddress,
 } = require("@tonclient/core");
 const { libNode } = require("@tonclient/lib-node");
-
 const transferAbi = {
     "ABI version": 2,
     "functions": [
@@ -46,20 +46,6 @@ const bits = x => builderOpBitString(x);
  */
 const bytes = x => builderOpCell([bits(x.toString("hex"))]);
 const str = x => bytes(Buffer.from(x, "utf8"));
-const addrStdFixed = (x) => {
-    let parts = x.split(":");
-    const wid = parts.length < 2 ? "00" : Number.parseInt(parts[0]).toString(16).padStart(2, "0");
-    const addr = parts[parts.length < 2 ? 0 : 1].padStart(64, "0");
-    return bits(`${wid}${addr}`);
-};
-
-const addrInt = (x) => {
-    let parts = x.split(":");
-    let [wid, addr] = parts.length < 2 ? ["0", parts[0]] : parts;
-    wid = Number.parseInt(wid).toString(2).padStart(8, "0");
-    addr = BigInt(`0x${addr}`).toString(2).padStart(256, "0");
-    return bits(`n100${wid}${addr}`);
-};
 
 (async () => {
     const client = new TonClient({
@@ -97,10 +83,10 @@ const addrInt = (x) => {
             price: 0, // u128
             sells_amount: 0, // u128
             buys_amount: 0, // u128
-            stock: "0", // addr_std_fixed
+            stock: "0:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", // addr_std_fixed
             min_amount: 0, // uint128
             deals_limit: 0, // u8 - limit for processed deals in one request
-            notify_addr: "0", // INotifyPtr
+            notify_addr: "0:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", // INotifyPtr
             workchain_id: 0, // u8
             tons_cfg: {
                 transfer_tip3: 0, // uint128
@@ -115,7 +101,7 @@ const addrInt = (x) => {
                 symbol: "S", // string
                 decimals: 2, // u8
                 root_public_key: "0", // uint256
-                root_address: "0", // address
+                root_address: "0:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789", // address
                 code: "te6ccgEBAgEAEwABCAAAAAABABRNeSBjb21tZW50", // cell
             },
             sells: {}, // queue<OrderInfo>
@@ -133,11 +119,11 @@ const addrInt = (x) => {
                     u128(price.price),
                     u128(price.sells_amount),
                     u128(price.buys_amount),
-                    addrStdFixed(price.stock),
+                    builderOpAddress(price.stock),
                     u128(price.min_amount),
                     u8(price.deals_limit),
                     builderOpCell([
-                        addrInt(price.notify_addr),
+                        builderOpAddress(price.notify_addr),
                         u8(price.workchain_id),
                         u128(price.tons_cfg.transfer_tip3),
                         builderOpCell([
@@ -151,7 +137,7 @@ const addrInt = (x) => {
                             u8(price.tip3cfg.decimals),
                             u256(price.tip3cfg.root_public_key),
                             builderOpCell([
-                                addrInt(price.tip3cfg.root_address),
+                                builderOpAddress(price.tip3cfg.root_address),
                                 builderOpCellBoc(price.tip3cfg.code),
                                 b0,
                                 u32(0),
