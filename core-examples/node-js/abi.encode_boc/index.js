@@ -15,7 +15,7 @@ TonClient.useBinaryLibrary(libNode);
             ],
             data: {
                 "dest": "-1:3333333333333333333333333333333333333333333333333333333333333333",
-                "value": 1234567,
+                "value": "1234567",
                 "bounce": true,
             }
         })).boc;
