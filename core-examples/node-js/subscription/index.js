@@ -1,5 +1,5 @@
-const { abiContract, TonClient } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { abiContract, TonClient } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const fs = require('fs');
 const path = require('path');
 const giverKeyPairFileName = 'GiverV2.keys.json';
@@ -13,9 +13,9 @@ const multisigContractPackage = {
     tvcInBase64: fs.readFileSync('../../../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc').toString('base64'),
 };
 
-// Address of giver on TON OS SE
+// Address of giver on Evernode SE
 const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
-// Giver ABI on TON OS SE
+// Giver ABI on Evernode SE
 const giverAbi = abiContract({
     'ABI version': 2,
     header: ['time', 'expire'],
@@ -60,7 +60,7 @@ const giverAbi = abiContract({
     events: []
 });
 
-// Requesting 10 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from Evernode SE giver
 async function get_tokens_from_giver(account) {
     if (!fs.existsSync(giverKeyPairFile)) {
         console.log(`Please place ${giverKeyPairFileName} file in project root folder with Giver's keys`);
@@ -128,7 +128,7 @@ async function deployContract(walletKeys) {
     const { address } = await client.abi.encode_message(deployOptions);
     console.log(`Future address of the wallet contract will be: ${address}`);
 
-    // Requesting contract deployment funds form a local TON OS SE giver.
+    // Requesting contract deployment funds form a local Evernode SE giver.
     // Not suitable for other networks.
     await get_tokens_from_giver(address);
     console.log(`Tokens were transferred from giver to ${address}`);
@@ -184,7 +184,7 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
         const wallet1keys = await generateWalletKeys();
         const wallet1Address = await deployContract(wallet1keys);
 
-        // Query data from accounts collection https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
+        // Query data from accounts collection https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
         let result = (await client.net.query_collection({
             collection: 'accounts',
             filter: {
@@ -252,14 +252,14 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
 
         await sendMoney(wallet1keys, wallet1Address, wallet2Address, 5_000_000_000);
 
-        // Cancels a subscription specified by its handle. https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#unsubscribe
+        // Cancels a subscription specified by its handle. https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#unsubscribe
         await client.net.unsubscribe({ handle: subscriptionAccountHandle });
         await client.net.unsubscribe({ handle: subscriptionTransactionHandle });
     //    await client.net.unsubscribe({ handle: subscriptionMessageHandle });
 
 
 
-        // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#find_last_shard_block
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#find_last_shard_block
         // Returns ID of the latest block in a wallet 1 address account shard.
         const block_id1 = (await client.net.find_last_shard_block({
             address: wallet1Address
@@ -297,7 +297,7 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

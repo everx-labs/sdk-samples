@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-const { libWeb } = require('@tonclient/lib-web')
-const { TonClient } = require('@tonclient/core')
+const { libWeb } = require('@eversdk/lib-web')
+const { TonClient } = require('@eversdk/core')
 const currency = require('currency.js')
 
 const table = require('./table')

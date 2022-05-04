@@ -1,5 +1,5 @@
 const { SafeMultisigContract } = require("./contracts");
-const { signerKeys, abiContract } = require("@tonclient/core");
+const { signerKeys, abiContract } = require("@eversdk/core");
 
 let _giver = null;
 
@@ -49,7 +49,7 @@ async function deployAccount(
  *
  * SafeMultisig wallet is used. If you want to use another contract as Giver -
  * read more about how to add a contract to a project here
- * https://docs.ton.dev/86757ecb2/p/07f1a5-add-contract-to-your-app-/b/462f33
+ * https://docs.everos.dev/ever-sdk/guides/work_with_contracts/add_contract_to_your_app
  */
 async function ensureGiver(client) {
     if (_giver) {

@@ -9,8 +9,8 @@ const {
     builderOpCellBoc,
     builderOpBitString,
     builderOpAddress,
-} = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+} = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const transferAbi = {
     "ABI version": 2,
     "functions": [

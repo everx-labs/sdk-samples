@@ -9,8 +9,8 @@ const {
     abiContract,
     signerKeys,
     TonClient,
-} = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+} = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const { loadContract } = require("utils");
 
 const fs = require("fs");
@@ -19,7 +19,7 @@ const path = require("path");
 const keyPairFile = path.join(__dirname, "keys.json");
 
 const transferAbi = require("./transfer.abi.json");
-const { Account } = require("@tonclient/appkit");
+const { Account } = require("@eversdk/appkit");
 const recipient = "0:acad9bed05bbf1223de0c9c7865d5f34d488487e941f76e888b19640ced190cf";
 
 const MultisigContract = loadContract("solidity/safemultisig/SafeMultisigWallet");
@@ -29,7 +29,7 @@ TonClient.useBinaryLibrary(libNode);
 (async () => {
     const client = new TonClient({
         network: {
-            //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
+            //Read more about NetworkConfig https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_client.md#networkconfig
             endpoints: [
                 "eri01.net.everos.dev",
                 "rbx01.net.everos.dev",
