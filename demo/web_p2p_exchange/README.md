@@ -12,7 +12,7 @@ Novice blockchain developers, who prefer to learn by doing.
     -   [What are we building?](#what-are-we-building)
     -   [Setup](#setup)
     -   [Run tests to check integrity](#run-tests-to-check-integrity)
-    -   [Blockchain net.ton.dev and TON OS SE](#blockchain-nettondev-and-TON-OS-SE)
+    -   [Blockchain net.ton.dev and Evernode SE](#blockchain-nettondev-and-TON-OS-SE)
     -   [Tokens](#tokens)
     -   [Run the App](#run-the-app)
         -   [Rules](#rules)
@@ -39,9 +39,9 @@ $ npm i
 
 Prerequisites:
 
-TON OS SE installed and listening on 127.0.0.1:80
+Evernode SE installed and listening on 127.0.0.1:80
 
-> If you are running TON OS SE on a custom IP or port, please change the TON_SERVER_ADDRESS variable in **`/src/config.js`** accordingly.
+> If you are running Evernode SE on a custom IP or port, please change the TON_SERVER_ADDRESS variable in **`/src/config.js`** accordingly.
 
 ```
 npm test
@@ -49,14 +49,14 @@ npm test
 
 If test passes you can go directly to the **[Run the App](#run-the-app) section**, else check [Troubleshooting](#troubleshooting) section.
 
-## Blockchain net.ton.dev and TON OS SE
+## Blockchain net.ton.dev and Evernode SE
 
-By default this application is configured to use a standalone blockchain **TON OS SE**, which helps you quickly debug and test your application.
+By default this application is configured to use a standalone blockchain **Evernode SE**, which helps you quickly debug and test your application.
 
-TON OS SE is twenty times faster than a **net.ton.dev** blockchain, so it's a real time saver.
-It's very easy to [install TON OS SE](https://docs.ton.dev/86757ecb2/p/324b55-installation) if you already have Docker installed
+Evernode SE is twenty times faster than a **net.ton.dev** blockchain, so it's a real time saver.
+It's very easy to [install Evernode SE](https://docs.everos.dev/everdev/command-line-interface/evernode-platform-startup-edition-se) if you already have Docker installed
 
-If your choice is TON OS SE, you are ready to [run the application](#run-the-app)
+If your choice is Evernode SE, you are ready to [run the application](#run-the-app)
 
 You can run this application on **net.ton.dev** blockchain, but you must have your own "Giver" smart contract. See next section
 
@@ -66,9 +66,9 @@ Each participant of our application must have their own wallet with crystals.
 
 In real life, your wallet is only yours, but in our example, the wallets of all participants are initially filled from another smart contract, called a **Giver**
 
-How many tokens does this Giver have? It depends if you are using TON OS SE or net.ton.dev
+How many tokens does this Giver have? It depends if you are using Evernode SE or net.ton.dev
 
--   TON OS SE.
+-   Evernode SE.
 
     There are 1.5 billion test tokens in your Giver contract and everything is ready to run the app
 
@@ -178,7 +178,7 @@ In the next part we will add a DeBot to make our application immediately availab
 
 ## Troubleshooting
 
-If you choose to use TON OS SE, then this application requires TON OS SE ver >= 0.25. Run `tondev se info` to see current version
+If you choose to use Evernode SE, then this application requires Evernode SE ver >= 0.25. Run `everdev se info` to see current version
 
 ## Appendix A
 

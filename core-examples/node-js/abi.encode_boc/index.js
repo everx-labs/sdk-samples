@@ -1,5 +1,5 @@
-const { TonClient } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { TonClient } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 

@@ -1,24 +1,24 @@
 # Hello Web – WebPack TON SDK example
 
-In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js) to deploy solidity contract Hello.sol to [TON OS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview) (local blockchain).
+In this example we use [ever-sdk-js](https://github.com/tonlabs/ever-sdk-js) to deploy solidity contract Hello.sol to [Evernode SE](https://docs.everos.dev/evernode-platform/products/simple-emulator-se) (local blockchain).
 
 ## Prerequisite
 
 * Node.js >= [14.x installed](https://nodejs.org)
-* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain TON OS SE) daemon running
+* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain Evernode SE) daemon running
 
 
 
 ## Preparation
 
-* [Run TON OS SE on your computer](https://docs.ton.dev/86757ecb2/p/2771b0-overview) 
+* [Run Evernode SE on your computer](https://docs.everos.dev/everdev/command-line-interface/evernode-platform-startup-edition-se)
 
 ```sh
 docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 tonlabs/local-node
 ```
 
-Note: if you have running TON OS SE already with port mapping other than 80, than you have to
-change TON OS SE address in index.js line 9.
+Note: if you have running Evernode SE already with port mapping other than 80, than you have to
+change Evernode SE address in index.js line 9.
 
 ## Install packages & run:
 

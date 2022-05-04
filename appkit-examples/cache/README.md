@@ -1,6 +1,6 @@
 # NodeJS SDK cache using example
 
-In this example we use [ton-client-js](https://github.com/tonlabs/ton-client-js) to call `tvm.run_tvm` method using cached account BOC.
+In this example we use [ever-sdk-js](https://github.com/tonlabs/ever-sdk-js) to call `tvm.run_tvm` method using cached account BOC.
 
 ## Prerequisite
 

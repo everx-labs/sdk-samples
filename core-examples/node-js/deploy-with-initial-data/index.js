@@ -1,13 +1,13 @@
-const { TonClient, abiContract, signerKeys, signerNone } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { TonClient, abiContract, signerKeys, signerNone } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const fs = require('fs');
 const path = require('path');
 const giverKeyPairFileName = 'GiverV2.keys.json';
 const giverKeyPairFile = path.join(__dirname, giverKeyPairFileName);
 
-// Address of giver on TON OS SE
+// Address of giver on Evernode SE
 const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
-// Giver ABI on TON OS SE
+// Giver ABI on Evernode SE
 const giverAbi = abiContract({
     'ABI version': 2,
     header: ['time', 'expire'],
@@ -52,7 +52,7 @@ const giverAbi = abiContract({
     events: []
 });
 
-// Requesting 10 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from Evernode SE giver
 async function getTokensFromGiver(client, account) {
     if (!fs.existsSync(giverKeyPairFile)) {
         console.log(`Please place ${giverKeyPairFileName} file in project root folder with Giver's keys`);
@@ -93,7 +93,7 @@ async function getTimestamp(client, address, abi) {
     const [account, message] = await Promise.all([
         // Download the latest state (BOC)
         // See more info about query method here
-        // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
         client.net.query_collection({
             collection: 'accounts',
             filter: { id: { eq: address } },
@@ -117,7 +117,7 @@ async function getTimestamp(client, address, abi) {
 
     // Execute `getTimestamp` get method  (execute the message locally on TVM)
     // See more info about run_tvm method here
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_tvm
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
     response = await client.tvm.run_tvm({ message, account, abi });
 
     return response.decoded.output.value0;
@@ -125,13 +125,13 @@ async function getTimestamp(client, address, abi) {
 
 async function main(client) {
     // Define contract ABI in the Application 
-    // See more info about ABI type here https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#abi
+    // See more info about ABI type here https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#abi
     const abi = abiContract(require('./Timestamp.abi.json'));
     // Generate an ed25519 key pair
     const contractKeys = await client.crypto.generate_random_sign_keys();
     
     // Prepare parameters for deploy message encoding
-    // See more info about `encode_message` method parameters here https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#encode_message
+    // See more info about `encode_message` method parameters here https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#encode_message
     const deployOptions = {
         abi,
         deploy_set: {
@@ -160,14 +160,14 @@ async function main(client) {
     const { address } = await client.abi.encode_message(deployOptions);
     console.log(`Future address of the contract will be: ${address}`);
 
-    // Request contract deployment funds form a local TON OS SE giver
+    // Request contract deployment funds form a local Evernode SE giver
     // not suitable for other networks
     await getTokensFromGiver(client, address);
     console.log(`Tokens were transferred from giver to ${address}`);
 
     // Deploy `Timestamp` contract
     // See more info about `process_message` here  
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#process_message
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#process_message
     await client.processing.process_message({
         send_events: false,
         message_encode_params: deployOptions
@@ -207,12 +207,12 @@ async function main(client) {
 
 (async () => {
     try {
-        // Link the platform-dependable TON-SDK binary with the target Application in Typescript
+        // Link the platform-dependable ever-sdk binary with the target Application in Typescript
         // This is a Node.js project, so we link the application with `libNode` binary 
-        // from `@tonclient/lib-node` package
+        // from `@eversdk/lib-node` package
         // If you want to use this code on other platforms, such as Web or React-Native,
-        // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
-        // (see README in  https://github.com/tonlabs/ton-client-js )
+        // use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+        // (see README in  https://github.com/tonlabs/ever-sdk-js )
         TonClient.useBinaryLibrary(libNode);
         const client = new TonClient({
             network: { 
@@ -225,7 +225,7 @@ async function main(client) {
         client.close();
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

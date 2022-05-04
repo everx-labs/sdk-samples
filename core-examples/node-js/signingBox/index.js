@@ -5,8 +5,8 @@ const {
     signerSigningBox, 
     abiContract, 
     signerNone 
-} = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+} = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const { Giver, Hello } = require("./contracts");
 const fs = require('fs');
 const path = require('path');
@@ -21,12 +21,12 @@ const HD_PATH = "m/44'/396'/0'/0/0";
 const seedPhrase = "abandon math mimic master filter design carbon crystal rookie group knife young";
 
 
-// address of giver on TON OS SE
+// address of giver on Evernode SE
 const giverAddress = "0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5";
-// giver ABI on TON OS SE
+// giver ABI on Evernode SE
 const giverAbi = abiContract(Giver.abi);
 
-// Requesting 10 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from Evernode SE giver
 /**
  * 
  * @param {TonClient} client 
@@ -120,7 +120,7 @@ async function main(client) {
 
     console.log(`Future address of the contract will be: ${futureAddress}`);
 
-    // Requesting contract deployment funds form a local TON OS SE giver
+    // Requesting contract deployment funds form a local Evernode SE giver
     // not suitable for other networks
     await get_tokens_from_giver(client, futureAddress);
     console.log(`Tokens were transferred from giver to ${futureAddress}`);

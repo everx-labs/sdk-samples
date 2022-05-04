@@ -1,8 +1,8 @@
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@eversdk/lib-node");
 const {
     signerKeys,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 const { MultisigContract } = require("./contracts");
 
 const SEED_PHRASE_WORD_COUNT = 12; //Mnemonic word count
@@ -13,7 +13,7 @@ const HD_PATH = "m/44'/396'/0'/0/0";
 
 const fs = require("fs");
 const path = require("path");
-const { Account } = require("@tonclient/appkit");
+const { Account } = require("@eversdk/appkit");
 
 const seedPhraseFile = path.join(__dirname, "seedPhrase.json");
 
@@ -22,12 +22,12 @@ const seedPhraseFile = path.join(__dirname, "seedPhrase.json");
 const keyPairFile = path.join(__dirname, "keyPair.json");
 
 (async () => {
-    // Link the platform-dependable TON-SDK binary with the target Application in Typescript
+    // Link the platform-dependable ever-sdk binary with the target Application in Typescript
     // This is a Node.js project, so we link the application with `libNode` binary
-    // from `@tonclient/lib-node` package
+    // from `@eversdk/lib-node` package
     // If you want to use this code on other platforms, such as Web or React-Native,
-    // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
-    // (see README in  https://github.com/tonlabs/ton-client-js )
+    // use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+    // (see README in  https://github.com/tonlabs/ever-sdk-js )
     TonClient.useBinaryLibrary(libNode);
 
     const client = new TonClient({
@@ -43,7 +43,7 @@ const keyPairFile = path.join(__dirname, "keyPair.json");
 
         const { crypto } = client;
         // Generate seed phrase. It is used to generate or re-generate keys. Keep it secret.
-        //https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_crypto.md#mnemonic_from_random
+        //https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_crypto.md#mnemonic_from_random
         const { phrase } = await crypto.mnemonic_from_random({
             dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
             word_count: SEED_PHRASE_WORD_COUNT,

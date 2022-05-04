@@ -1,16 +1,16 @@
-const { TonClient, abiContract, signerKeys } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { TonClient, abiContract, signerKeys } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 // ABI and imageBase64 of a binary HelloWallet contract
 const { HelloWallet } = require('./HelloWallet.js');
 
-// Giver address TON OS SE
+// Giver address Evernode SE
 const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
-// Giver keys on TON OS SE
+// Giver keys on Evernode SE
 const giverSigner = signerKeys({
     "public": "2ada2e65ab8eeab09490e3521415f45b6e42df9c760a639bcf53957550b25a16",
     "secret": "172af540e43a524763dd53b26a066d472a97c4de37d5498170564510608250c3"
 });
-// Giver ABI on TON OS SE
+// Giver ABI on Evernode SE
 const giverAbi = abiContract({
     'ABI version': 2,
     header: ['time', 'expire'],
@@ -57,7 +57,7 @@ const giverAbi = abiContract({
 
 // Requesting test tokens from the Giver
 async function getTokensFromGiver(client, account, amount) {
-    // Execute method `sendTransaction` of the TON OS SE Giver v2 contract:
+    // Execute method `sendTransaction` of the Evernode SE Giver v2 contract:
     const processingResult = await client.processing.process_message({
         send_events: false,
         message_encode_params: {
@@ -95,7 +95,7 @@ async function getTokensFromGiver(client, account, amount) {
 
 async function main(client) {
     // Define contract ABI in the Application 
-    // See more info about ABI type here https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#abi
+    // See more info about ABI type here https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#abi
     const abi = {
         type: 'Contract',
         value: HelloWallet.abi
@@ -105,7 +105,7 @@ async function main(client) {
     
     // Prepare parameters for deploy message encoding
     // See more info about `encode_message` method parameters here
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#encode_message
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#encode_message
     const deployOptions = {
         abi,
         deploy_set: {
@@ -134,7 +134,7 @@ async function main(client) {
 
     // Deploy `hello` contract
     // See more info about `process_message` here  
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#process_message
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#process_message
     await client.processing.process_message({
         send_events: false,
         message_encode_params: deployOptions
@@ -145,12 +145,12 @@ async function main(client) {
 
 (async () => {
     try {
-        // Link the platform-dependable TON-SDK binary with the target Application in Typescript
+        // Link the platform-dependable ever-sdk binary with the target Application in Typescript
         // This is a Node.js project, so we link the application with `libNode` binary 
-        // from `@tonclient/lib-node` package
+        // from `@eversdk/lib-node` package
         // If you want to use this code on other platforms, such as Web or React-Native,
-        // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
-        // (see README in  https://github.com/tonlabs/ton-client-js )
+        // use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+        // (see README in  https://github.com/tonlabs/ever-sdk-js )
         TonClient.useBinaryLibrary(libNode);
         const client = new TonClient({
             network: { 
@@ -164,8 +164,8 @@ async function main(client) {
     } catch (error) {
         if (error.code === 504) {
             console.error(
-                "Network is inaccessible. Check your connection. If you are using TON OS SE, make sure that you have"
-                + " started TON OS SE using `tondev se start`.\n If you run SE on another port or ip, replace"
+                "Network is inaccessible. Check your connection. If you are using Evernode SE, make sure that you have"
+                + " started Evernode SE using `everdev se start`.\n If you run SE on another port or ip, replace"
                 + " http://localhost endpoint with http://localhost:port or http://ip:port in index.js file."
             );
         } else {

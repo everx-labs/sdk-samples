@@ -1,11 +1,11 @@
-const { Account } = require("@tonclient/appkit");
+const { Account } = require("@eversdk/appkit");
 const {
     signerKeys,
     TonClient,
     MessageBodyType,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 
@@ -112,7 +112,7 @@ class HelloEvents extends Account {
         await hello.free();
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

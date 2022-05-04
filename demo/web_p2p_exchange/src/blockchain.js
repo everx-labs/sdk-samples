@@ -2,8 +2,8 @@
 
 const buffer = require('buffer')
 const { prop, path, last } = require('ramda')
-const { Account } = require('@tonclient/appkit')
-const { signerKeys } = require('@tonclient/core')
+const { Account } = require('@eversdk/appkit')
+const { signerKeys } = require('@eversdk/core')
 
 const { add0x, strip0x, toNano, hexToUtf8 } = require('./utils')
 const {

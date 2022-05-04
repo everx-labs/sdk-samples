@@ -1,13 +1,13 @@
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@eversdk/lib-node");
 const { MultisigContract } = require("./contracts");
 const {
     signerKeys,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 
 const fs = require("fs");
 const path = require("path");
-const { Account } = require("@tonclient/appkit");
+const { Account } = require("@eversdk/appkit");
 const keyPairFile = path.join(__dirname, "keyPair.json");
 
 // Account is active when contract is deployed.
@@ -20,7 +20,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
     TonClient.useBinaryLibrary(libNode);
     const client = new TonClient({
         network: {
-            //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
+            //Read more about NetworkConfig https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_client.md#networkconfig
             endpoints: [
                 "eri01.net.everos.dev",
                 "rbx01.net.everos.dev",

@@ -1,11 +1,11 @@
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@eversdk/lib-node");
 const fs = require("fs");
 const path = require("path");
-const { Account } = require("@tonclient/appkit");
+const { Account } = require("@eversdk/appkit");
 const {
     signerKeys,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 const { MultisigContract } = require("./contracts");
 
 const keyPairFile = path.join(__dirname, "keyPair.json");
@@ -17,7 +17,7 @@ const ACCOUNT_TYPE_ACTIVE = 1;
 const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
 // Number of tokens required to deploy the contract.
-// See https://docs.ton.dev/86757ecb2/p/6207cd-estimate-fees on how to calculate definite number.
+// See https://docs.everos.dev/ever-sdk/guides/work_with_contracts/estimate_fees on how to calculate definite number.
 const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 
 TonClient.useBinaryLibrary(libNode);
