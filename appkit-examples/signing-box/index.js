@@ -1,10 +1,10 @@
-const { Account } = require("@tonclient/appkit");
+const { Account } = require("@eversdk/appkit");
 const {
     signerSigningBox,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 

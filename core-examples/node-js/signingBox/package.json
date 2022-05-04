@@ -10,7 +10,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@tonclient/core": "^1.9.0",
-        "@tonclient/lib-node": "^1.9.0"
+        "@eversdk/core": "^1.9.0",
+        "@eversdk/lib-node": "^1.9.0"
     }
 }

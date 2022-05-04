@@ -19,7 +19,7 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin({
             patterns: [
-                { from: './node_modules/@tonclient/lib-web/tonclient.wasm' },
+                { from: './node_modules/@eversdk/lib-web/tonclient.wasm' },
             ],
         }),
         new webpack.LoaderOptionsPlugin({
@@ -34,8 +34,8 @@ module.exports = {
                 include: [
                     path.resolve('index.js'),
                     path.resolve(__dirname, './node_modules/webpack-dev-server'),
-                    path.resolve(__dirname, './node_modules/@tonclient/core'),
-                    path.resolve(__dirname, './node_modules/@tonclient/lib-web'),
+                    path.resolve(__dirname, './node_modules/@eversdk/core'),
+                    path.resolve(__dirname, './node_modules/@eversdk/lib-web'),
                 ],
             },
             {

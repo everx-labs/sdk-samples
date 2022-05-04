@@ -1,10 +1,10 @@
-const { Account } = require("@tonclient/appkit");
-const { libNode } = require("@tonclient/lib-node");
+const { Account } = require("@eversdk/appkit");
+const { libNode } = require("@eversdk/lib-node");
 const { HelloContract } = require("./HelloContract.js");
 const {
     signerKeys,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 TonClient.useBinaryLibrary(libNode);
 
 /**
@@ -18,8 +18,8 @@ async function main(client) {
         signer: signerKeys(await client.crypto.generate_random_sign_keys()),
         client,
     });
-    
-    
+
+
     const address = await helloAccount.getAddress();
     console.log(`Future address of the contract will be: ${address}`);
 
@@ -47,8 +47,8 @@ async function main(client) {
             console.error(error);
         }
     }
- 
-    
+
+
     console.log('Let\'s calculate amount of nano tokens you need to deploy contract:');
     // https://docs.ton.dev/86757ecb2/p/632251-fee-calculation-details
 
@@ -63,7 +63,7 @@ async function main(client) {
     console.log(response);
     console.log(`Hello contract was deployed at address: ${address}`);
 
-    
+
     console.log('Let\'s calculate amount of nano tokens you need to run "touch" function:')
 
     fee = await helloAccount.calcRunFees("touch", {});
@@ -79,7 +79,7 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            // Local TON OS SE instance URL here 
+            // Local Evernode SE instance URL here
             endpoints: ["http://localhost"],
         },
     });
@@ -89,7 +89,7 @@ async function main(client) {
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

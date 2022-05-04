@@ -1,6 +1,6 @@
-# Integrate Free TON into exchange backend
+# Integrate EVER OS into exchange backend
 
-In this example we demonstrate how to integrate Free TON into an exchange backend.
+In this example we demonstrate how to integrate EVER OS into an exchange backend.
 
 It covers such use-cases as: 
 - wallet deploy 
@@ -24,16 +24,16 @@ This is a high priority feature for us right now.
 ## How to run the sample?
 
 To run this sample you need to have a multisig wallet with positive balance,
-already deployed to the [Developer Network](https://docs.ton.dev/86757ecb2/p/85c869-networks). Specify its private key and address at the launch.
+already deployed to the [Developer Network](https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks). Specify its private key and address at the launch.
 It will be used to pay for deploy operation. 
 
 If you already have Surf with tokens installed, you can use it. 
 To get the private key of Surf wallet, run this:
 
 ```
-npm tondev install -g
-tondev signer add surfWallet "your seed phrase"
-tondev signer info surfwallet
+npm install -g everdev
+everdev signer add surfWallet "your seed phrase"
+everdev signer info surfwallet
 ```
 
 You will see your key pair. Copy the private key. 
@@ -50,10 +50,10 @@ You will see your key pair. Copy the private key.
 
 Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
 
-**To migrate from Developer Network to Free TON you need to update the endpoints specified in TonClient configuration
-to Free TON endpoints.**
+**To migrate from Developer Network to Everscale you need to update the endpoints specified in TonClient configuration
+to Everscale endpoints.**
 
-See the list of supported networks and endpoints here https://docs.ton.dev/86757ecb2/p/85c869-networks
+See the list of supported networks and endpoints here https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks
 
 ## Install packages & run:
 

@@ -1,9 +1,9 @@
 import {
     signerKeys,
     TonClient,
-} from "@tonclient/core";
-import {Account} from "@tonclient/appkit";
-import {libWeb} from "@tonclient/lib-web";
+} from "@eversdk/core";
+import {Account} from "@eversdk/appkit";
+import {libWeb} from "@eversdk/lib-web";
 
 import {HelloContract} from "./HelloContract";
 

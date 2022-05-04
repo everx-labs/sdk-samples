@@ -1,5 +1,5 @@
-const { TonClient } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { TonClient } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const { SafeMultisigContract, networkEndpoints, getPreparedSigner } = require("./utils");
 
 TonClient.useBinaryLibrary(libNode);
@@ -14,7 +14,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
     try {
         const tonClient = new TonClient({
             network: {
-                //Read more about NetworkConfig https://docs.ton.dev/86757ecb2/v/0/p/5328db-configure-sdk
+                //Read more about NetworkConfig https://docs.everos.dev/ever-sdk/guides/installation/configure_sdk
                 endpoints: networkEndpoints,
                 // how many retries SDK will perform in case of message delivery failure
                 message_retries_count: 3,
@@ -50,7 +50,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
         console.log(address);
 
         // Let's check if the account is deployed and check its balance
-        // See more about GraphQL API documentation here https://docs.ton.dev/86757ecb2/p/793337-ton-os-api
+        // See more about GraphQL API documentation here https://docs.everos.dev/ever-sdk/samples/graphql-samples/quick-start#api-documentation
         /** @type {{ acc_type: number, balance: string, code: string}[]} */
         const result = (await tonClient.net.query_collection({
             collection: "accounts",
@@ -79,7 +79,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
         const [account, message] = await Promise.all([
             // Download the latest state (so-called BOC)
             // See more info about query method here
-            // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
+            // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
             // See more about BOC here https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/11b639
             tonClient.net.query_collection({
                 collection: "accounts",
@@ -104,7 +104,7 @@ const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a63124
 
         // Execute `getCustodians` get method  (execute the message locally on TVM)
         // See more info about run_tvm method here
-        // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_tvm
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
         /** @type {{decoded:{output:{custodians:string[]}}}}*/
         const response = await tonClient.tvm.run_tvm({
             message, account, abi: SafeMultisigContract.abi,

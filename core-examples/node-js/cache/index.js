@@ -1,5 +1,5 @@
-const { TonClient, abiContract, signerNone, bocCacheTypePinned, bocCacheTypeUnpinned } = require('@tonclient/core')
-const { libNode } = require('@tonclient/lib-node')
+const { TonClient, abiContract, signerNone, bocCacheTypePinned, bocCacheTypeUnpinned } = require('@eversdk/core')
+const { libNode } = require('@eversdk/lib-node')
 
 TonClient.useBinaryLibrary(libNode)
 

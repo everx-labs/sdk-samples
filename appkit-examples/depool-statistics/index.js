@@ -1,11 +1,11 @@
-const { Account } = require("@tonclient/appkit");
-const { libNode } = require("@tonclient/lib-node");
+const { Account } = require("@eversdk/appkit");
+const { libNode } = require("@eversdk/lib-node");
 const {
     signerNone,
     TonClient,
     AggregationFn,
     SortDirection,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 const { DePoolContract } = require("./DePoolContract.js");
 
 TonClient.useBinaryLibrary(libNode);
@@ -163,7 +163,7 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            /// https://docs.ton.dev/86757ecb2/p/85c869-networks
+            /// https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks
             endpoints: [
                 "eri01.main.everos.dev",
                 "gra01.main.everos.dev",

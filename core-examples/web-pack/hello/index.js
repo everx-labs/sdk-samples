@@ -1,5 +1,5 @@
-import { abiContract, TonClient } from '@tonclient/core';
-import { libWeb } from '@tonclient/lib-web';
+import { abiContract, TonClient } from '@eversdk/core';
+import { libWeb } from '@eversdk/lib-web';
 
 import contractPackage from './HelloContract.js';
 
@@ -14,9 +14,9 @@ function setText(id, text) {
     document.getElementById(id).innerText = text
 }
 
-// Address of giver on TON OS SE
+// Address of giver on Evernode SE
 const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
-// Giver ABI on TON OS SE
+// Giver ABI on Evernode SE
 const giverAbi = abiContract({
     'ABI version': 2,
     header: ['time', 'expire'],
@@ -63,7 +63,7 @@ const giverAbi = abiContract({
 // Giver keypair:
 const giverKeyPair = require('./GiverV2.keys.json');
 
-// Requesting 10 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from Evernode SE giver
 async function get_tokens_from_giver(client, account) {
     const params = {
         send_events: false,
@@ -91,14 +91,14 @@ async function get_tokens_from_giver(client, account) {
 window.addEventListener('load', async () => {
     setText("version", (await client.client.version()).version);
     // Define contract ABI in the Application
-    // See more info about ABI type here https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#abi
+    // See more info about ABI type here https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#abi
     const abi = abiContract(contractPackage.abi);
 
     // Generate an ed25519 key pair
     const helloKeys = await client.crypto.generate_random_sign_keys();
 
     // Prepare parameters for deploy message encoding
-    // See more info about `encode_message` method parameters here https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#encode_message
+    // See more info about `encode_message` method parameters here https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#encode_message
     const deployOptions = {
         abi,
         deploy_set: {
@@ -121,14 +121,14 @@ window.addEventListener('load', async () => {
     const { address } = await client.abi.encode_message(deployOptions);
     setText("address", address);
 
-    // Request contract deployment funds form a local TON OS SE giver
+    // Request contract deployment funds form a local Evernode SE giver
     // not suitable for other networks
     await get_tokens_from_giver(client, address);
     setText("prepaid", "Success")
 
     // Deploy `hello` contract
     // See more info about `process_message` here
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#process_message
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#process_message
     await client.processing.process_message({
         send_events: false,
         message_encode_params: deployOptions
@@ -167,7 +167,7 @@ window.addEventListener('load', async () => {
     const [account, message] = await Promise.all([
         // Download the latest state (BOC)
         // See more info about query method here
-        // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
         client.net.query_collection({
             collection: 'accounts',
             filter: { id: { eq: address } },
@@ -191,7 +191,7 @@ window.addEventListener('load', async () => {
 
     // Execute `getTimestamp` get method  (execute the message locally on TVM)
     // See more info about run_tvm method here
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_tvm
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
     response = await client.tvm.run_tvm({ message, account, abi });
     setText("getTimestampOutput", Number.parseInt(response.decoded.output.value0));
 });

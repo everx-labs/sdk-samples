@@ -1,24 +1,24 @@
-const { abiContract } = require("@tonclient/core");
-const { ResponseType } = require("@tonclient/core/dist/bin");
+const { abiContract } = require("@eversdk/core");
+const { ResponseType } = require("@eversdk/core/dist/bin");
 
 const {
     signerKeys,
     signerNone,
     TonClient,
     MessageBodyType,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 TonClient.defaultConfig = { network: { endpoints: ["http://localhost"] } };
 
 const { HelloEventsContract } = require("./contracts");
 
-// Address of giver on TON OS SE
+// Address of giver on Evernode SE
 const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
 
-// Giver ABI on TON OS SE
+// Giver ABI on Evernode SE
 const giverAbi = abiContract({
     'ABI version': 2,
     header: ['time', 'expire'],
@@ -63,7 +63,7 @@ const giverAbi = abiContract({
     events: []
 });
 
-// Requesting 10 local test tokens from TON OS SE giver
+// Requesting 10 local test tokens from Evernode SE giver
 async function get_tokens_from_giver(client, account) {
     const giverKeyPair = {
         "public": "2ada2e65ab8eeab09490e3521415f45b6e42df9c760a639bcf53957550b25a16",
