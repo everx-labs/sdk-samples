@@ -1,4 +1,4 @@
-# Integrate EVER OS into exchange backend
+# Integrate Everscale into exchange backend
 
 In this example we demonstrate how to integrate EVER OS into an exchange backend.
 
