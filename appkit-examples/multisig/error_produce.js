@@ -1,11 +1,11 @@
 // this example produces error intentionally
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@eversdk/lib-node");
 const fs = require("fs");
 const path = require("path");
 const {
     signerKeys,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 const { MultisigContract } = require("./contracts");
 
 const keyPairFile = path.join(__dirname, "keyPair.json");
@@ -58,7 +58,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
 
         // Execute `getCustodians` get method  (execute the message locally on TVM)
         // See more info about run_tvm method here
-        // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_tvm
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
         const response = await acc.runLocal("getCustodians", {});
         // Print the custodians of the wallet
         console.log("Custodians list:", response.decoded.output.custodians);

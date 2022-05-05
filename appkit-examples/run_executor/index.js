@@ -1,11 +1,11 @@
-const { Account } = require("@tonclient/appkit");
-const { libNode } = require("@tonclient/lib-node");
+const { Account } = require("@eversdk/appkit");
+const { libNode } = require("@eversdk/lib-node");
 // https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
 const { SafeMultisigWalletContract } = require("./SafeMultisigWalletContract.js");
 const {
     signerKeys,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 TonClient.useBinaryLibrary(libNode);
 
 async function main(client) {
@@ -67,7 +67,7 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            // Local TON OS SE instance URL here 
+            // Local Evernode SE instance URL here
             endpoints: ["http://localhost"],
         },
     });
@@ -77,7 +77,7 @@ async function main(client) {
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

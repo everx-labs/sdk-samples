@@ -1,5 +1,5 @@
-const { TonClient } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { TonClient } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 (async () => {
@@ -31,7 +31,7 @@ TonClient.useBinaryLibrary(libNode);
         })).result[0];
 
         // Use run_get to execute get-methods of Fift contract 
-        // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_get
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_get
         let result = (await client.tvm.run_get({
             account: account.boc,
             function_name: 'active_election_id'

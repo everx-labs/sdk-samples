@@ -1,14 +1,14 @@
-const { TonClient } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node")
+const { TonClient } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node")
 
 ;(async () => {
     try {
-        // Link the platform-dependable TON-SDK binary with the target Application in Typescript
+        // Link the platform-dependable ever-sdk binary with the target Application in Typescript
         // This is a Node.js project, so we link the application with `libNode` binary
-        // from `@tonclient/lib-node` package
+        // from `@eversdk/lib-node` package
         // If you want to use this code on other platforms, such as Web or React-Native,
-        // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
-        // (see README in  https://github.com/tonlabs/ton-client-js )
+        // use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+        // (see README in  https://github.com/tonlabs/ever-sdk-js )
         TonClient.useBinaryLibrary(libNode);
         const client = new TonClient({
             network: {

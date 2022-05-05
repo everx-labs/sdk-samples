@@ -1,12 +1,12 @@
 # TON Labs AppKit SDK samples
 
-`appkit_examples` folder contains samples that use [AppKit - Free TON Javascript Application Kit](https://github.com/tonlabs/appkit-js) - package that is built over the [@tonclient/core](https://tonlabs.github.io/ton-client-js/) package and purposed to simplify writing applications on Free TON
+`appkit_examples` folder contains samples that use [AppKit - Everscale Javascript Application Kit](https://github.com/tonlabs/appkit-js) - package that is built over the [@eversdk/core](https://tonlabs.github.io/ever-sdk-js/) package and purposed to simplify writing applications on Everscale
 
-- **[hello-wallet](./hello-wallet/)** - In this example  we learn how to deploy solidity contract `HelloWallet.sol` to [TON OS SE (local blockchain)](https://github.com/tonlabs/tonos-se), run its on-chain method and run its get-method.
+- **[hello-wallet](./hello-wallet/)** - In this example  we learn how to deploy solidity contract `HelloWallet.sol` to [Evernode SE (local blockchain)](https://github.com/tonlabs/evernode-se), run its on-chain method and run its get-method.
 
 - **[web-hello](./web-hello/)** - In this example we learn how to do the same things in WEB.
 
-- **[multisig](./multisig/)** In this example you will learn how to deploy solidity [multisig contract `SafeMultisigWallet.sol`](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#multisignature-wallet) to [Developer Network](https://docs.ton.dev/86757ecb2/p/85c869-networks) and work with it. 
+- **[multisig](./multisig/)** In this example you will learn how to deploy solidity [multisig contract `SafeMultisigWallet.sol`](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#multisignature-wallet) to [Developer Network](https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks) and work with it.
   
 - **[multisig-submit-tx](./multisig-submit-tx)** this is a simple sample of submitting transaction to multisig contract.
   

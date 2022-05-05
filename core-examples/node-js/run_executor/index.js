@@ -1,7 +1,7 @@
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@eversdk/lib-node");
 // https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
 const { SafeMultisigWalletContract } = require("./SafeMultisigWalletContract.js");
-const { signerKeys, abiContract, TonClient } = require("@tonclient/core");
+const { signerKeys, abiContract, TonClient } = require("@eversdk/core");
 
 TonClient.useBinaryLibrary(libNode);
 
@@ -12,10 +12,10 @@ const giverKeyPairFile = path.join(__dirname, giverKeyPairFileName);
 // ABI and imageBase64 of a binary Hello contract
 const {GiverV2} = require('./GiverV2.js');
 const { Console } = require("console");
-// Address of giver on TON OS SE
+// Address of giver on Evernode SE
 const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
 
-// Function that requests 10 local test tokens from TON OS SE giver
+// Function that requests 10 local test tokens from Evernode SE giver
 async function get_tokens_from_giver(client, account) {
     if (!fs.existsSync(giverKeyPairFile)) {
         console.log(`Please place ${giverKeyPairFileName} file in project root folder with Giver's keys`);
@@ -51,7 +51,7 @@ async function main(client) {
     const multisigKeys1 = await client.crypto.generate_random_sign_keys();
 
     // Creating signed deploy message.
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#encode_message
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#encode_message
     let deploy_message_encode_params = {
         abi: abiContract(SafeMultisigWalletContract.abi),
         deploy_set: {
@@ -81,7 +81,7 @@ async function main(client) {
     console.log("In this sample we are emulating deploy and call of the contract:  ", deployMessage.address);
 
     // Emulate deploy on blockchain using run_executor. In real blockchain we need to sponsor account address for deploy.
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_executor
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_executor
     let result = await client.tvm.run_executor({
         message: deployMessage.message,
         account: {
@@ -95,14 +95,14 @@ async function main(client) {
     console.log("Estimated deploy fees are: ", result.fees);
 
     // Now lets deploy and compare estimated and real fees
-    
-    // Request contract deployment funds form a local TON OS SE giver
+
+    // Request contract deployment funds form a local Evernode SE giver
     // If you want to run deploy on other networks,
     // update `get_tokens_from_giver` function so that it uses your contract as a giver.
-    // For instance, you can use Multisig contract  as a giver https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig, 
-    // transfering tokens with `submitTransaction` method. 
-    // Or you can deploy the `GiverV2` contract (https://github.com/tonlabs/tonos-se/tree/master/contracts) 
-    // with your own key pair and update it in GiverV2.keys.json file. 
+    // For instance, you can use Multisig contract  as a giver https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig,
+    // transfering tokens with `submitTransaction` method.
+    // Or you can deploy the `GiverV2` contract (https://github.com/tonlabs/evernode-se/tree/master/contracts)
+    // with your own key pair and update it in GiverV2.keys.json file.
 
     console.log("Deploy to the local blockchain.");
 
@@ -117,7 +117,7 @@ async function main(client) {
     console.log(`Deploy fees are  ${JSON.stringify(response.fees, null, 2)}`);
     console.log(`Contract is successfully deployed. You can play with your multisig wallet now at ${address}`);
     console.log(`Explore its data at the local version of TON Live http://localhost/accounts/accountDetails?id=0%3A` + `${address.split(':')[1]}`);
-    
+
     // Let's emulate `submitTransaction` function call.
     // Create an external inbound message for emulation of token transfer back to giver
 
@@ -128,9 +128,9 @@ async function main(client) {
             function_name: 'submitTransaction',
             input: { // read about multisig parameters here https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli/t/4829ad
                 dest: giverAddress,
-                value: 100_000_000, 
-                bounce: false, 
-                allBalance: true, 
+                value: 100_000_000,
+                bounce: false,
+                allBalance: true,
                 payload: "",
             }
         },
@@ -140,7 +140,7 @@ async function main(client) {
     submitTransactionMessage = await client.abi.encode_message(submit_encode_message_params);
 
     // Emulate message proccessing with run_executor.
-    
+
     result = await client.tvm.run_executor({
         message: submitTransactionMessage.message,
         account: {
@@ -149,7 +149,7 @@ async function main(client) {
             unlimited_balance: true // this flags emulates unlimited balance on the account
         },
         abi: abiContract(SafeMultisigWalletContract.abi),
-       // skip_transaction_check: true, 
+       // skip_transaction_check: true,
         return_updated_account: true
     });
     let newAccountBOC = result.account;
@@ -158,7 +158,7 @@ async function main(client) {
     console.log("Estimated execution fees are: ", result.fees);
     console.log(`We have just emulated the submition of a transaction with ID = ${result.decoded.output.transId}`);
 
-    // Let's run submitTransaction on-chain and compare fees. 
+    // Let's run submitTransaction on-chain and compare fees.
     result = await client.processing.process_message({
         send_events: false,
         message_encode_params: submit_encode_message_params
@@ -167,7 +167,7 @@ async function main(client) {
     console.log(`Execution fees are  ${JSON.stringify(result.fees, null, 2)}`);
 
     // Now lets run a get method over our virtual multisig wallet.
-    // We will retrieve the list of not confirmed transactions. 
+    // We will retrieve the list of not confirmed transactions.
     getTransactionsMessage = await client.abi.encode_message({
         abi: abiContract(SafeMultisigWalletContract.abi),
         address,
@@ -240,10 +240,10 @@ async function main(client) {
 
 
     // This is basically the essential capabilities of run_execuor function which allows to emulate execution and calculate fees.
-    // If you need to emulate execution with presize account balance then start with top-up from giver emulation. 
+    // If you need to emulate execution with presize account balance then start with top-up from giver emulation.
     // To do it you need to create an internal message (with `create_internal_message` function) of transfer from some address (some virtual giver) to your deploy address
-    // and run it on executor, with `unlimited_balance` parameter set to false, Account type = None and skip_transaction_check = true. 
-    // All further calls are the same. 
+    // and run it on executor, with `unlimited_balance` parameter set to false, Account type = None and skip_transaction_check = true.
+    // All further calls are the same.
     // Like this:
 
 
@@ -259,10 +259,10 @@ async function main(client) {
 
     result = await client.tvm.run_executor({
         message: topup_internal_message.message,
-        // Non-existing account to run a creation internal message. 
+        // Non-existing account to run a creation internal message.
         // Should be used with skip_transaction_check = true if the message has no deploy data since transactions on the uninitialized account are always aborted
         account: {
-            type: 'None', 
+            type: 'None',
         },
         abi: abiContract(SafeMultisigWalletContract.abi),
         skip_transaction_check: true,
@@ -280,8 +280,8 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_client.md#clientconfig
-            // Configucation guide: https://docs.ton.dev/86757ecb2/p/5328db-configure-sdk/b/18573c
+            // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_client.md#clientconfig
+            // Configucation guide: https://docs.everos.dev/ever-sdk/guides/installation/configure_sdk
             endpoints: ["http://localhost"],
         },
     });
@@ -291,7 +291,7 @@ async function main(client) {
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

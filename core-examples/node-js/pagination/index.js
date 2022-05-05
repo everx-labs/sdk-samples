@@ -1,5 +1,5 @@
-const { abiContract, TonClient } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { abiContract, TonClient } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 
 const walletAddress = "-1:3333333333333333333333333333333333333333333333333333333333333333";
 // time range
@@ -11,12 +11,12 @@ let client;
 
 (async () => {
     try {
-        // Link the platform-dependable TON-SDK binary with the target Application in Typescript
+        // Link the platform-dependable ever-sdk binary with the target Application in Typescript
         // This is a Node.js project, so we link the application with `libNode` binary 
-        // from `@tonclient/lib-node` package
+        // from `@eversdk/lib-node` package
         // If you want to use this code on other platforms, such as Web or React-Native,
-        // use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
-        // (see README in  https://github.com/tonlabs/ton-client-js )
+        // use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+        // (see README in  https://github.com/tonlabs/ever-sdk-js )
         TonClient.useBinaryLibrary(libNode);
         client = new TonClient({
             network: {
@@ -30,7 +30,7 @@ let client;
         });
 
         // In the following we query the first transaction within the specified time range for an account.
-        // See https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
+        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
         console.log(">> query the first account transaction within the specified time range");
         let result = (await client.net.query_collection({
             collection: 'transactions',
@@ -92,7 +92,7 @@ let client;
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

@@ -1,7 +1,7 @@
 {
     "dependencies": {
-        "@tonclient/appkit": "^0.2.0",
-        "@tonclient/core": "^1",
-        "@tonclient/lib-node": "^1.14.0"
+        "@eversdk/appkit": "^0.2.0",
+        "@eversdk/core": "^1",
+        "@eversdk/lib-node": "^1.14.0"
     }
 }
