@@ -1,5 +1,5 @@
-const { TonClient } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { TonClient } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const { SafeMultisigContract, networkEndpoints, getPreparedSigner } = require("./utils");
 
 TonClient.useBinaryLibrary(libNode);
@@ -8,7 +8,7 @@ TonClient.useBinaryLibrary(libNode);
     try {
         const tonClient = new TonClient({
             network: {
-                //Read more about NetworkConfig https://docs.ton.dev/86757ecb2/v/0/p/5328db-configure-sdk
+                //Read more about NetworkConfig https://docs.everos.dev/ever-sdk/guides/installation/configure_sdk
                 endpoints: networkEndpoints,
             },
         });
@@ -42,7 +42,7 @@ TonClient.useBinaryLibrary(libNode);
 
         // Let's read and print all withdraws from our account.
         // To do this we iterate internal outbound messages with positive value.
-        // See more about GraphQL API documentation here https://docs.ton.dev/86757ecb2/p/793337-ton-os-api
+        // See more about GraphQL API documentation here https://docs.everos.dev/ever-sdk/samples/graphql-samples/quick-start#api-documentation
         const filter = {
             src: { eq: address },
             msg_type: { eq: 0 },

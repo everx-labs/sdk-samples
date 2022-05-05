@@ -1,16 +1,16 @@
-const { Account } = require("@tonclient/appkit");
-const { TonClient, signerKeys } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { Account } = require("@eversdk/appkit");
+const { TonClient, signerKeys } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const assert = require('assert');
 
 const { HelloWallet } = require("./HelloWallet.js")
 
-// Link the platform-dependable TON-SDK binary with the target Application in Typescript
+// Link the platform-dependable ever-sdk binary with the target Application in Typescript
 // This is a Node.js project, so we link the application with `libNode` binary
-// from `@tonclient/lib-node` package
+// from `@eversdk/lib-node` package
 // If you want to use this code on other platforms, such as Web or React-Native,
-// use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
-// (see README in  https://github.com/tonlabs/ton-client-js )
+// use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+// (see README in  https://github.com/tonlabs/ever-sdk-js )
 TonClient.useBinaryLibrary(libNode);
 
 const giverContract = {
@@ -180,7 +180,7 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            // Local TON OS SE instance URL here
+            // Local Evernode SE instance URL here
             endpoints: ["http://localhost"]
         }
     });
@@ -190,7 +190,7 @@ async function main(client) {
         process.exit(0);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

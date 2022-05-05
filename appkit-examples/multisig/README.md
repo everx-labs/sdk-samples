@@ -1,12 +1,12 @@
 # How to deploy your wallet and make a transfer
 In this example we use [AppKit package](https://github.com/tonlabs/appkit-js) to deploy a [multisig contract](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/) into [Developer Network](https://net.ton.live/) and then make a transfer from it.  
 
-You can update the scripts to [work with other networks](https://docs.ton.dev/86757ecb2/p/85c869-networks), for example, with Free TON.
+You can update the scripts to [work with other networks](https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks), for example, with Everscale.
 
 ## Prerequisite
 
 * Node.js >= [14.x installed](https://nodejs.org)
-* Optional [Docker](https://docs.docker.com/desktop/#download-and-install) - if you want to use local blockchain TON OS SE
+* Optional [Docker](https://docs.docker.com/desktop/#download-and-install) - if you want to use local blockchain Evernode SE
 
 In order to do it, perform these steps:
 

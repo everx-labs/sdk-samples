@@ -1,11 +1,11 @@
-const { Account } = require("@tonclient/appkit");
+const { Account } = require("@eversdk/appkit");
 const { loadContract } = require("utils");
 const {
     signerKeys,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 
-const { libNode } = require("@tonclient/lib-node");
+const { libNode } = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 
@@ -51,7 +51,7 @@ async function sendMoney(acc, toAddress, amount) {
     try {
         const wallet1 = await deployContract(client);
 
-        // Query data from accounts collection https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
+        // Query data from accounts collection https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
         const balance1 = (await wallet1.getAccount()).balance;
         console.log(`Account 1 balance is ${balance1}`);
 
@@ -105,13 +105,13 @@ async function sendMoney(acc, toAddress, amount) {
 
         await sendMoney(wallet1, await wallet2.getAddress(), 5_000_000_000);
 
-        // Cancels a subscription specified by its handle. https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#unsubscribe
+        // Cancels a subscription specified by its handle. https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#unsubscribe
         await client.net.unsubscribe({ handle: subscriptionAccountHandle });
         await client.net.unsubscribe({ handle: subscriptionTransactionHandle });
         //    await client.net.unsubscribe({ handle: subscriptionMessageHandle });
 
 
-        // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#find_last_shard_block
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#find_last_shard_block
         // Returns ID of the latest block in a wallet 1 address account shard.
         const block_id1 = (await client.net.find_last_shard_block({
             address: await wallet1.getAddress(),
@@ -137,7 +137,7 @@ async function sendMoney(acc, toAddress, amount) {
         client.close();
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

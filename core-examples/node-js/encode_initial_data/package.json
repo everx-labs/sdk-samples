@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "@tonclient/core": "^1",
-        "@tonclient/lib-node": "^1"
+        "@eversdk/core": "^1",
+        "@eversdk/lib-node": "^1"
     }
 }

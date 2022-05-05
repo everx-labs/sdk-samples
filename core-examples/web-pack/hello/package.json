@@ -19,12 +19,12 @@
 	"license": "SEE LICENSE IN LICENSE",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/tonlabs/ton-client-web-js.git"
+		"url": "https://github.com/tonlabs/sdk-samples.git"
 	},
-	"homepage": "https://docs.ton.dev/",
+	"homepage": "https://docs.everos.dev/",
 	"dependencies": {
-		"@tonclient/core": "^1.5.3",
-		"@tonclient/lib-web": "^1.5.3"
+		"@eversdk/core": "^1.5.3",
+		"@eversdk/lib-web": "^1.5.3"
 	},
 	"devDependencies": {
 		"assert": "^2.0.0",

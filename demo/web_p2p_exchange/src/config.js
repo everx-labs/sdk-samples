@@ -7,14 +7,14 @@ const OFFER_PACKAGE = require('./ton-contracts/Offer.package')
 const GIVER_PACKAGE = require('./ton-contracts/giver.package')
 
 /*
- * Change TON_ENDPOINTS if you do not use TON OS SE
+ * Change TON_ENDPOINTS if you do not use Evernode SE
  */
 const TON_ENDPOINTS = ['http://0.0.0.0'] // or ['net1.ton.dev', 'net5.ton.dev']
 const TON_MESSAGE_PROCESSING_TIMEOUT = 60000
 const TON_MESSAGE_RETRIES_COUNT = 5
 
 /*
- * Change next 3 lines if you do not use TON OS SE and have your own giver contract
+ * Change next 3 lines if you do not use Evernode SE and have your own giver contract
  */
 const GIVER_ADDRESS = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5'
 const GIVER_PUBLIC_KEY = '2ada2e65ab8eeab09490e3521415f45b6e42df9c760a639bcf53957550b25a16'

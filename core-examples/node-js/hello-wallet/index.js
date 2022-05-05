@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { TonClient, abiContract, signerKeys, signerNone } = require('@tonclient/core');
-const { libNode } = require('@tonclient/lib-node');
+const { TonClient, abiContract, signerKeys, signerNone } = require('@eversdk/core');
+const { libNode } = require('@eversdk/lib-node');
 
 // ABI and imageBase64 of a binary HelloWallet contract
 const { HelloWallet } = require('./contracts/HelloWallet.js');
@@ -9,7 +9,7 @@ const GIVER_ABI = require('./contracts/GiverV2.abi.json');
 const GIVER_KEYS = readKeysFromFile('GiverV2.keys.json');
 
 /**
- * If you are running this script not on the TON OS SE, you should:
+ * If you are running this script not on the Evernode SE, you should:
  *  - change `ENDPOINTS`
  *  - change `GIVER_ADDRESS`
  *  - write down giver keys into 'GiverV2.keys.json'
@@ -17,12 +17,12 @@ const GIVER_KEYS = readKeysFromFile('GiverV2.keys.json');
 const ENDPOINTS = ['http://localhost'];
 const GIVER_ADDRESS = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
 
-// Link the platform-dependable TON-SDK binary with the target Application in Typescript
+// Link the platform-dependable ever-sdk binary with the target Application in Typescript
 // This is a Node.js project, so we link the application with `libNode` binary
-// from `@tonclient/lib-node` package
+// from `@eversdk/lib-node` package
 // If you want to use this code on other platforms, such as Web or React-Native,
-// use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
-// (see README in  https://github.com/tonlabs/ton-client-js)
+// use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+// (see README in  https://github.com/tonlabs/ever-sdk-js)
 TonClient.useBinaryLibrary(libNode);
 const client = new TonClient({
     network: {
@@ -65,7 +65,7 @@ const client = new TonClient({
         if (error.code === 504) {
             console.error(
                 [
-                    'Network is inaccessible. You have to start TON OS SE using `tondev se start`',
+                    'Network is inaccessible. You have to start Evernode SE using `everdev se start`',
                     'If you run SE on another port or ip, replace http://localhost endpoint with',
                     'http://localhost:port or http://ip:port in index.js file.',
                 ].join('\n'),
@@ -87,7 +87,7 @@ async function calcWalletAddress(keys) {
 function buildDeployOptions(keys) {
     // Prepare parameters for deploy message encoding
     // See more info about `encode_message` method parameters here:
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#encode_message
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#encode_message
     const deployOptions = {
         abi: {
             type: 'Contract',
@@ -139,7 +139,7 @@ async function getTokensFromGiver(dest, value) {
 async function deployWallet(walletKeys) {
     // Deploy `Hello wallet` contract
     // See more info about `process_message` here:
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#process_message
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#process_message
     console.log('Deploying Hello wallet contract');
     await client.processing.process_message({
         send_events: false,
@@ -204,14 +204,14 @@ async function executeGetTimeLocally(address, transLt) {
 
     // Download the latest state (BOC)
     // See more info about wait_for_collection method here:
-    // https://tonlabs.gitbook.io/ton-sdk/reference/types-and-methods/mod_net#wait_for_collection
+    // https://docs.everos.dev/ever-sdk/reference/types-and-methods/mod_net#wait_for_collection
     const account = await waitForAccountUpdate(address, transLt).then(({ result }) => result.boc);
 
     // Encode the message with `getTimestamp` call
     const { message } = await client.abi.encode_message({
         // Define contract ABI in the Application
         // See more info about ABI type here:
-        // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#abi
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#abi
         abi: {
             type: 'Contract',
             value: HelloWallet.abi,
@@ -226,7 +226,7 @@ async function executeGetTimeLocally(address, transLt) {
 
     // Execute `getTimestamp` get method  (execute the message locally on TVM)
     // See more info about run_tvm method here:
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_tvm
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
     console.log('Run `getTimestamp` function locally');
     const response = await client.tvm.run_tvm({
         message,
@@ -247,7 +247,7 @@ async function sendValue(address, dest, amount, keys) {
             address,
             // Define contract ABI in the Application
             // See more info about ABI type here:
-            // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_abi.md#abi
+            // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#abi
             abi: {
                 type: 'Contract',
                 value: HelloWallet.abi,
