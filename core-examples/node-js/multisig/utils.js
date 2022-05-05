@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 
-/** @typedef {import("@tonclient/core").Signer} TonSigner */
+/** @typedef {import("@eversdk/core").Signer} TonSigner */
 
 function loadContract(name) {
     const contractPath = path.resolve(
@@ -46,7 +46,7 @@ const keyPairFile = path.join(__dirname, "keyPair.json");
  */
 async function prepareSignerWithRandomKeys(client) {
     // Generate seed phrase. It is used to generate or re-generate keys. Keep it secret.
-    //https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_crypto.md#mnemonic_from_random
+    //https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_crypto.md#mnemonic_from_random
     const { phrase } = await client.crypto.mnemonic_from_random({
         dictionary: SEED_PHRASE_DICTIONARY_ENGLISH,
         word_count: SEED_PHRASE_WORD_COUNT,

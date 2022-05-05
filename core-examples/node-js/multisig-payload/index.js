@@ -1,19 +1,19 @@
-const { Account } = require("@tonclient/appkit");
-const { libNode } = require("@tonclient/lib-node");
+const { Account } = require("@eversdk/appkit");
+const { libNode } = require("@eversdk/lib-node");
 const { SafeMultisigContract } = require("./SafeMultisigContract.js");
 const { DePoolContract } = require("./DePoolContract.js");
 const {
     signerKeys,
     signerNone,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 
-// Link the platform-dependable TON-SDK binary with the target Application in Typescript
+// Link the platform-dependable ever-sdk binary with the target Application in Typescript
 // This is a Node.js project, so we link the application with `libNode` binary
-// from `@tonclient/lib-node` package
+// from `@eversdk/lib-node` package
 // If you want to use this code on other platforms, such as Web or React-Native,
-// use  `@tonclient/lib-web` and `@tonclient/lib-react-native` packages accordingly
-// (see README in  https://github.com/tonlabs/ton-client-js )
+// use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+// (see README in  https://github.com/tonlabs/ever-sdk-js )
 TonClient.useBinaryLibrary(libNode);
 
 async function getExistingMultisigAccount(client) {
@@ -69,8 +69,8 @@ async function getExistingDePoolAccount(client, validatorWallet) {
 
         
         // Generate payload with order to deposit ordinary stake in depool from multisignature wallet.
-        // See https://docs.ton.dev/86757ecb2/p/04040b-run-depool-v3/t/5600a5
-        // https://github.com/tonlabs/TON-SDK/blob/b6449a8f575c62a9e6fbcfa11979f3c9863f797b/docs/mod_abi.md#encode_message_body
+        // See https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/depool#1-ordinary-stake
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_abi.md#encode_message_body
         const payload = (await client.abi.encode_message_body({
             abi: dePoolAccount.abi,
             call_set: {

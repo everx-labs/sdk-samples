@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 /* eslint-disable no-extra-semi */
 
-const { TonClient } = require('@tonclient/core')
-const { libNode } = require('@tonclient/lib-node')
+const { TonClient } = require('@eversdk/core')
+const { libNode } = require('@eversdk/lib-node')
 
 const blockchain = require('../blockchain')
 const { isNear, sleep, isValidAddress, utf8ToHex } = require('../utils')

@@ -1,5 +1,5 @@
-const { TonClient } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { TonClient } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const { SafeMultisigContract, networkEndpoints, getPreparedSigner } = require("./utils");
 
 TonClient.useBinaryLibrary(libNode);
@@ -11,12 +11,12 @@ const ACCOUNT_TYPE_ACTIVE = 1;
 const ACCOUNT_TYPE_UNINITIALIZED = 0;
 
 // Number of tokens required to deploy the contract.
-// See https://docs.ton.dev/86757ecb2/p/6207cd-estimate-fees on how to calculate definite number.
+// See https://docs.everos.dev/ever-sdk/guides/work_with_contracts/estimate_fees on how to calculate definite number.
 const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 
 (async () => {
     try {
-        //Read more about NetworkConfig https://docs.ton.dev/86757ecb2/v/0/p/5328db-configure-sdk
+        //Read more about NetworkConfig https://docs.everos.dev/ever-sdk/guides/installation/configure_sdk
         const tonClient = new TonClient({
             network: {
                 endpoints: networkEndpoints,
@@ -51,7 +51,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
         });
 
         // Query account type, balance and code to analyse if it is possible to deploy the contract
-        // See more info about query method here https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_net.md#query_collection
+        // See more info about query method here https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
         /** @type {{ acc_type: number, balance: string, code: string}[]} */
         const result = (await tonClient.net.query_collection({
             collection: "accounts",

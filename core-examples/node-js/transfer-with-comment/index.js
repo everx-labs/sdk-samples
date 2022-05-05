@@ -3,8 +3,8 @@
 // Before running this sample deploy multisig wallet to net.ton.dev and place your keys in
 // the project root folder into keys.json file and multisig account address to address.txt file
 
-const { TonClient, signerNone, abiContract } = require("@tonclient/core");
-const { libNode } = require("@tonclient/lib-node");
+const { TonClient, signerNone, abiContract } = require("@eversdk/core");
+const { libNode } = require("@eversdk/lib-node");
 const fs = require("fs");
 const path = require("path");
 const keyPairFile = path.join(__dirname, "keys.json");
@@ -27,7 +27,7 @@ const multisigContractPackage = {
         TonClient.useBinaryLibrary(libNode);
         const tonClient = new TonClient({
             network: {
-                //Read more about NetworkConfig https://github.com/tonlabs/TON-SDK/blob/e16d682cf904b874f9be1d2a5ce2196b525da38a/docs/mod_client.md#networkconfig
+                //Read more about NetworkConfig https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_client.md#networkconfig
                 endpoints: [
                     "eri01.net.everos.dev",
                     "rbx01.net.everos.dev",

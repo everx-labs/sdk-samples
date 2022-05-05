@@ -3,7 +3,7 @@
 In this example we demonstrate how to eliminate passing your keys to the library
 by using `signingBox` interface.
 
-We deploy solidity contract `Hello.sol` to [TONOS SE](https://docs.ton.dev/86757ecb2/p/2771b0-overview)
+We deploy solidity contract `Hello.sol` to [Evernode SE](https://docs.everos.dev/evernode-platform/products/simple-emulator-se)
 (local blockchain) and interact with it using `signingBox` instead of a key pair.
 
 Notice `dummySigningBox` class that implements the required interface.
@@ -37,15 +37,15 @@ and eliminate passing your keys inside the library.
 ## Prerequisite
 
 * Node.js >= [14.x installed](https://nodejs.org)
-* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain TON OS SE)
+* [Docker](https://docs.docker.com/desktop/#download-and-install) (if you want to use local blockchain Evernode SE)
 
 ## Preparation
 
-* [Install tondev and run TONOS SE on your computer](https://docs.ton.dev/86757ecb2/p/206d7d-introduction) 
+* [Install everdev and run Evernode SE on your computer](https://docs.everos.dev/everdev/command-line-interface/evernode-platform-startup-edition-se)
 
 ```sh
-npm i -g tondev
-tondev se start
+npm i -g everdev
+everdev se start
 ```
 
 Install packages and run:

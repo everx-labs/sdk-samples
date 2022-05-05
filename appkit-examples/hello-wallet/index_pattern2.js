@@ -2,14 +2,14 @@
 // using `encode_message`, `send_message` and `wait_for_transaction` functions.
 // Also it demonstrates how to catch intermediate events during message processing and log them
 
-const { Account } = require("@tonclient/appkit");
-const { libNode } = require("@tonclient/lib-node");
+const { Account } = require("@eversdk/appkit");
+const { libNode } = require("@eversdk/lib-node");
 const { HelloWallet } = require("./HelloWallet.js")
 const {
     abiContract,
     signerKeys,
     TonClient,
-} = require("@tonclient/core");
+} = require("@eversdk/core");
 
 TonClient.useBinaryLibrary(libNode);
 
@@ -33,7 +33,7 @@ async function main(client) {
     const address = await helloAcc.getAddress();
     console.log(`Future address of the contract will be: ${address}`);
 
-    // Request contract deployment funds form a local TON OS SE giver
+    // Request contract deployment funds form a local Evernode SE giver
     // not suitable for other networks
     const giver = await Account.getGiverForClient(client);
     await giver.sendTo(address, 10_000_000_000);
@@ -41,7 +41,7 @@ async function main(client) {
 
     // Send deploy message to the network
     // See more info about `send_message` here
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#send_message
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#send_message
     const deployMessage = await client.abi.encode_message(await helloAcc.getParamsOfDeployMessage());
     let shard_block_id;
     shard_block_id = (await client.processing.send_message({
@@ -54,7 +54,7 @@ async function main(client) {
 
     // Monitor message delivery.
     // See more info about `wait_for_transaction` here
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#wait_for_transaction
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#wait_for_transaction
     const deploy_processing_result = await client.processing.wait_for_transaction({
             abi: abiContract(HelloWallet.abi),
             message: deployMessage.message,
@@ -88,7 +88,7 @@ async function main(client) {
 
     // Send `touch` call message to the network
     // See more info about `send_message` here
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#send_message
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#send_message
     shard_block_id = (await client.processing.send_message({
             message: encode_touch_result.message,
             send_events: true,
@@ -99,7 +99,7 @@ async function main(client) {
 
     // Monitor message delivery.
     // See more info about `wait_for_transaction` here
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_processing.md#wait_for_transaction
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#wait_for_transaction
     const touch_processing_result = await client.processing.wait_for_transaction({
             abi: abiContract(HelloWallet.abi),
             message: encode_touch_result.message,
@@ -113,21 +113,21 @@ async function main(client) {
 
     // Execute `getTimestamp` get method  (execute the message locally on TVM)
     // See more info about run_tvm method here
-    // https://github.com/tonlabs/TON-SDK/blob/master/docs/mod_tvm.md#run_tvm
+    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
     const response = await helloAcc.runLocal("getTimestamp", {});
     console.log("Contract reacted to your getTimestamp:", response.decoded.output);
     await helloAcc.free();
 }
 
 (async () => {
-    // Use local TON OS SE instance
+    // Use local Evernode SE instance
     const client = new TonClient({ network: { endpoints: ["http://localhost"] } });
     try {
         console.log("Hello localhost TON!");
         await main(client);
     } catch (error) {
         if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start TON OS SE using \`tondev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
+            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
         } else {
             console.error(error);
         }

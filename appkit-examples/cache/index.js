@@ -4,8 +4,8 @@ const {
     signerNone,
     bocCacheTypePinned,
     bocCacheTypeUnpinned,
-} = require("@tonclient/core");
-const {libNode} = require("@tonclient/lib-node");
+} = require("@eversdk/core");
+const {libNode} = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 
