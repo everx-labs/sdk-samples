@@ -2,101 +2,90 @@ const TRANSACTION_FIELDS = `
     id
     account_addr
     now
-    lt
-    balance_delta(format:DEC)
     bounce { bounce_type }
-    orig_status
-    end_status
-    aborted
     in_message { 
         value(format:DEC)
-        msg_type
-        bounce
+        id
         src
     } 
     out_messages {
         value(format:DEC)
-        msg_type
-        bounce
+        id
         dst
+    }
+    ext_in_msg_fee(format:DEC)
+    storage{
+        storage_fees_collected(format:DEC)
+    }
+    compute{
+        gas_fees(format:DEC)
+    }
+    action{
+        total_fwd_fees(format:DEC)
     }
 `;
 
-function getTransfersFromTransaction(transaction) {
-    const transfers = [];
-    const isBounced = transaction.bounce && transaction.bounce.bounce_type === BounceType.Ok;
-    const inbound = transaction.in_message;
-    if (inbound && Number(inbound.value) > 0) {
-        transfers.push({
-            account: transaction.account_addr,
-            transaction: transaction.id,
-            message: inbound.id,
-            isBounced,
-            isDeposit: true,
-            counterparty: inbound.src,
-            value: inbound.value,
-            time: transaction.now,
-        });
-    }
-    for (const outbound of transaction.out_messages) {
-        if (Number(outbound.value) > 0) {
-            transfers.push({
-                account: transaction.account_addr,
-                transaction: transaction.id,
-                message: outbound.id,
-                isBounced,
-                isDeposit: false,
-                counterparty: outbound.dst,
-                value: outbound.value,
-                time: transaction.now,
-            });
+// This API has additional consistency checks to ensure consistent pagination, which can lead to additional delay
+const queryAccouont = `query MyQuery($address: String!, $cursor: String, $count: Int, $seq_no: Int) {
+    blockchain {
+        account(address: $address){
+            transactions(
+                master_seq_no_range: {
+                    start: $seq_no
+                }
+                first: $count
+                after: $cursor
+            ){
+                edges{
+                    node{
+                        ${TRANSACTION_FIELDS}
+                    }
+                }
+                pageInfo{
+                    endCursor
+                    hasNextPage
+                }
+            }
         }
     }
-    return transfers;
+}`;
 
-}
-
-const BounceType = {
-    NegFunds: 0,
-    NoFunds: 1,
-    Ok: 2,
-};
-
-function seconds(ms) {
-    return Math.round(ms / 1000);
-}
-
-async function internalQueryTransactionsWithTransfers(
-    client,
-    filter,
-    order,
-    endTime,
-) {
-    let transactions = (await client.net.query_collection({
-        collection: "transactions",
-        result: TRANSACTION_FIELDS,
-        filter,
-        order: order.split(" ").map(x => ({ path: x, direction: "ASC" })),
-    })).result;
-    if (endTime) {
-        transactions = transactions.filter(x => x.now < endTime);
-    }
-    transactions.forEach(x => x.transfers = getTransfersFromTransaction(x));
-    const last = transactions.length > 0 ? transactions[transactions.length - 1] : undefined;
-    return {
-        transactions,
-        last: last
-            ? {
-                now: last.now,
-                account_addr: last.account_addr,
-                lt: last.lt,
+// This API has additional consistency checks to ensure consistent pagination, which can lead to additional delay
+const queryAll = `query MyQuery($cursor: String, $count: Int, $seq_no: Int) {
+    blockchain {
+        transactions(
+            master_seq_no_range: {
+                start: $seq_no
             }
-            : {},
-    };
-}
+            first: $count
+            after: $cursor
+        ){
+            edges{
+                node{
+                    ${TRANSACTION_FIELDS}
+                }
+            }
+            pageInfo{
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+}`;
 
+const sleep = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms))
+
+async function internalQueryTransactions(client, variables) {
+    const isAccount = "address" in variables;
+    const query = isAccount ? queryAccouont : queryAll;
+    const response = await client.net.query({query, variables});
+    return isAccount ?
+        response.result.data.blockchain.account.transactions
+        :
+        response.result.data.blockchain.transactions;
+}
 
 module.exports = {
-    seconds,
-    internalQueryTransactionsWithTransfers,
+    sleep,
+    internalQueryTransactions,
 };

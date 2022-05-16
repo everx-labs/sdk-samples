@@ -6,20 +6,7 @@ It covers such use-cases as:
 - wallet deploy 
 - wallet deposit
 - wallet withdraw
-- sequential blockchain transactions reading
-- sequential wallet transactions reading
-
-**Attention!**
-Note that the most recent API data can be present in an inconsistent
-state. Usually this data relates to the last minute. The older
-API data is always in consistent state.
- 
-Therefore, not to miss any data while reading you can specify the `endTime` option in correspondint methods.
-Two minutes before now is enough to not miss anything.
-
-We are currently working on a new feature to allow reliable recent data reading,
-as soon as it is ready, there will be an announcement and this sample will be updated.
-This is a high priority feature for us right now. 
+- cursor-based pagination read all transfers related to this wallet
 
 ## How to run the sample?
 
@@ -49,6 +36,7 @@ You will see your key pair. Copy the private key.
 ```
 
 Read about multisig wallet here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
+See example on how to deploy it here https://github.com/tonlabs/sdk-samples/tree/master/core-examples/node-js/multisig
 
 **To migrate from Developer Network to Everscale you need to update the endpoints specified in TonClient configuration
 to Everscale endpoints.**
