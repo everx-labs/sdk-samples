@@ -1,7 +1,8 @@
 const { internalQueryTransactions } = require("./transactions");
+const { consoleClear, consoleWrite } = require("./utils");
 
 /**
- * Query all blockchain transactions by using cursor-based pagination.
+ * Iterator to query ALL blockchain transactions in backward way by using cursor-based pagination.
  */
 async function *queryAllTransactions(
     client,
@@ -11,12 +12,14 @@ async function *queryAllTransactions(
         cursor: null,
         ...options,
     }
-    let hasNextPage = true;
-    while (hasNextPage) {
+    let hasPreviousPage = true;
+    while (hasPreviousPage) {
+        consoleWrite(`Requesting transactions...`)
         const transactions = await internalQueryTransactions(client, variables);
+        consoleClear()
         yield transactions.edges.map(_ => _.node);
-        variables.cursor = transactions.pageInfo.endCursor;
-        hasNextPage = transactions.pageInfo.hasNextPage;
+        variables.cursor = transactions.pageInfo.startCursor;
+        hasPreviousPage = transactions.pageInfo.hasPreviousPage;
     }
 }
 

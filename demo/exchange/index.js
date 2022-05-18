@@ -24,11 +24,11 @@ const { TonClient, signerKeys } = require("@eversdk/core");
 const { ensureGiver, depositAccount, walletWithdraw, getAccount, deployAccount } = require(
     "./wallet");
 const { SafeMultisigContract } = require("./contracts");
-const { sleep } = require("./transactions");
+const { consoleWrite, consoleClear, keyPress } = require("./utils");
 const { getLastBlockSeqNo } = require("./blockchain");
 const { queryAccountTransactions } = require("./account-transactions");
 const { queryAllTransactions } = require("./all-transactions");
-const { printTransfers } = require("./transfers");
+const { hasTransfersOnTransactions, printTransfers } = require("./transfers");
 
 TonClient.useBinaryLibrary(libNode);
 
@@ -39,7 +39,6 @@ TonClient.useBinaryLibrary(libNode);
  * and then read all transfers related to this account
  */
 async function main(client) {
-
     // Сonfigures the specified multisig wallet as a wallet to sponsor deploy operation
     // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
     const giver = await ensureGiver(client);
@@ -58,7 +57,8 @@ async function main(client) {
     // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
     const wallet = await getAccount(client, SafeMultisigContract, signerKeys(walletKeys));
 
-    // Save seq_no before we send the first transaction. We will need it later
+    // Save block seq_no before we send the first transaction.
+    // It will be used later as starting point for pagination reqest.
     const lastSeqNo = await getLastBlockSeqNo(client);
 
     // Prepay contract before deploy.
@@ -83,27 +83,43 @@ async function main(client) {
     console.log(`Withdrawing 1 token from ${wallet.address} to ${giver.address}...`);
     await walletWithdraw(wallet, giver.address, 1_000_000_000);
 
-    // Wait for consistency before calling blockchain API
-    console.log(`Wait 10 seconds`);
-    await sleep(10_000);
-
-    // To build pagination request limit count of transactions
+    // To build a query with pagination, let's limit the count of transactions
+    // which will be obtained by one request
     const countLimit = 10;
-    
+
     // And here we retrieve all the wallet's transactions since the specified block seq_no
+    let size = 0;
     console.log(`\nTransactions for ${wallet.address} account since block(seq_no):${lastSeqNo}`);
     for await (let transactions of queryAccountTransactions(client, wallet.address, {seq_no: lastSeqNo, count: countLimit})) {
         transactions.forEach(printTransfers);
+        size += transactions.length;
+        if (size >= 4) {
+            // Wait 4 transactions:
+            //   1. Sending deploy fee
+            //   2. Deploying new wallet
+            //   3. Depositing 2 tokens
+            //   4. Withdrawing 1 token
+            break;
+        }
     }
 
-    // Now let's iterate all transactions
-    //
-    // Currently we are working on a feature that will allow reliable reading of recent data
-    //
-    // Watch out for announcements. This sample will also be refactored after the feature is released.
-    console.log(`\nTransactions of all accounts since block(seq_no):${lastSeqNo}`);
-    for await (let transactions of queryAllTransactions(client, {seq_no: lastSeqNo, count: countLimit})) {
+    // Now let's iterate all blockchain transactions with value transfers in backward way.
+    // Starting from now till the first block was generated.
+    console.log(`\nTransactions of all accounts`);
+    for await (let transactions of queryAllTransactions(client, {count: countLimit})) {
+        // Trying get next trnsactions which contain any valuable transfers
+        if (!hasTransfersOnTransactions(transactions)) {
+            continue;
+        }
+
         transactions.forEach(printTransfers);
+
+        try {
+            await keyPress();
+        } catch(_) {
+            // If pressed Ctrl+C exits from iteration
+            break;
+        }
     }
 }
 
