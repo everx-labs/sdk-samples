@@ -1,5 +1,6 @@
 const { SafeMultisigContract } = require("./contracts");
 const { signerKeys, abiContract } = require("@eversdk/core");
+const { sleep } = require("./utils");
 
 let _giver = null;
 
@@ -97,11 +98,17 @@ async function runAndWaitForRecipientTransactions(account, functionName, input) 
     //  2. Recipient receives tokens - this transaction can be caught with `query_transaction_tree method`
     // Read more about transactions and messages here
     // https://ton.dev/faq/blockchain-basic
-    for (const messageId of runResult.transaction.out_msgs) {
-        const tree = await account.client.net.query_transaction_tree({
-            in_msg: messageId,
-        });
-        transactions.push(...tree.transactions);
+    let countCallingApi = 0;
+    while(transactions.length === 0 && countCallingApi < 100) {
+        for (const messageId of runResult.transaction.out_msgs) {
+            const tree = await account.client.net.query_transaction_tree({
+                in_msg: messageId,
+            });
+            transactions.push(...tree.transactions);
+            if (countCallingApi++) {
+                await sleep(200); // don't spam API
+            }
+        }
     }
     return transactions;
 }
@@ -110,7 +117,7 @@ async function runAndWaitForRecipientTransactions(account, functionName, input) 
  * Sends some tokens from msig wallet to specified address.
  */
 async function walletSend(wallet, address, amount) {
-    await runAndWaitForRecipientTransactions(wallet, "sendTransaction", {
+    return await runAndWaitForRecipientTransactions(wallet, "sendTransaction", {
         dest: address,
         value: amount,
         bounce: false,
@@ -142,6 +149,7 @@ async function walletWithdraw(wallet, address, amount) {
     if (transactions.length > 0) {
         console.log(`Recipient received transfer. The recipient's transaction is: ${transactions[0].id}`);
     }
+    return transactions
 }
 
 /**
@@ -155,7 +163,7 @@ async function walletWithdraw(wallet, address, amount) {
  * In production you can use any other contract that can transfer funds, as a giver.
  */
 async function depositAccount(address, amount, client) {
-    await walletSend(await ensureGiver(client), address, amount);
+    return await walletSend(await ensureGiver(client), address, amount);
 }
 
 module.exports = {

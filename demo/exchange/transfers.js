@@ -1,3 +1,7 @@
+function hasTransfersOnTransactions(transactions) {
+    return transactions.some(t => t.out_messages.some(m => Number(m.value) > 0) || t.in_message != null && Number(t.in_message.value))
+}
+
 function getTransfersFromTransaction(transaction) {
     const transfers = [];
     const isBounced = transaction.bounce && transaction.bounce.bounce_type === BounceType.Ok;
@@ -69,5 +73,8 @@ function printTransfers(transaction) {
 }
 
 module.exports = {
+    hasTransfersOnTransactions,
+    getTransfersFromTransaction,
+    printTransactionTransfer,
     printTransfers,
 };
