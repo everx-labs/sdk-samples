@@ -1,7 +1,8 @@
 const { internalQueryTransactions } = require("./transactions");
+const { sleep } = require("./utils");
 
 /**
- * Query account transactions by using cursor-based pagination.
+ * Iterator to query account transactions by using cursor-based pagination.
  */
 async function *queryAccountTransactions(
     client,
@@ -13,12 +14,11 @@ async function *queryAccountTransactions(
         cursor: null,
         ...options,
     }
-    let hasNextPage = true;
-    while (hasNextPage) {
+    while (true) { // <-- !WARNING! Infinity loop, you need to implement condition to exit from iterator
         const transactions = await internalQueryTransactions(client, variables);
         yield transactions.edges.map(_ => _.node);
-        variables.cursor = transactions.pageInfo.endCursor;
-        hasNextPage = transactions.pageInfo.hasNextPage;
+        variables.cursor = transactions.pageInfo.endCursor || variables.cursor;
+        await sleep(200); // don't spam API
     }
 }
 
