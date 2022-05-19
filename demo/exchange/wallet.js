@@ -60,7 +60,7 @@ async function ensureGiver(client) {
     const secret = process.argv[3];
     if (!address || !secret) {
         console.log("USE: node index <giver-address> <giver-secret-key>");
-        console.log("Giver must be the safe multisig wallet");
+        console.log("Giver must be a multisig wallet");
         process.exit(1);
     }
     _giver = await getAccount(
