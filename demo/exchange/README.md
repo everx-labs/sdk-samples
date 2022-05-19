@@ -6,7 +6,8 @@ It covers such use-cases as:
 - wallet deploy 
 - wallet deposit
 - wallet withdraw
-- cursor-based pagination read all transfers related to this wallet
+- cursor-based pagination read all transactions related to this wallet
+- cursor-based pagination read all blockchain transactions
 
 ## How to run the sample?
 
