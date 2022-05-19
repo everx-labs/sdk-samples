@@ -40,16 +40,14 @@ TonClient.useBinaryLibrary(libNode);
  */
 async function main(client) {
     // Сonfigures the specified multisig wallet as a wallet to sponsor deploy operation
-    // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
     const giver = await ensureGiver(client);
 
-    // Generate a key pair for a wallet
+    // Generate a key pair for a wallet that we will deploy
     console.log("Generate new wallet keys");
     const walletKeys = await client.crypto.generate_random_sign_keys();
 
     // In this example we will deploy safeMultisig wallet.
     // Read about it here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig
-    // See example on how to deploy it here https://github.com/tonlabs/sdk-samples/tree/master/core-examples/node-js/multisig
 
     // The first step - initialize new account object with ABI,
     // target network (client) and previously generated key pair (signer) and 
