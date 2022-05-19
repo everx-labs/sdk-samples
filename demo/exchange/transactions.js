@@ -43,7 +43,6 @@ const queryAccouont = `query MyQuery($address: String!, $cursor: String, $count:
                 }
                 pageInfo{
                     endCursor
-                    hasNextPage
                 }
             }
         }
@@ -51,11 +50,14 @@ const queryAccouont = `query MyQuery($address: String!, $cursor: String, $count:
 }`;
 
 // This API has additional consistency checks to ensure consistent pagination, which can lead to additional delay
-const queryAllBackward = `query MyQuery($cursor: String, $count: Int) {
+const queryAll = `query MyQuery($cursor: String, $count: Int, $seq_no: Int) {
     blockchain {
         transactions(
-            last: $count
-            before: $cursor
+            master_seq_no_range: {
+                start: $seq_no
+            }
+            first: $count
+            after: $cursor
         ){
             edges{
                 node{
@@ -63,8 +65,7 @@ const queryAllBackward = `query MyQuery($cursor: String, $count: Int) {
                 }
             }
             pageInfo{
-                startCursor
-                hasPreviousPage
+                endCursor
             }
         }
     }
@@ -72,7 +73,7 @@ const queryAllBackward = `query MyQuery($cursor: String, $count: Int) {
 
 async function internalQueryTransactions(client, variables) {
     const isAccount = "address" in variables;
-    const query = isAccount ? queryAccouont : queryAllBackward;
+    const query = isAccount ? queryAccouont : queryAll;
     const response = await client.net.query({query, variables});
     return isAccount ?
         response.result.data.blockchain.account.transactions

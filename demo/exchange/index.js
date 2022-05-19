@@ -24,8 +24,8 @@ const { TonClient, signerKeys } = require("@eversdk/core");
 const { ensureGiver, depositAccount, walletWithdraw, getAccount, deployAccount } = require(
     "./wallet");
 const { SafeMultisigContract } = require("./contracts");
-const { consoleWrite, consoleClear, keyPress } = require("./utils");
-const { getLastBlockSeqNo } = require("./blockchain");
+const { keyPress, seconds } = require("./utils");
+const { getLastMasterBlockSeqNoByTime } = require("./blockchain");
 const { queryAccountTransactions } = require("./account-transactions");
 const { queryAllTransactions } = require("./all-transactions");
 const { hasTransfersOnTransactions, printTransfers } = require("./transfers");
@@ -57,9 +57,9 @@ async function main(client) {
     // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
     const wallet = await getAccount(client, SafeMultisigContract, signerKeys(walletKeys));
 
-    // Save block seq_no before we send the first transaction.
+    // Save last master block seq_no before we send the first transaction.
     // It will be used later as starting point for pagination reqest.
-    const lastSeqNo = await getLastBlockSeqNo(client);
+    const lastSeqNo = await getLastMasterBlockSeqNoByTime(client, seconds());
 
     // Prepay contract before deploy.
     console.log(`Sending deploy fee from giver wallet ${giver.address} to the new account at ${wallet.address}`);
@@ -91,6 +91,7 @@ async function main(client) {
     let size = 0;
     console.log(`\nTransactions for ${wallet.address} account since block(seq_no):${lastSeqNo}`);
     for await (let transactions of queryAccountTransactions(client, wallet.address, {seq_no: lastSeqNo, count: countLimit})) {
+        console.dir(transactions, {depth:null})
         transactions.forEach(printTransfers);
         size += transactions.length;
         if (size >= 4) {
@@ -103,10 +104,11 @@ async function main(client) {
         }
     }
 
-    // Now let's iterate all blockchain transactions with value transfers in backward way.
-    // Starting from now till the first block was generated.
+    // Now let's iterate all blockchain transactions with value transfers.
+    // Starting from master seq_no which was generated 10 minuts ago.
+    const afterSeqNo = await getLastMasterBlockSeqNoByTime(client, seconds(Date.now() - 10*60*1000));
     console.log(`\nTransactions of all accounts`);
-    for await (let transactions of queryAllTransactions(client, {count: countLimit})) {
+    for await (let transactions of queryAllTransactions(client, {seq_no: afterSeqNo, count: countLimit})) {
         // Trying get next trnsactions which contain any valuable transfers
         if (!hasTransfersOnTransactions(transactions)) {
             continue;
