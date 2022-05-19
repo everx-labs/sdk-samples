@@ -89,7 +89,6 @@ async function main(client) {
     let size = 0;
     console.log(`\nTransactions for ${wallet.address} account since block(seq_no):${lastSeqNo}`);
     for await (let transactions of queryAccountTransactions(client, wallet.address, {seq_no: lastSeqNo, count: countLimit})) {
-        console.dir(transactions, {depth:null})
         transactions.forEach(printTransfers);
         size += transactions.length;
         if (size >= 4) {
