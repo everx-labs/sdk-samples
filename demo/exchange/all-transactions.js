@@ -1,59 +1,27 @@
-const { internalQueryTransactionsWithTransfers } = require("./transactions");
+const { internalQueryTransactions } = require("./transactions");
+const { sleep, consoleClear, consoleWrite } = require("./utils");
 
 /**
- * Query portion of the account transactions.
- *
- * To query first portion omit `after` option and specify the `startTime`.
- * To query next portion specify `after` option equals to the `last` field
- * of the previous result.
- *
- * Note that the most recent API data can be present in an inconsistent
- * state. Usually this data relates to the last minute. The older
- * API data is always in consistent state.
- *
- * Therefore, not to miss any data while reading you can specify the `endTime`
- * option in corresponding methods.
- * Two minutes before now is enough to not miss anything.
- *
- * We are currently working on a new feature to allow reliable recent data reading,
- * as soon as it is ready, there will be an announcement and this sample will be updated.
+ * Iterator to query ALL blockchain transactions by using cursor-based pagination.
  */
-async function queryAllTransactions(
+async function *queryAllTransactions(
     client,
     options,
 ) {
-    const { startTime, after } = options;
-    if (after && !after.lt) {
-        return {
-            transactions: [],
-            last: {},
-        };
+    const variables = {
+        cursor: null,
+        ...options,
     }
-
-    // transactions are sorted by [time of creation, account, logical time of account(lt)]
-    // so, to paginate, we need to use this filter:
-    const filter = !after
-        ? { now: { ge: startTime } }
-        : {
-            now: { gt: after.now },
-            OR: { // if we have many transactions with the same `now` time
-                now: { eq: after.now },
-                account_addr: { gt: after.account_addr },
-                OR: {
-                    now: { eq: after.now },
-                    account_addr: { eq: after.account_addr },
-                    lt: { gt: after.lt },
-                },
-            },
-        };
-
-    return await internalQueryTransactionsWithTransfers(
-        client,
-        filter,
-        "now account_addr lt",
-        options.endTime,
-    );
+    while (true) { // <-- !WARNING! Infinity loop, you need to implement condition to exit from iterator
+        consoleWrite(`Requesting transactions...`)
+        const transactions = await internalQueryTransactions(client, variables);
+        consoleClear()
+        yield transactions.edges.map(_ => _.node);
+        variables.cursor = transactions.pageInfo.endCursor || variables.cursor;
+        await sleep(200); // don't spam API
+    }
 }
+
 
 module.exports = {
     queryAllTransactions,
