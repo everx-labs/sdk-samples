@@ -8,7 +8,7 @@ TonClient.useBinaryLibrary(libNode);
 const ACCOUNT_TYPE_ACTIVE = 1;
 
 // Address to send tokens to
-const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a6312490415";
+const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13";
 
 (async () => {
     try {

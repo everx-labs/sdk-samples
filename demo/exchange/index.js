@@ -86,6 +86,9 @@ async function main(client) {
     const countLimit = 10;
 
     // And here we retrieve all the wallet's transactions since the specified block seq_no
+    // Due to blockchain multi-sharded nature its data needs some time to reach consistency
+    // for reliable pagination. This is why we use `for` here, waiting for the last transaction
+    // in the list
     let size = 0;
     console.log(`\nTransactions for ${wallet.address} account since block(seq_no):${lastSeqNo}`);
     for await (let transactions of queryAccountTransactions(client, wallet.address, {seq_no: lastSeqNo, count: countLimit})) {

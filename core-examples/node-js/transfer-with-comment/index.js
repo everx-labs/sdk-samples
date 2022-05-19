@@ -11,7 +11,7 @@ const keyPairFile = path.join(__dirname, "keys.json");
 const addressFile = path.join(__dirname, "address.txt");
 const transferAbi = require("./transfer.abi.json");
 
-const recipient = "0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a6312490415";
+const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13";
 
 const multisigContractPackage = {
     // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
