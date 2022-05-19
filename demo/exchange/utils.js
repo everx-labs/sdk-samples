@@ -19,7 +19,9 @@ const keyPress = async () => {
     });
 };
 
-const sleep = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
+
+const seconds = (ms = Date.now()) => Math.round(ms / 1000);
 
 const consoleClear = () => consoleWrite('');
 
@@ -32,5 +34,6 @@ module.exports = {
     keyPress,
     consoleClear,
     consoleWrite,
+    seconds,
     sleep,
 }
