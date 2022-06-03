@@ -1,0 +1,15 @@
+{
+    "scripts": {
+        "format": "prettier --write \"**/*.js\"",
+        "eslint": "eslint \"**/*.js\"",
+        "eslint-fix": "eslint \"**/*.js\" --fix",
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "@eversdk/core": "^1.34.1",
+        "@eversdk/lib-node": "^1.34.1"
+    },
+    "devDependencies": {
+        "eslint": "^8.16.0"
+    }
+}
