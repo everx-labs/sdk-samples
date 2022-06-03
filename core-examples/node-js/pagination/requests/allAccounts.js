@@ -1,3 +1,6 @@
+/*
+ * Paginate all accounts with positive balance (WITHOUT CURSOR).
+ */
 const { print, sleep } = require('../utils')
 
 const TITLE = 'All accounts with their balances'
@@ -38,7 +41,6 @@ async function allAccounts(client, { itemsPerPage, pagesLimit }) {
             break
         }
 
-        // Move cursor
         variables.last_id = results[results.length - 1].id
 
         // Don't send API requests too aggressively

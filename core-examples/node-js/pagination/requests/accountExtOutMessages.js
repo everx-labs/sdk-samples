@@ -1,3 +1,7 @@
+/*
+ * Paginate all external outgoing messages of an account starting
+ * from 10 minutes ago and moving FORWARD until now.
+ */
 const { getLastMasterBlockSeqNoByTime } = require('./getLastMasterBlockSeqNoByTime')
 const { print, sleep } = require('../utils')
 

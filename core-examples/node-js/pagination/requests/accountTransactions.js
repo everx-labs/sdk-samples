@@ -1,3 +1,7 @@
+/*
+ * Paginate all account transactions starting from now
+ * and moving BACKWARD, for example, to show wallet transaction history.
+ */
 const { print, sleep } = require('../utils')
 
 const TITLE = 'Account transactions'

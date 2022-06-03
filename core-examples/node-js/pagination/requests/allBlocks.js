@@ -1,3 +1,6 @@
+/*
+ * Paginate all blocks starting from 2 minutes ago and moving FORWARD.
+ */
 const { print, sleep } = require('../utils')
 const { getLastMasterBlockSeqNoByTime } = require('./getLastMasterBlockSeqNoByTime')
 

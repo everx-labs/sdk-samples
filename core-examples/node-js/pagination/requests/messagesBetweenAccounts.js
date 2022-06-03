@@ -1,3 +1,6 @@
+/*
+ * Paginate all messages between two accounts starting from now and moving BACKWARD.
+ */
 const { print, sleep } = require('../utils')
 
 const TITLE = 'Messages between two accounts'

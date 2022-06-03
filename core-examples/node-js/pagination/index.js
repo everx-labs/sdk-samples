@@ -29,7 +29,7 @@ const client = new TonClient({
 
 async function main() {
     /*
-     * Paginate all blocks starting from 2 minutes ago and moving forward.
+     * CASE: Paginate all blocks starting from 2 minutes ago and moving FORWARD.
      *
      * If there are thousands of transactions in the account, or new ones are added very quickly,
      * there is a chance that this test will not catch up with them at all or will take too long.
@@ -43,7 +43,7 @@ async function main() {
     })
 
     /*
-     * Paginate all transactions starting from 2 minutes ago and moving forward.
+     * CASE: Paginate all transactions starting from 2 minutes ago and moving FORWARD.
      */
     await allTransactions(client, {
         from: Math.round(Date.now() / 1000) - 120,
@@ -52,8 +52,8 @@ async function main() {
     })
 
     /*
-     * Paginate all account transactions starting from now and moving backwards,
-     * for example, to show wallet transaction history.
+     * CASE: Paginate all account transactions starting from now
+     * and moving BACKWARD, for example, to show wallet transaction history.
      */
     await accountTransactions(client, {
         address: '-1:3333333333333333333333333333333333333333333333333333333333333333',
@@ -63,8 +63,8 @@ async function main() {
     })
 
     /*
-     * Paginate all external outgoing messages of an account starting from 10 minutes
-     * ago and moving forward until now.
+     * CASE: Paginate all external outgoing messages of an account starting
+     * from 10 minutes ago and moving FORWARD until now.
      */
     await accountExtOutMessages(client, {
         address: '-1:4911e4e34e91a39c6005eed46c3a0ebe9644bd1528b770ecf48f7dd29b907ae2',
@@ -74,7 +74,7 @@ async function main() {
     })
 
     /*
-     * Paginate all messages between two accounts starting from now and moving backwards.
+     * CASE: Paginate all messages between two accounts starting from now and moving BACKWARD.
      */
     await messagesBetweenAccounts(client, {
         address1: '-1:0000000000000000000000000000000000000000000000000000000000000000',
@@ -84,12 +84,17 @@ async function main() {
     })
 
     /*
-     * Paginate all accounts with positive balance.
+     * Pagination of all accounts with a positive balance (PAGINATION WITHOUT CURSOR)
+     *
+     * Note: Objects in the `accounts` collection are mutable, and there is no support
+     * for cursor-based pagination yet.
+     * Despite this, iteration based on the account.id property is possible.
+     *
      */
     await allAccounts(client, { itemsPerPage: 20, pagesLimit: 10 })
 }
 
-(async () => {
+;(async () => {
     try {
         await main()
         process.exit(0)
