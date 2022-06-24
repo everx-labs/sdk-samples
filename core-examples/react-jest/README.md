@@ -14,10 +14,14 @@ In the project directory, run:
 npm i
 npm test
 ```
+Launches the test runner in the interactive watch mode and when you see:
+```
+No tests found related to files changed since last commit.
+Press `a` to run all tests, or run Jest with `--watchAll`.
+```
+Press `a`
 
-Launches the test runner in the interactive watch mode.\
-**Pay attention to the specifics** in the [config-overrides.js](./config-overrides.js).
-
+**Pay attention to the specifics** in the [config-overrides.js](./config-overrides.js).\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ## Runs the app in the development mode
