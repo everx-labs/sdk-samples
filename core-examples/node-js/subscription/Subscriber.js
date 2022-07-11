@@ -19,6 +19,11 @@ class Subscriber extends EventEmitter {
     }
 
     async _callback(params, responseType) {
+        /*
+         * Where responseType:
+         * 100 - GraphQL data received
+         * 101 - GraphQL error received
+         */
         if (responseType === 100) {
             if (params.result) {
                 this.emit(Events.DATA, params.result)
@@ -28,6 +33,8 @@ class Subscriber extends EventEmitter {
             /*
              * When the library has successfully reconnected the application
              * receives callback with responseType == 101 and params.code == 614
+             * See full list of error codes here:
+             * https://docs.everos.dev/ever-sdk/reference/types-and-methods/mod_net#neterrorcode
              */
             if (responseType !== 101 || params.code !== 614) {
                 // Create new subscription
