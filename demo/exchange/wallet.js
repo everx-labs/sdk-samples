@@ -97,7 +97,7 @@ async function runAndWaitForRecipientTransactions(account, functionName, input) 
     //  1. Sender sends tokens - this transaction is returned by `Run` method
     //  2. Recipient receives tokens - this transaction can be caught with `query_transaction_tree method`
     // Read more about transactions and messages here
-    // https://ton.dev/faq/blockchain-basic
+    // https://everos.dev/faq/blockchain-basic
     let countCallingApi = 0;
     while(transactions.length === 0 && countCallingApi < 100) {
         for (const messageId of runResult.transaction.out_msgs) {
