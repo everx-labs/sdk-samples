@@ -52,7 +52,7 @@ async function main(client) {
     // The first step - initialize new account object with ABI,
     // target network (client) and previously generated key pair (signer) and 
     // calculate future wallet address so that we can sponsor it before deploy.
-    // Read more about deploy and other basic concepts here https://ton.dev/faq/blockchain-basic
+    // Read more about deploy and other basic concepts here https://everos.dev/faq/blockchain-basic
     const wallet = await getAccount(client, SafeMultisigContract, signerKeys(walletKeys));
 
     // Save last master block seq_no before we send the first transaction.
