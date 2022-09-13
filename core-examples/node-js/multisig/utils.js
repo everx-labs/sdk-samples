@@ -4,16 +4,7 @@ const fs = require("fs");
 /** @typedef {import("@eversdk/core").Signer} TonSigner */
 
 function loadContract(name) {
-    const contractPath = path.resolve(
-        __dirname,
-        "..",
-        "..",
-        "..",
-        "..",
-        "ton-labs-contracts",
-        "solidity",
-        name,
-    );
+    const contractPath = path.resolve(__dirname, "contracts", name);
     return {
         // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
         abi: {
@@ -85,12 +76,7 @@ function getPreparedSigner() {
 }
 
 module.exports = {
-    networkEndpoints: [
-        "eri01.net.everos.dev",
-        "rbx01.net.everos.dev",
-        "gra01.net.everos.dev",
-    ],
-    SafeMultisigContract: loadContract("safemultisig/SafeMultisigWallet"),
+    SafeMultisigContract: loadContract("SafeMultisigWallet"),
     prepareSignerWithRandomKeys,
     getPreparedSigner,
 };

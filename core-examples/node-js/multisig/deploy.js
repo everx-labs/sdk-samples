@@ -1,8 +1,16 @@
 const { TonClient } = require("@eversdk/core");
 const { libNode } = require("@eversdk/lib-node");
-const { SafeMultisigContract, networkEndpoints, getPreparedSigner } = require("./utils");
+const { SafeMultisigContract, getPreparedSigner } = require("./utils");
 
 TonClient.useBinaryLibrary(libNode);
+
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
 
 // Account is active when contract is deployed.
 const ACCOUNT_TYPE_ACTIVE = 1;
@@ -19,7 +27,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
         //Read more about NetworkConfig https://docs.everos.dev/ever-sdk/guides/installation/configure_sdk
         const tonClient = new TonClient({
             network: {
-                endpoints: networkEndpoints,
+                endpoints: [ HTTPS_DEVNET_ENDPOINT ],
             },
         });
 
