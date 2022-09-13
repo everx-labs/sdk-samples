@@ -295,6 +295,7 @@ async function main(client) {
         } else {
             console.error(error);
         }
+        process.exit(1);
     }
     client.close();
 })();

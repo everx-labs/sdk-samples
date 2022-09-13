@@ -1,15 +1,15 @@
 {
-  "name": "multisig-submittx",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@eversdk/core": "^1",
-    "@eversdk/lib-node": "^1"
-  }
+    "name": "multisig-submittx",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@eversdk/core": "^1.37.0",
+        "@eversdk/lib-node": "^1.37.0"
+    }
 }

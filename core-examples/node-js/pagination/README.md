@@ -52,9 +52,16 @@ Don't request the API too aggressively or you'll get an HTTP 429 status code.
 You can read more about cursor-based pagination here:
 [graphql.org/learn/pagination](https://graphql.org/learn/pagination/#pagination-and-edges)
 
+## Before running the example
+
+-   Create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev/projects) if you don't have one.
+-   Remember its Development Network HTTPS endpoint.
+-   Pass this endpoint as a parameter when running the example.
+
+
 ## Run examples
 
 ```
 npm i
-node index.js
+node index.js <HTTPS_DEVNET_ENDPOINT>
 ```

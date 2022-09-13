@@ -16,6 +16,14 @@ const {
 // (see README in  https://github.com/tonlabs/ever-sdk-js )
 TonClient.useBinaryLibrary(libNode);
 
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
+
 async function getExistingMultisigAccount(client) {
     const keys = {
         public: 'c0786e0dcd57ed9896512e66b74f2ecdade2fc22e1bc10121c690b4b27a4248d',
@@ -50,16 +58,12 @@ async function getExistingDePoolAccount(client, validatorWallet) {
 }
 
 (async () => {
-    // Use test network
     const client = new TonClient({
         network: {
-            endpoints: [
-                "eri01.net.everos.dev",
-                "rbx01.net.everos.dev",
-                "gra01.net.everos.dev",
-            ]
+            endpoints: [ HTTPS_DEVNET_ENDPOINT ],
         }
     });
+
     try {
         let multisigAccount = await getExistingMultisigAccount(client);
         let dePoolAccount = await getExistingDePoolAccount(client, multisigAccount.address);

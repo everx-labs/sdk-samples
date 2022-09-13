@@ -5,21 +5,28 @@ const path = require('path')
 
 /**
  * In this example we will send `value` to `destAddress`
- * Correct next 6 lines with your data
+ * Correct next lines with your data
  */
 const value = 10_000_000_000
 const destAddress = '0:7a867df1edb6654e142376a05fc380f121d24190a1d164f9784bf7c5f7d5521e'
-const endpoints = [
-    "eri01.net.everos.dev",
-    "rbx01.net.everos.dev",
-    "gra01.net.everos.dev",
-]
 const msigKeysFileName = 'msig.keys.json'
 const msigAbiFileName = 'SafeMultisigWallet.abi.json'
 const msigAddress = '0:469c51a08633376690a088218ec20f190be22a1e7a0ba3005eb12444363a5997'
 
 TonClient.useBinaryLibrary(libNode)
-const client = new TonClient({ network: { endpoints } })
+
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
+const client = new TonClient({
+    network: {
+        endpoints: [ HTTPS_DEVNET_ENDPOINT ],
+    }
+});
 
 const msigKeysFile = path.join(__dirname, msigKeysFileName)
 const msigAbiFile = path.join(__dirname, msigAbiFileName)

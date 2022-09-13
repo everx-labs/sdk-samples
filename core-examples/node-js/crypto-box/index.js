@@ -103,11 +103,7 @@ async function main(client) {
 
 (async () => {
     try {
-        const client = new TonClient({
-            network: {
-                endpoints: ["http://localhost"],
-            },
-        });
+        const client = new TonClient()
         await main(client);
         await client.close();
     } catch (error) {

@@ -10,9 +10,9 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@eversdk/appkit": "^0.1.0",
-        "@eversdk/core": "^1.11.1",
-        "@eversdk/lib-node": "^1.10.2"
+        "@eversdk/appkit": "^0",
+        "@eversdk/core": "^1.37.0",
+        "@eversdk/lib-node": "^1.37.0"
     },
     "devDependencies": {
         "@types/node": "^14.14.31"

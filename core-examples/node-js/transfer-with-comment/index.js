@@ -15,14 +15,12 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
 
 const multisigContractPackage = {
     // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
-    abi: require("../../../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json"),
+    abi: require('./contracts/SafeMultisigWallet.abi.json'),
     // Compiled smart contract file
-    tvcInBase64: fs.readFileSync(
-        "../../../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc").toString(
-            "base64"),
-};
+    tvcInBase64: fs.readFileSync('./contracts/SafeMultisigWallet.tvc').toString('base64'),
+}
 
-(async () => {
+;(async () => {
     try {
         TonClient.useBinaryLibrary(libNode);
         const tonClient = new TonClient({

@@ -6,21 +6,18 @@ const { Subscriber, Events } = require("./Subscriber")
 
 TonClient.useBinaryLibrary(libNode)
 
-/*
- * To configure an Everos client, it needs to pass API endpoints as parameters.
- * You can find all public EVER OS API endpoints
- * here: https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks
- * This sample uses the Developer Network endpoints:
- */
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
 const client = new TonClient({
     network: {
-        endpoints: [
-            "https://eri01.net.everos.dev",
-            "https://rbx01.net.everos.dev",
-            "https://gra01.net.everos.dev",
-        ],
-    },
-})
+        endpoints: [ HTTPS_DEVNET_ENDPOINT ],
+    }
+});
 
 const sampleQuery = {
     collection: "messages",

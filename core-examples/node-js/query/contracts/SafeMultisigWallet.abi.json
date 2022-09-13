@@ -1,82 +1,4 @@
-const { TonClient, abiContract, signerNone, bocCacheTypePinned, bocCacheTypeUnpinned } = require('@eversdk/core')
-const { libNode } = require('@eversdk/lib-node')
-
-TonClient.useBinaryLibrary(libNode)
-
-const address = "-1:7777777777777777777777777777777777777777777777777777777777777777";
-
-// Create a project on https://dashboard.evercloud.dev and pass
-// its Development Network HTTPS endpoint as a parameter:
-const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
-if (HTTPS_DEVNET_ENDPOINT === undefined) {
-    throw new Error("HTTPS endpoint required")
-}
-
-async function main(client) {
-    // Download account BOC
-    const account = (await client.net.query_collection({
-        collection: "accounts",
-        filter: { id: { eq: address } },
-        result: "boc",
-    })).result[0];
-    
-    // Save account BOC into cache to use in local calls. Pin the BOC with some name to prevent 
-    // replacing it by another BOCs
-    const bocRef = (await client.boc.cache_set({
-        boc: account.boc,
-        cache_type: bocCacheTypePinned('testPin')
-    })).boc_ref;
-
-    console.log('Cached account BOC reference', bocRef);
-
-    // Use received BOC reference in local call
-    const result = await client.tvm.run_tvm({
-        abi,
-        account: bocRef,
-        message: (await client.abi.encode_message({
-            abi,
-            address,
-            call_set: {
-                function_name: 'getCustodians',
-            },
-            signer: signerNone(),
-        })).message,
-        // Use ouput caching to reduce returned data serialization overhead. Don't pin since it 
-        // is not needed in consequent calls
-        boc_cache: bocCacheTypeUnpinned()
-    });
-    //console.log(result.decoded.output);
-
-    // Unpin all the BOCs pinned with the specified name to remove them from cache
-    await client.boc.cache_unpin({
-        pin: 'testPin'
-    }).boc_ref;
-
-    // BOC can be received from cache
-    const out_message = (await client.boc.cache_get({
-        boc_ref: result.out_messages[0],
-    })).boc;
-
-    console.log('Message received from cache', out_message);
-}
-
-(async () => {
-    const client = new TonClient({
-        network: {
-            endpoints: [ HTTPS_DEVNET_ENDPOINT ],
-        }
-    });
-    try {
-        await main(client);
-    } catch (e) {
-        console.log(e);
-        process.exit(1)
-    }
-    client.close();
-})();
-
-
-const abi = abiContract({
+{
 	"ABI version": 2,
 	"header": ["pubkey", "time", "expire"],
 	"functions": [
@@ -198,4 +120,4 @@ const abi = abiContract({
 			]
 		}
 	]
-});
+}
