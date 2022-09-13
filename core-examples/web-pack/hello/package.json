@@ -23,8 +23,8 @@
 	},
 	"homepage": "https://docs.everos.dev/",
 	"dependencies": {
-		"@eversdk/core": "^1.5.3",
-		"@eversdk/lib-web": "^1.5.3"
+        "@eversdk/core": "^1.37.0",
+        "@eversdk/lib-node": "^1.37.0"
 	},
 	"devDependencies": {
 		"assert": "^2.0.0",
