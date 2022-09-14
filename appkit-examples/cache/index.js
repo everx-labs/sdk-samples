@@ -9,6 +9,14 @@ const {libNode} = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
 
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
+
 const address = "-1:7777777777777777777777777777777777777777777777777777777777777777";
 
 async function main(client) {
@@ -62,19 +70,14 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            endpoints: [
-                "eri01.main.everos.dev",
-                "gra01.main.everos.dev",
-                "gra02.main.everos.dev",
-                "lim01.main.everos.dev",
-                "rbx01.main.everos.dev",
-            ]
-        },
+            endpoints: [ HTTPS_DEVNET_ENDPOINT ],
+        }
     });
     try {
         await main(client);
     } catch (e) {
         console.log(e);
+        process.exit(1);
     }
     client.close();
 })();

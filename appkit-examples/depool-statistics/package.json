@@ -1,7 +1,10 @@
 {
+    "scripts": {
+        "start": "node index.js"
+    },
     "dependencies": {
-        "@eversdk/appkit": "^0.1.0",
-        "@eversdk/core": "^1",
-        "@eversdk/lib-node": "^1"
+        "@eversdk/appkit": "^0",
+        "@eversdk/core": "^1.37.0",
+        "@eversdk/lib-node": "^1.37.0"
     }
 }

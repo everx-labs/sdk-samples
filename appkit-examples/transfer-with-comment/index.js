@@ -16,7 +16,7 @@ const { loadContract } = require("utils");
 const fs = require("fs");
 const path = require("path");
 
-const keyPairFile = path.join(__dirname, "keys.json");
+const keyPairFile = path.join(__dirname, "keyPair.json");
 
 const transferAbi = require("./transfer.abi.json");
 const { Account } = require("@eversdk/appkit");
@@ -26,15 +26,18 @@ const MultisigContract = loadContract("solidity/safemultisig/SafeMultisigWallet"
 
 TonClient.useBinaryLibrary(libNode);
 
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2];
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required");
+}
+
 (async () => {
     const client = new TonClient({
         network: {
-            //Read more about NetworkConfig https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_client.md#networkconfig
-            endpoints: [
-                "eri01.net.everos.dev",
-                "rbx01.net.everos.dev",
-                "gra01.net.everos.dev",
-            ],
+            endpoints: [HTTPS_DEVNET_ENDPOINT],
             message_retries_count: 3,
         },
         abi: {
@@ -43,7 +46,7 @@ TonClient.useBinaryLibrary(libNode);
     });
     try {
         if (!fs.existsSync(keyPairFile)) {
-            console.log("Please create keys.json file in project root folder  with multisig keys");
+            console.log("Please create keyPair.json file in project root folder  with multisig keys");
             process.exit(1);
         }
 
@@ -91,7 +94,7 @@ TonClient.useBinaryLibrary(libNode);
         console.log(transactionInfo.out_messages);
         const messages = transactionInfo.out_messages;
 
-        const decodedMessage1 = (await tonClient.abi.decode_message({
+        const decodedMessage1 = (await client.abi.decode_message({
             abi: abiContract(transferAbi),
             message: messages[0],
         }));
@@ -101,13 +104,13 @@ TonClient.useBinaryLibrary(libNode);
 
         console.log("Decoded message 1:", decodedMessage1.value);
 
-        const decodedMessage2 = (await tonClient.abi.decode_message({
-            abi: abiContract(multisigContractPackage.abi),
+        const decodedMessage2 = (await client.abi.decode_message({
+            abi: abiContract(MultisigContract.abi),
             message: messages[1],
         }));
 
         console.log("Decoded message 2:", decodedMessage2);
-
+        client.close();
     } catch (error) {
         console.error(error);
         process.exit(1);

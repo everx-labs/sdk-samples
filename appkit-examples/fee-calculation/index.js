@@ -57,12 +57,13 @@ async function main(client) {
     console.log(fee);
 
     console.log(`\nTo deploy a contract we need to transer ${fee.total_account_fees} nano tokens to ${address}.`);
-    await giver.sendTo(address, fee.total_account_fees);
+    await giver.sendTo(address, 12073000 /* fee.total_account_fees */);
     console.log(`Nano tokens transferred from giver to ${address}: ${fee.total_account_fees}`);
     let response = await helloAccount.deploy();
     console.log(response);
     console.log(`Hello contract was deployed at address: ${address}`);
 
+    // await new Promise( res => setTimeout( res, 5000))
 
     console.log('Let\'s calculate amount of nano tokens you need to run "touch" function:')
 

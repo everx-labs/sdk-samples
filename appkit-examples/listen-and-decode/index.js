@@ -116,6 +116,7 @@ class HelloEvents extends Account {
         } else {
             console.error(error);
         }
+        process.exit(1);
     }
     client.close();
     process.exit(0);
