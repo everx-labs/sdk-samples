@@ -1,15 +1,22 @@
 const { TonClient } = require("@eversdk/core");
 const { libNode } = require("@eversdk/lib-node");
-const { SafeMultisigContract, networkEndpoints, getPreparedSigner } = require("./utils");
+const { SafeMultisigContract, getPreparedSigner } = require("./utils");
 
 TonClient.useBinaryLibrary(libNode);
+
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
 
 (async () => {
     try {
         const tonClient = new TonClient({
             network: {
-                //Read more about NetworkConfig https://docs.everos.dev/ever-sdk/guides/installation/configure_sdk
-                endpoints: networkEndpoints,
+                endpoints: [ HTTPS_DEVNET_ENDPOINT ],
             },
         });
 

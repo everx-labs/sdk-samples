@@ -30,13 +30,16 @@ const keyPairFile = path.join(__dirname, "keyPair.json");
     // (see README in  https://github.com/tonlabs/ever-sdk-js )
     TonClient.useBinaryLibrary(libNode);
 
+    // Create a project on https://dashboard.evercloud.dev and pass
+    // its Development Network HTTPS endpoint as a parameter:
+    const HTTPS_DEVNET_ENDPOINT = process.argv[2];
+
+    if (HTTPS_DEVNET_ENDPOINT === undefined) {
+        throw new Error("HTTPS endpoint required");
+    }
     const client = new TonClient({
         network: {
-            endpoints: [
-                "eri01.net.everos.dev",
-                "rbx01.net.everos.dev",
-                "gra01.net.everos.dev",
-            ]
+            endpoints: [ HTTPS_DEVNET_ENDPOINT ]
         }
     });
     try {
@@ -62,8 +65,8 @@ const keyPairFile = path.join(__dirname, "keyPair.json");
         console.log(keyPair);
 
         const acc = new Account(MultisigContract, { signer: signerKeys(keyPair), client });
-        console.log(`Here is the future address of your contract ${await acc.getAddress()}. Please save the keys. You will need them later to work with your multisig wallet.`);
-
+        console.log("Your keys have been saved in the file './keyPair.json' and will be used later to work with your multisig wallet.");
+        console.log(`Here is the future address of your contract  ${await acc.getAddress()}, please top-up this account`);
         process.exit(0);
     } catch (error) {
         console.error(error);

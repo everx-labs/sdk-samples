@@ -24,8 +24,8 @@
 	"homepage": "https://docs.everos.dev/",
 	"dependencies": {
 		"@eversdk/appkit": "^0",
-		"@eversdk/core": "^1",
-		"@eversdk/lib-web": "^1",
+	        "@eversdk/core": "^1.37.0",
+        	"@eversdk/lib-web": "^1.37.1",
 		"utils": "file:../../utils"
 	},
 	"devDependencies": {

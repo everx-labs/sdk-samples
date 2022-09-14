@@ -4,11 +4,7 @@ const { SetcodeMultisigWallet } = require("./SetcodeMultisigWallet.js");
 
 TonClient.useBinaryLibrary(libNode);
 (async () => {
-    const client = new TonClient({
-        network: {
-            endpoints: ["http://localhost"]
-        }
-    });
+    const client = new TonClient()
     try {
         // To update code in SetCodeMultisigWallet you need to pass codehash to submitUpdate().
         // https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/setcodemultisig/SetcodeMultisigWallet.sol#L458
@@ -30,6 +26,7 @@ TonClient.useBinaryLibrary(libNode);
         } else {
             console.error(error);
         }
+        process.exit(1);
     }
     client.close();
 })();

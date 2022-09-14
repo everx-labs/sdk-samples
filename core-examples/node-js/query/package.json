@@ -1,21 +1,16 @@
 {
-  "name": "sdk-subscription",
-  "version": "1.0.0",
-  "description": "How to use SDK subscription",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "FreeTON",
-    "TON",
-    "SDK",
-    "subscription"
-  ],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@eversdk/core": "^1",
-    "@eversdk/lib-node": "^1"
-  }
+    "name": "sdk-subscription",
+    "version": "1.0.0",
+    "description": "How to use SDK subscription",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": ["FreeTON", "TON", "SDK", "subscription"],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@eversdk/core": "^1.37.0",
+        "@eversdk/lib-node": "^1.37.0"
+    }
 }

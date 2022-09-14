@@ -5,6 +5,13 @@ TonClient.useBinaryLibrary(libNode)
 
 const address = "-1:7777777777777777777777777777777777777777777777777777777777777777";
 
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
+
 async function main(client) {
     // Download account BOC
     const account = (await client.net.query_collection({
@@ -56,17 +63,14 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-			endpoints: [
-				"eri01.net.everos.dev",
-				"rbx01.net.everos.dev",
-				"gra01.net.everos.dev",
-			]
-		}
+            endpoints: [ HTTPS_DEVNET_ENDPOINT ],
+        }
     });
     try {
         await main(client);
     } catch (e) {
         console.log(e);
+        process.exit(1)
     }
     client.close();
 })();

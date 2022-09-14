@@ -4,7 +4,9 @@ In this example you will learn how to query the chain of transactions and messag
 
 We will pick one external inbound message to a multisig contract with 'sendTransaction' call and retrieve the transaction tree from it to make sure the internal message with value transfer was delivered.
 
-In the example we use [Evernode SE](https://docs.everos.dev/evernode-platform/products/simple-emulator-se), local blockchain.
+In the example we use [Evernode SE](https://docs.everos.dev/evernode-platform/products/simple-emulator-se), local blockchain,
+if you want to use the developer network, create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev) 
+and specify its Development Network HTTPS endpoint when initializing TONClient
 
 ## Prerequisite
 

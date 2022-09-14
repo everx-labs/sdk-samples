@@ -9,8 +9,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@eversdk/core": "^1",
-        "@eversdk/lib-node": "^1"
+        "@eversdk/core": "^1.37.0",
+        "@eversdk/lib-node": "^1.37.0"
     },
     "devDependencies": {
         "eslint": "^8.7.0"

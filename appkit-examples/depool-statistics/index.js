@@ -10,6 +10,14 @@ const { DePoolContract } = require("./DePoolContract.js");
 
 TonClient.useBinaryLibrary(libNode);
 
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
+
 async function printDePool(client, address) {
     const dePoolAcc = new Account(DePoolContract, {
         address: address,
@@ -130,7 +138,7 @@ async function main(client) {
 
     console.log("DePool Count:", dePoolCount);
 
-    // Query list of all known DePool contracts in main.ton.dev
+    // Query list of all known DePool contracts
     // There is impossible to get more than 50 records using single request, so we request in loop by portions,
     // using field `id` (address) as record number (sorting by this field).
     let lastId = "";
@@ -163,15 +171,8 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            /// https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks
-            endpoints: [
-                "eri01.main.everos.dev",
-                "gra01.main.everos.dev",
-                "gra02.main.everos.dev",
-                "lim01.main.everos.dev",
-                "rbx01.main.everos.dev",
-            ],
-        },
+            endpoints: [ HTTPS_DEVNET_ENDPOINT ],
+        }
     });
     try {
         console.log("\nDePools Statistics Example\n");

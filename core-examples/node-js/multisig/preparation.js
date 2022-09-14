@@ -1,6 +1,6 @@
 const { TonClient } = require("@eversdk/core");
 const { libNode } = require("@eversdk/lib-node");
-const { SafeMultisigContract, networkEndpoints, prepareSignerWithRandomKeys } = require("./utils");
+const { SafeMultisigContract, prepareSignerWithRandomKeys } = require("./utils");
 
 // Link the platform-dependable ever-sdk binary with the target Application in Typescript
 // This is a Node.js project, so we link the application with `libNode` binary
@@ -10,12 +10,19 @@ const { SafeMultisigContract, networkEndpoints, prepareSignerWithRandomKeys } = 
 // (see README in  https://github.com/tonlabs/ever-sdk-js )
 TonClient.useBinaryLibrary(libNode);
 
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
 
 (async () => {
     try {
         const tonClient = new TonClient({
             network: {
-                endpoints: networkEndpoints,
+                endpoints: [ HTTPS_DEVNET_ENDPOINT ],
             },
         });
 
@@ -45,8 +52,8 @@ TonClient.useBinaryLibrary(libNode);
             signer,
             processing_try_index: 1,
         });
-        console.log(`Here is the future address of your contract ${address}. Please save the keys. You will need them later to work with your multisig wallet.`);
-
+        console.log("Your keys have been saved in the file './keyPair.json' and will be used later to work with your multisig wallet.");
+        console.log(`Here is the future address of your contract ${address}, please top-up this account`);
         process.exit(0);
     } catch (error) {
         console.error(error);

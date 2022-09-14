@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "@eversdk/core": "^1",
-        "@eversdk/lib-node": "^1"
+        "@eversdk/core": "^1.37.0",
+        "@eversdk/lib-node": "^1.37.0"
     }
 }

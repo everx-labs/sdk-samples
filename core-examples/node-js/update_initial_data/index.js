@@ -7,8 +7,8 @@ TonClient.useBinaryLibrary(libNode);
     const client = new TonClient();
 
     // Read TVC from file
-    const tvc = fs.readFileSync("../hello-wallet/HelloWallet.tvc", "base64");
-    const abi = abiContract(require("../hello-wallet/HelloWallet.abi.json"));
+    const tvc = fs.readFileSync("../hello-wallet/contracts/HelloWallet.tvc", "base64");
+    const abi = abiContract(require("../hello-wallet/contracts/HelloWallet.abi.json"));
     try {
         // Decode TVC
         const decoded = await client.boc.decode_tvc({
@@ -42,6 +42,7 @@ TonClient.useBinaryLibrary(libNode);
         fs.writeFileSync("updated.tvc", updated, "base64");
     } catch (err) {
         console.error(err);
+        process.exit(1);
     }
     client.close();
 })();

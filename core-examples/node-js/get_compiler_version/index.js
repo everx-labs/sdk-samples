@@ -25,6 +25,7 @@ TonClient.useBinaryLibrary(libNode);
          */
     } catch (err) {
         console.error(err);
+        process.exit(1);
     }
     client.close();
 })();

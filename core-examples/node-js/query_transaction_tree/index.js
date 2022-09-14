@@ -1,6 +1,5 @@
 const { abiContract, TonClient } = require('@eversdk/core')
 const { libNode } = require('@eversdk/lib-node')
-const fs = require('fs')
 const path = require('path')
 
 /**
@@ -12,10 +11,13 @@ const path = require('path')
  */
 
 const inMsg = "9add67505ac1cb530414ad6c3979865475722f25506c364df3a9a5c71c93e5ec";
+/*
+ * In this example we use EverosSE network.
+ * If you want to use the developer network, create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev) 
+ * and use specify its Development Network HTTPS endpoint below:
+ */
 const endpoints = [
-    "eri01.net.everos.dev",
-    "rbx01.net.everos.dev",
-    "gra01.net.everos.dev",
+    "http://localhost"
 ];
 // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
 const msigAbiFileName = 'SafeMultisigWallet.abi.json'

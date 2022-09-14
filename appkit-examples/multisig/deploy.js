@@ -22,14 +22,18 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 
 TonClient.useBinaryLibrary(libNode);
 
-(async () => {
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2];
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required");
+}
+
+;(async () => {
     const client = new TonClient({
         network: {
-            endpoints: [
-                "eri01.net.everos.dev",
-                "rbx01.net.everos.dev",
-                "gra01.net.everos.dev",
-            ]
+            endpoints: [ HTTPS_DEVNET_ENDPOINT ]
         }
     });
     try {

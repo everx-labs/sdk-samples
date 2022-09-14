@@ -63,8 +63,9 @@ const ABI = abiContract({
               length: '0x000000000000000000000000000000000000000000000000000000000000000f'
             }
          */
+        client.close();
     } catch (err) {
         console.error(err);
+        process.exit(1);
     }
-    client.close();
 })();

@@ -1,27 +1,29 @@
 const { TonClient } = require("@eversdk/core");
 const { libNode } = require("@eversdk/lib-node")
 
+// Link the platform-dependable ever-sdk binary with the target Application in Typescript
+// This is a Node.js project, so we link the application with `libNode` binary
+// from `@eversdk/lib-node` package
+// If you want to use this code on other platforms, such as Web or React-Native,
+// use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+// (see README in  https://github.com/tonlabs/ever-sdk-js )
+TonClient.useBinaryLibrary(libNode);
+
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
+const client = new TonClient({
+    network: {
+        endpoints: [ HTTPS_DEVNET_ENDPOINT ],
+    }
+});
+
 ;(async () => {
     try {
-        // Link the platform-dependable ever-sdk binary with the target Application in Typescript
-        // This is a Node.js project, so we link the application with `libNode` binary
-        // from `@eversdk/lib-node` package
-        // If you want to use this code on other platforms, such as Web or React-Native,
-        // use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
-        // (see README in  https://github.com/tonlabs/ever-sdk-js )
-        TonClient.useBinaryLibrary(libNode);
-        const client = new TonClient({
-            network: {
-                endpoints: [
-                    "eri01.main.everos.dev",
-                    "gra01.main.everos.dev",
-                    "gra02.main.everos.dev",
-                    "lim01.main.everos.dev",
-                    "rbx01.main.everos.dev",
-                ],
-            },
-        });
-
         // Get masterchain `seq_no` range for the last 3 days:
         const days = 3;
         const now = Math.trunc(Date.now() / 1000);
@@ -53,7 +55,7 @@ const { libNode } = require("@eversdk/lib-node")
             query: `{
                       blockchain {
                         key_blocks(
-                            seq_no: {
+                            master_seq_no_range: {
                                 start: ${range.start}
                                 end: ${range.end}
                             }
@@ -69,7 +71,7 @@ const { libNode } = require("@eversdk/lib-node")
                         }
                       }
                     }`,
-        });
+        })
 
         console.log(`\nFist key-block for the last ${days} days:`);
         const keyBlock = result.result.data.blockchain.key_blocks.edges[0].node;
@@ -90,8 +92,8 @@ const { libNode } = require("@eversdk/lib-node")
         result = await client.net.query({
             query: `{
                       blockchain {
-                        workchain_blocks(
-                          master_seq_no: { 
+                        blocks(
+                          master_seq_no_range: { 
                             start: ${keyBlock.seq_no},
                             end: ${keyBlock.seq_no + 1}
                           }
@@ -112,7 +114,7 @@ const { libNode } = require("@eversdk/lib-node")
 
         console.log(`\nWorkchain blocks for the key-block with seq_no = ${keyBlock.seq_no}:`);
 
-        for (const block of result.result.data.blockchain.workchain_blocks.edges) {
+        for (const block of result.result.data.blockchain.blocks.edges) {
             const blockNode = block.node;
             console.log(
                 `${blockNode.workchain_id}:${blockNode.shard}:${blockNode.seq_no}, hash: ${blockNode.hash}, file_hash: ${blockNode.file_hash}`,
@@ -152,9 +154,9 @@ const { libNode } = require("@eversdk/lib-node")
         result = await client.net.query({
             query: `{ 
                    blockchain {
-                     workchain_transactions(
-                       master_seq_no: {start: ${keyBlock.seq_no} end: ${keyBlock.seq_no + 1}}
-                       min_balance_delta: 1000000000
+                     transactions(
+                       master_seq_no_range: {start: ${keyBlock.seq_no} end: ${keyBlock.seq_no + 1}}
+                       min_balance_delta: "1000000000"
                      ) {
                        edges {
                          node {
@@ -172,7 +174,7 @@ const { libNode } = require("@eversdk/lib-node")
             `\nWorkchain transactions for the key-block with seq_no = ${keyBlock.seq_no} and value more than 1 token:`,
         );
 
-        for (const transaction of result.result.data.blockchain.workchain_transactions.edges) {
+        for (const transaction of result.result.data.blockchain.transactions.edges) {
             const trans = transaction.node;
             console.log(
                 `${trans.now_string}, balance change: ${trans.balance_delta}, aborted: ${trans.aborted}`,
@@ -190,9 +192,8 @@ const { libNode } = require("@eversdk/lib-node")
         result = await client.net.query({
             query: `{ 
                  blockchain {
-                   account_transactions(
-                     master_seq_no: {start: ${keyBlock.seq_no} end: ${keyBlock.seq_no + 1}}
-                     account_address: "-1:3333333333333333333333333333333333333333333333333333333333333333"
+                   transactions(
+                     master_seq_no_range: {start: ${keyBlock.seq_no} end: ${keyBlock.seq_no + 1}}
                  ) {
                    edges {
                      node {
@@ -209,11 +210,13 @@ const { libNode } = require("@eversdk/lib-node")
 
         console.log(`\nElector transactions for the key-block with seq_no = ${keyBlock.seq_no}:`);
 
-        for (const transaction of result.result.data.blockchain.account_transactions.edges) {
+        for (const transaction of result.result.data.blockchain.transactions.edges) {
             const trans = transaction.node;
-            console.log(
-                `${trans.now_string}, account: ${trans.account_addr}, balance change: ${trans.balance_delta}, aborted: ${trans.aborted}`,
-            );
+            if (trans.account_addr === "-1:3333333333333333333333333333333333333333333333333333333333333333") {
+                console.log(
+                    `${trans.now_string}, account: ${trans.account_addr}, balance change: ${trans.balance_delta}, aborted: ${trans.aborted}`,
+                );
+            }
         }
 
         /*

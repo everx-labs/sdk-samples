@@ -2,18 +2,19 @@ const { TonClient } = require("@eversdk/core");
 const { libNode } = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
-(async () => {
 
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
+
+(async () => {
     const client = new TonClient({
         network: {
-            // Blockchain node URL 
-            endpoints: [
-                "eri01.main.everos.dev",
-                "gra01.main.everos.dev",
-                "gra02.main.everos.dev",
-                "lim01.main.everos.dev",
-                "rbx01.main.everos.dev",
-            ]
+            endpoints: [ HTTPS_DEVNET_ENDPOINT ],
         }
     });
     try {
@@ -78,6 +79,7 @@ TonClient.useBinaryLibrary(libNode);
 
     } catch (err) {
         console.error(err);
+        process.exit(1);
     }
     client.close();
 })();

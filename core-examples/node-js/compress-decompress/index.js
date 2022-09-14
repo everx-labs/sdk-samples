@@ -3,21 +3,7 @@ const { libNode } = require('@eversdk/lib-node')
 
 TonClient.useBinaryLibrary(libNode)
 
-/*
- * To configure Ton Client, it needs to pass API endpoints as parameters.
- *
- * The public EVER OS API endpoints see here:
- * https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks
- *
- * To use DApp Server, specify its URL here the same way.
- *
- * This sample uses the Developer Network:
- */
-const client = new TonClient({
-    network: {
-        endpoints: ['eri01.net.everos.dev', 'rbx01.net.everos.dev', 'gra01.net.everos.dev'],
-    },
-})
+const client = new TonClient()
 
 async function main() {
     const maxCompression = 21

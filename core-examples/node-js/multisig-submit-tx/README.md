@@ -6,15 +6,20 @@ You should know Multisig keys, ABI, address and network
 
 ## Prerequisite
 
-* Node.js >= [14.x installed](https://nodejs.org)
+-   Node.js >= [14.x installed](https://nodejs.org)
 
-## Prerequisites:
-  1. Paste multisig keys in msig.keys.json
-  2. See index.js, check comments and edit the relevant lines.
+## Before running the example
+
+-   Paste multisig keys in msig.keys.json
+-   See index.js, check comments and edit the relevant lines.
+
+-   Create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev) if you don't have one.
+-   Remember its Development Network HTTPS endpoint.
+-   Pass this endpoint as a parameter when running the example.
 
 ## Install packages & run:
 
 ```sh
 npm install
-node index.js
+node index.js <HTTPS_DEVNET_ENDPOINT>
 ```

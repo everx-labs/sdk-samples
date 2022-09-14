@@ -8,9 +8,9 @@ let client;
 
 const multisigContractPackage = {
     // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
-    abi: require('../../../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.abi.json'),
+    abi: require('./contracts/SafeMultisigWallet.abi.json'),
     // Compiled smart contract file.
-    tvcInBase64: fs.readFileSync('../../../../ton-labs-contracts/solidity/safemultisig/SafeMultisigWallet.tvc').toString('base64'),
+    tvcInBase64: fs.readFileSync('./contracts/SafeMultisigWallet.tvc').toString('base64'),
 };
 
 // Address of giver on Evernode SE
