@@ -1,6 +1,6 @@
 // This sample shows how to attach a comment to a multisig transfer
 // and decode it
-// Before running this sample deploy multisig wallet to net.ton.dev and place your keys in
+// Before running this sample deploy multisig wallet to Development network and place your keys in
 // the project root folder into keys.json file
 
 

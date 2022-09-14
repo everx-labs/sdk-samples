@@ -1,13 +1,13 @@
 // This sample shows how to attach a comment to a multisig transfer
 // and decode it
-// Before running this sample deploy multisig wallet to net.ton.dev and place your keys in
+// Before running this sample deploy multisig wallet to the Development network and place your keys in
 // the project root folder into keys.json file and multisig account address to address.txt file
 
 const { TonClient, signerNone, abiContract } = require("@eversdk/core");
 const { libNode } = require("@eversdk/lib-node");
 const fs = require("fs");
 const path = require("path");
-const keyPairFile = path.join(__dirname, "keys.json");
+const keyPairFile = path.join(__dirname, "keyPair.json");
 const addressFile = path.join(__dirname, "address.txt");
 const transferAbi = require("./transfer.abi.json");
 
@@ -23,14 +23,16 @@ const multisigContractPackage = {
 ;(async () => {
     try {
         TonClient.useBinaryLibrary(libNode);
+        // Create a project on https://dashboard.evercloud.dev and pass
+        // its Development Network HTTPS endpoint as a parameter:
+        const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+        if (HTTPS_DEVNET_ENDPOINT === undefined) {
+            throw new Error("HTTPS endpoint required")
+        }
         const tonClient = new TonClient({
             network: {
-                //Read more about NetworkConfig https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_client.md#networkconfig
-                endpoints: [
-                    "eri01.net.everos.dev",
-                    "rbx01.net.everos.dev",
-                    "gra01.net.everos.dev",
-                ],
+                endpoints: [ HTTPS_DEVNET_ENDPOINT ],
                 message_retries_count: 3,
             },
             abi: {

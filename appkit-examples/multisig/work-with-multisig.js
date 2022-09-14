@@ -16,16 +16,19 @@ const ACCOUNT_TYPE_ACTIVE = 1;
 // Address to send tokens to
 const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13";
 
+// Create a project on https://dashboard.evercloud.dev and pass
+// its Development Network HTTPS endpoint as a parameter:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2] 
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required")
+}
+
 (async () => {
     TonClient.useBinaryLibrary(libNode);
     const client = new TonClient({
         network: {
-            //Read more about NetworkConfig https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_client.md#networkconfig
-            endpoints: [
-                "eri01.net.everos.dev",
-                "rbx01.net.everos.dev",
-                "gra01.net.everos.dev",
-            ],
+            endpoints: [ HTTPS_DEVNET_ENDPOINT ],
             message_retries_count: 3,
             message_processing_timeout: 60000,
             network_retries_count: 2,
