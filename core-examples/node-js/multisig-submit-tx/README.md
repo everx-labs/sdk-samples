@@ -13,7 +13,7 @@ You should know Multisig keys, ABI, address and network
 -   Paste multisig keys in msig.keys.json
 -   See index.js, check comments and edit the relevant lines.
 
--   Create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev/projects) if you don't have one.
+-   Create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev) if you don't have one.
 -   Remember its Development Network HTTPS endpoint.
 -   Pass this endpoint as a parameter when running the example.
 
