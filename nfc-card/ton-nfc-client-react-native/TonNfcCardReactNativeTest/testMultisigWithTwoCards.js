@@ -135,9 +135,9 @@ const testMultisigWithTwoCards = async () => {
 
     ton.config.setData({
         servers: [
-            "eri01.net.everos.dev",
-            "rbx01.net.everos.dev",
-            "gra01.net.everos.dev",
+            // Create a project on https://dashboard.evercloud.dev and replace this endpoint 
+            // with your "Everscale network" or "Development Network" HTTPS endpoint:
+            "https://devnet.evercloud.dev/cafebabed4/graphql"
         ],
     });
 

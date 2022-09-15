@@ -9,6 +9,11 @@ It covers such use-cases as:
 - cursor-based pagination read all transactions related to this wallet
 - cursor-based pagination read all blockchain transactions
 
+## Before running the sample
+
+- Create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev) if you don't have one.
+- Specify your Everscale or Development Network HTTPS endpoint in ./index.js line 135
+
 ## How to run the sample?
 
 To run this sample you need to have a multisig wallet with positive balance,

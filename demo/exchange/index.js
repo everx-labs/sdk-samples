@@ -129,14 +129,10 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            // If you use DApp Server, specify its URL here the same way.
-            // If you want to work with public EVER OS API - specify its endpoints 
-            // https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks
-            // Developer Network endpoints:
             endpoints: [
-                "eri01.net.everos.dev",
-                "rbx01.net.everos.dev",
-                "gra01.net.everos.dev",
+                // Create a project on https://dashboard.evercloud.dev and replace this endpoint 
+                // with your "Everscale network" or "Development Network" HTTPS endpoint:
+                "https://devnet.evercloud.dev/cafebabed4/graphql"
             ],
         },
     });
