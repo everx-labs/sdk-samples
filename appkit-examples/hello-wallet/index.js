@@ -45,6 +45,25 @@ async function main(client) {
     response = await helloAcc.runLocal("getTimestamp", {});
     console.log("Contract reacted to your getTimestamp:", response.decoded.output)
 
+    // Get account balance. 
+    const query = `query($address: String!) {
+            blockchain {
+                account(address: $address) {
+                    info {
+                        balance(format: DEC)
+                    }
+                }
+            }
+        }`;
+    const variables = { address };
+    const { result } = await client.net.query({ query, variables });
+
+    // Big numbers are returned as a string in hexadecimal or decimal representation.
+    const balanceAsDecString = result.data.blockchain.account.info.balance
+
+    // The result can be parsed as a number using parseInt() or BigInt() functions
+    console.log("Hello wallet balance is", parseInt(balanceAsDecString, 10))
+
     // Send some money to the random address
     const randomAddress = 
         "0:" + 
@@ -52,6 +71,7 @@ async function main(client) {
             (await client.crypto.generate_random_bytes({length: 32})).bytes,
             "base64"
         ).toString("hex");
+
     response = await helloAcc.run("sendValue", {
         dest: randomAddress,
         amount: 100_000_000, // 0.1 token
