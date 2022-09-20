@@ -201,26 +201,15 @@ async function waitForAccountUpdate(address, transLt) {
 
 
 async function getBalance(address) {
-    // `client.net.query` is the preferable function to use for all queries,
-    // https://docs.everos.dev/ever-sdk/reference/types-and-methods/mod_net#query.
-    // Write graphql query in playground, copy it and insert into SDK's net.query function.
-    // Then define variables and execute it.
-    const query = `query($address: String!) {
-            blockchain {
-                account(address: $address) {
-                    info {
-                        balance(format: DEC)
-                    }
-                }
-            }
-        }`;
-    const variables = { address };
-
-    const { result } = await client.net.query({ query, variables });
+    const { result }  = await client.net.query_collection({
+        collection: "accounts",
+        filter: { id: { eq: address } },
+        result: "balance(format: DEC)",
+    })
 
     // Big numbers are returned as a string in hexadecimal or decimal representation,
     // in this query we choose decimal representation (format: DEC).
-    const balanceAsDecString = result.data.blockchain.account.info.balance
+    const balanceAsDecString = result[0].balance
 
     // The result can be parsed as a number using parseInt() or BigInt() functions
     return parseInt(balanceAsDecString, 10)
