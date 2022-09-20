@@ -46,6 +46,10 @@ const client = new TonClient({
 
         await deployWallet(walletKeys);
 
+        // Get account balance. 
+        const walletBalance = await getBalance(walletAddress);
+        console.log("Hello wallet balance is", walletBalance)
+
         // Execute `touch` method for newly deployed Hello wallet contract
         // Remember the logical time of the generated transaction
         let transLt = await touchWallet(walletAddress);
@@ -193,6 +197,22 @@ async function waitForAccountUpdate(address, transLt) {
     const duration = Math.floor((Date.now() - startTime) / 1000);
     console.log(`Success. Account was updated, it took ${duration} sec.\n`);
     return account;
+}
+
+
+async function getBalance(address) {
+    const { result }  = await client.net.query_collection({
+        collection: "accounts",
+        filter: { id: { eq: address } },
+        result: "balance(format: DEC)",
+    })
+
+    // Big numbers are returned as a string in hexadecimal or decimal representation,
+    // in this query we choose decimal representation (format: DEC).
+    const balanceAsDecString = result[0].balance
+
+    // The result can be parsed as a number using parseInt() or BigInt() functions
+    return parseInt(balanceAsDecString, 10)
 }
 
 async function executeGetTimeLocally(address, transLt) {
