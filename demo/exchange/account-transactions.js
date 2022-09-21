@@ -1,4 +1,4 @@
-const { internalQueryTransactions } = require("./transactions");
+const { queryAccount } = require("./transactions");
 const { sleep } = require("./utils");
 
 /**
@@ -14,14 +14,15 @@ async function *queryAccountTransactions(
         cursor: null,
         ...options,
     }
-    while (true) { // <-- !WARNING! Infinity loop, you need to implement condition to exit from iterator
-        const transactions = await internalQueryTransactions(client, variables);
+    for (;;) { // <-- !WARNING! Infinity loop, you need to implement condition to exit from iterator
+        const { result } = await client.net.query({query: queryAccount, variables});
+        const { transactions } = result.data.blockchain.account;
+
         yield transactions.edges.map(_ => _.node);
         variables.cursor = transactions.pageInfo.endCursor || variables.cursor;
         await sleep(200); // don't spam API
     }
 }
-
 
 module.exports = {
     queryAccountTransactions,
