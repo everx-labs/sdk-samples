@@ -26,7 +26,7 @@ const TRANSACTION_FIELDS = `
 `;
 
 // This API has additional consistency checks to ensure consistent pagination, which can lead to additional delay
-const queryAccouont = `query MyQuery($address: String!, $cursor: String, $count: Int, $seq_no: Int) {
+const queryAccount = `query MyQuery($address: String!, $cursor: String, $count: Int, $seq_no: Int) {
     blockchain {
         account(address: $address){
             transactions(
@@ -71,16 +71,7 @@ const queryAll = `query MyQuery($cursor: String, $count: Int, $seq_no: Int) {
     }
 }`;
 
-async function internalQueryTransactions(client, variables) {
-    const isAccount = "address" in variables;
-    const query = isAccount ? queryAccouont : queryAll;
-    const response = await client.net.query({query, variables});
-    return isAccount ?
-        response.result.data.blockchain.account.transactions
-        :
-        response.result.data.blockchain.transactions;
-}
-
 module.exports = {
-    internalQueryTransactions,
+    queryAccount,
+    queryAll,
 };

@@ -25,7 +25,7 @@ const { ensureGiver, depositAccount, walletWithdraw, getAccount, deployAccount }
     "./wallet");
 const { SafeMultisigContract } = require("./contracts");
 const { keyPress, seconds } = require("./utils");
-const { getLastMasterBlockSeqNoByTime } = require("./blockchain");
+const { getLastMasterBlockSeqNo, getLastMasterBlockSeqNoByTime } = require("./blockchain");
 const { queryAccountTransactions } = require("./account-transactions");
 const { queryAllTransactions } = require("./all-transactions");
 const { hasTransfersOnTransactions, printTransfers } = require("./transfers");
@@ -56,8 +56,8 @@ async function main(client) {
     const wallet = await getAccount(client, SafeMultisigContract, signerKeys(walletKeys));
 
     // Save last master block seq_no before we send the first transaction.
-    // It will be used later as starting point for pagination reqest.
-    const lastSeqNo = await getLastMasterBlockSeqNoByTime(client, seconds());
+    // It will be used later as starting point for pagination request.
+    const lastSeqNo = await getLastMasterBlockSeqNo(client);
 
     // Prepay contract before deploy.
     console.log(`Sending deploy fee from giver wallet ${giver.address} to the new account at ${wallet.address}`);
