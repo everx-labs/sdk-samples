@@ -105,7 +105,12 @@ async function main(client) {
     }
 
     // Now let's iterate all blockchain transactions with value transfers.
-    // Starting from master seq_no which was generated 10 minuts ago.
+    // 
+    // Attention! If you try to get the latest master seq_no for `now` you may receive `null` because 
+    // the database is not yet consistent. So you can desrease timestamp by, say 30 seconds, or wait in a cycle until 
+    // your request returns positive value. 
+    // We will iterate data starting from master seq_no which was generated 10 minutes ago.
+
     const afterSeqNo = await getLastMasterBlockSeqNoByTime(client, seconds(Date.now() - 10*60*1000));
     console.log(`\nTransactions of all accounts`);
     for await (let transactions of queryAllTransactions(client, {seq_no: afterSeqNo, count: countLimit})) {
