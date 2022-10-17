@@ -1,4 +1,4 @@
-# Simple TON application
+# Simple Everscale web application
 
 ## Audience
 
