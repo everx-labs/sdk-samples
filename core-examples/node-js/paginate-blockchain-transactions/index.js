@@ -29,24 +29,28 @@ const client = new TonClient({
         // If you try to get master seq_no for `now` time you may receive `null` because
         // data is not consistent yet.  If you need the most fresh data, do not specify the
         // `time_end` value at all. 
-        const days = 3;
+        let hours = 1;
         const now = Math.trunc(Date.now() / 1000);
         let result = await client.net.query({
-            query: `{
-                      blockchain {
-                        master_seq_no_range(
-                            time_start: ${now - days * 24 * 60 * 60}
-                            time_end: ${now-60} 
-                        ) {
-                            start
-                            end
-                        }
+          query: `query MyQuery($time_start: Int, $time_end: Int)
+                  {  
+                    blockchain 
+                    {
+                      master_seq_no_range(
+                        time_start: $time_start
+                        time_end: $time_end
+                      ) 
+                      {
+                        start
+                        end
                       }
-                    }`,
-        });
+                    }
+                  }`,
+               variables:{time_start: now - hours * 60 * 60, time_end: now-60}
+      }); 
 
         const range = result.result.data.blockchain.master_seq_no_range;
-        console.log(`Masterchain seq_no range for the last ${days} days: [${range.start}..${range.end}]`);
+        console.log(`Masterchain seq_no range for the last ${hours} hours: [${range.start}..${range.end}]`);
 
         /*
             Sample output:
@@ -57,31 +61,34 @@ const client = new TonClient({
        
         // Get workchain transactions with amount more than 1 token for in this range:
         result = await client.net.query({
-            query: `{ 
-                   blockchain {
-                     transactions(
-                      master_seq_no_range: {
-                          start: ${range.start}
-                          end: ${range.end}
+          query: `query MyQuery($start: Int, $end: Int, $min_balance_delta: String)
+                  {  
+                    blockchain 
+                    {
+                      transactions(
+                        master_seq_no_range: {
+                          start: $start
+                          end: $end
+                        }                  
+                      min_balance_delta: $min_balance_delta
+                      ) 
+                      {
+                        edges {
+                          node {
+                            now_string
+                            balance_delta(format: DEC) 
+                            aborted
+                          }
+                        }
+                        pageInfo {
+                          endCursor
+                          hasNextPage
+                        }
                       }
-                   
-                      min_balance_delta: "1000000000"
-                     ) {
-                       edges {
-                         node {
-                           now_string
-                           balance_delta(format: DEC) 
-                           aborted
-                         }
-                       }
-                       pageInfo{
-                        endCursor
-                        hasNextPage
-                      }
-                     }
-                   }
-                 }`,
-        });
+                    }
+                  }`,
+               variables:{start: range.start, end: range.end, min_balance_delta:"1000000000" }
+      }); 
 
         console.log(
             `\nFirst batch of transactions:`,
@@ -101,32 +108,36 @@ const client = new TonClient({
       );
 
         while (result.result.data.blockchain.transactions.pageInfo.hasNextPage) {
+
           result = await client.net.query({
-            query: `{ 
-                   blockchain {
-                     transactions(
-                      master_seq_no_range: {
-                          start: ${range.start}
-                          end: ${range.end}
+            query: `query MyQuery($start: Int, $end: Int, $cursor: String, $min_balance_delta: String)
+                    {  
+                      blockchain 
+                      {
+                        transactions(
+                          master_seq_no_range: {
+                            start: $start
+                            end: $end
+                          }                  
+                        after: $cursor
+                        min_balance_delta: $min_balance_delta
+                        ) 
+                        {
+                          edges {
+                            node {
+                              now_string
+                              balance_delta(format: DEC) 
+                              aborted
+                            }
+                          }
+                          pageInfo {
+                            endCursor
+                            hasNextPage
+                          }
+                        }
                       }
-                   
-                      min_balance_delta: "1000000000"
-                      after: ${cursor}
-                     ) {
-                       edges {
-                         node {
-                           now_string
-                           balance_delta(format: DEC) 
-                           aborted
-                         }
-                       }
-                       pageInfo{
-                        endCursor
-                        hasNextPage
-                      }
-                     }
-                   }
-                 }`,
+                    }`,
+                 variables:{start: range.start, end: range.end, cursor: cursor, min_balance_delta:"1000000000" }
         }); 
 
         console.log(
@@ -139,7 +150,11 @@ const client = new TonClient({
               `Tx hash: ${trans.hash}, timestamp: ${trans.now_string}, balance change: ${trans.balance_delta}, aborted: ${trans.aborted}`,
           );
       }
-        }
+
+      cursor = result.result.data.blockchain.transactions.pageInfo.endCursor;
+      console.log(`\nLast cursor: ${cursor}. Has next page? : ${result.result.data.blockchain.transactions.pageInfo.hasNextPage}`);
+
+    }
 
         process.exit(0);
     } catch (error) {

@@ -1,3 +1,7 @@
+## About this sample
+
+This sample shows how to easily implement blockchain transaction iteration with ever-sdk (JavaScript)
+
 ## Before running the example
 
 -   Create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev) if you don't have one.
