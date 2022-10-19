@@ -30,7 +30,6 @@ const query = `query MyQuery($cursor: String, $count: Int, $seq_no: Int) {
     }
 }`
 
-// Is it ok that transactions remain unsorted ?
 
 async function allTransactions(client, { from, itemsPerPage, pagesLimit }) {
     // The last master block seq_no will be used as a starting point for the pagination.
