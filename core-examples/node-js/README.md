@@ -1,4 +1,4 @@
-# TON Labs low-level SDK samples
+# EverX low-level SDK samples
 
 `core_examples` folder contains samples demonstrating different core SDK functionality and is constantly replenished with samples with new core sdk features.
 `node-js` folder contains samples running on Node.js that use [@eversdk/core and @eversdk/node-lib](https://github.com/tonlabs/ever-sdk-js) JS packages.
