@@ -223,13 +223,13 @@ async function getHelloText(address) {
                         }));
                         switch (decoded.body_type) {
                         case MessageBodyType.Input:
-                            log_.push(`External inbound message, function "${decoded.name}", parameters: ${JSON.stringify(decoded.value)}` );
+                            log_.push(`External inbound message, function "${decoded.name}", fields: ${JSON.stringify(decoded.value)}` );
                             break;
                         case MessageBodyType.Output:
-                            log_.push(`External outbound message, function "${decoded.name}", result: ${JSON.stringify(decoded.value)}`);
+                            log_.push(`External outbound message (return) of function "${decoded.name}", fields: ${JSON.stringify(decoded.value)}`);
                             break;
                         case MessageBodyType.Event:
-                            log_.push(`External outbound message, event "${decoded.name}", parameters: ${JSON.stringify(decoded.value)}`);
+                            log_.push(`External outbound message (event) "${decoded.name}", fields: ${JSON.stringify(decoded.value)}`);
                             break;
                         }
                     }
