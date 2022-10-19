@@ -197,16 +197,6 @@ async function getHelloText(address) {
         let {address} = await calcAddr(signer);
         console.log(`Account ${address}"`);
 
-        const accountSubscription = await client.net.subscribe_collection({
-            collection: "accounts",
-            filter: { id: { eq: address } },
-            result: "balance",
-        }, (params, responseType) => {
-            if (responseType === ResponseType.Custom) {
-                console.log("Account has updated. Current balance is ", parseInt(params.result.balance));
-            }
-        });
-
         const messageSubscription = await client.net.subscribe_collection({
             collection: "messages",
             filter: {
@@ -215,45 +205,59 @@ async function getHelloText(address) {
                     dst: { eq: address },
                 }
             },
-            result: "boc",
+            result: "boc msg_type id src dst",
         }, async (params, responseType) => {
+            const log_ = [""]
             try {
                 if (responseType === ResponseType.Custom) {
-                    console.log(`msg_type: ${params.result.body_type} boc: ${params.result.boc}`)
-                    const decoded = (await client.abi.decode_message({
-                        abi: abiContract(HelloEventsContract.abi),
-                        message: params.result.boc,
-                    }));
-                    switch (decoded.body_type) {
-                    case MessageBodyType.Input:
-                        console.log(`External inbound message, function "${decoded.name}", parameters: `, JSON.stringify(decoded.value));
-                        break;
-                    case MessageBodyType.Output:
-                        console.log(`External outbound message, function "${decoded.name}", result`, JSON.stringify(decoded.value));
-                        break;
-                    case MessageBodyType.Event:
-                        console.log(`External outbound message, event "${decoded.name}", parameters`, JSON.stringify(decoded.value));
-                        break;
+                    const {msg_type, id, src, dst, boc} = params.result;
+                    log_.push(`msg_type: ${msg_type}, msg_id ${id}`)
+                    log_.push(`src: ${src}, dst ${dst}`)
+                    if (src==giverAddress){
+                        log_.push("Top-up message from giver")
+                    }
+                    else {
+                        const decoded = (await client.abi.decode_message({
+                            abi: abiContract(HelloEventsContract.abi),
+                            message: boc,
+                        }));
+                        switch (decoded.body_type) {
+                        case MessageBodyType.Input:
+                            log_.push(`External inbound message, function "${decoded.name}", parameters: ${JSON.stringify(decoded.value)}` );
+                            break;
+                        case MessageBodyType.Output:
+                            log_.push(`External outbound message, function "${decoded.name}", result: ${JSON.stringify(decoded.value)}`);
+                            break;
+                        case MessageBodyType.Event:
+                            log_.push(`External outbound message, event "${decoded.name}", parameters: ${JSON.stringify(decoded.value)}`);
+                            break;
+                        }
                     }
                 }
             } catch (err) {
-                console.log('>>>', err);
+                log_.push(`>>> ${JSON.stringify(err)}`);
             }
+            for (const line of log_){console.log(line)};
         });
 
-        await new Promise(r => setTimeout(r, 20000));
-
+        // deploy
         await deployNew("Hello World!", signer);
         console.log(`Initial hello text is "${await getHelloText(address)}"`);
 
         await setHelloText(address, signer, "Hello there1!");
         console.log(`Updated hello text is ${await getHelloText(address)}`);
 
-        /** Free up all internal resources associated with wallets. */
-        await client.net.unsubscribe(accountSubscription);
+        /** 
+         * We add timeout before we unsubscribe so that we receive all messages.
+         * In the real network increase this timeout or add a message counter 
+         */
+        await new Promise(r => setTimeout(r, 2000));
         await client.net.unsubscribe(messageSubscription);
+
     } catch (error) {
         console.error(error);
+        client.close();
+        process.exit(1)
     }
     client.close();
 })();
