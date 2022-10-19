@@ -11,7 +11,12 @@ const {
 const { libNode } = require("@eversdk/lib-node");
 
 TonClient.useBinaryLibrary(libNode);
-TonClient.defaultConfig = { network: { endpoints: ["http://localhost"] } };
+const client = new TonClient({
+    network: {
+        endpoints: ['http://localhost']
+    },
+});
+
 
 const { HelloEventsContract } = require("./contracts");
 
@@ -92,12 +97,12 @@ async function get_tokens_from_giver(client, account) {
     await client.processing.process_message(params)
 }
 
+
 /**
  * @param text {string}
  * @returns {Promise<{address:string, signer: Signer}>}
  */
-async function deployNew(text) {
-    const signer = signerKeys(await TonClient.default.crypto.generate_random_sign_keys());
+async function deployNew(text, signer) {
     const deployParams = {
         abi: abiContract(HelloEventsContract.abi),
         deploy_set: {
@@ -111,13 +116,29 @@ async function deployNew(text) {
         },
         signer
     };
-    const address = (await TonClient.default.abi.encode_message(deployParams)).address;
-    await get_tokens_from_giver(TonClient.default, address);
-    await TonClient.default.processing.process_message({
+    const address = (await client.abi.encode_message(deployParams)).address;
+    await get_tokens_from_giver(client, address);
+    await client.processing.process_message({
         message_encode_params: deployParams,
         send_events: false,
     });
     return { address, signer };
+}
+
+/**
+ * @param sigher 
+ * @returns {Promise<{address:string}>}
+ */
+ async function calcAddr(signer) {
+    const deployParams = {
+        abi: abiContract(HelloEventsContract.abi),
+        deploy_set: {
+            tvc: HelloEventsContract.tvc,
+        },
+        signer
+    };
+    let address = (await client.abi.encode_message(deployParams)).address;
+    return { address};
 }
 
 /**
@@ -127,7 +148,7 @@ async function deployNew(text) {
  * @returns {Promise<void>}
  */
 async function setHelloText(address, signer, text) {
-    await TonClient.default.processing.process_message({
+    await client.processing.process_message({
         message_encode_params: {
             abi: abiContract(HelloEventsContract.abi),
             call_set: {
@@ -148,16 +169,16 @@ async function setHelloText(address, signer, text) {
  * @returns {Promise<string>}
  */
 async function getHelloText(address) {
-    const account = (await TonClient.default.net.wait_for_collection({
+    const account = (await client.net.wait_for_collection({
         collection: "accounts",
         filter: { id: { eq: address } },
         result: "boc"
     })).result.boc;
     const abi = abiContract(HelloEventsContract.abi);
-    const { decoded } = await TonClient.default.tvm.run_tvm({
+    const { decoded } = await client.tvm.run_tvm({
         abi,
         account,
-        message: (await TonClient.default.abi.encode_message({
+        message: (await client.abi.encode_message({
             address: address,
             signer: signerNone(),
             abi,
@@ -172,20 +193,11 @@ async function getHelloText(address) {
 
 (async () => {
     try {
-        const { address, signer } = await deployNew("Hello World!");
-        console.log(`Initial hello text is "${await getHelloText(address)}"`);
+        const signer =  signerKeys(await client.crypto.generate_random_sign_keys());
+        let {address} = await calcAddr(signer);
+        console.log(`Account ${address}"`);
 
-        const accountSubscription = await TonClient.default.net.subscribe_collection({
-            collection: "accounts",
-            filter: { id: { eq: address } },
-            result: "balance",
-        }, (params, responseType) => {
-            if (responseType === ResponseType.Custom) {
-                console.log("Account has updated. Current balance is ", parseInt(params.result.balance));
-            }
-        });
-
-        const messageSubscription = await TonClient.default.net.subscribe_collection({
+        const messageSubscription = await client.net.subscribe_collection({
             collection: "messages",
             filter: {
                 src: { eq: address },
@@ -193,39 +205,59 @@ async function getHelloText(address) {
                     dst: { eq: address },
                 }
             },
-            result: "boc",
+            result: "boc msg_type id src dst",
         }, async (params, responseType) => {
+            const log_ = [""]
             try {
                 if (responseType === ResponseType.Custom) {
-                    const decoded = (await TonClient.default.abi.decode_message({
-                        abi: abiContract(HelloEventsContract.abi),
-                        message: params.result.boc,
-                    }));
-                    switch (decoded.body_type) {
-                    case MessageBodyType.Input:
-                        console.log(`External inbound message, function "${decoded.name}", parameters: `, JSON.stringify(decoded.value));
-                        break;
-                    case MessageBodyType.Output:
-                        console.log(`External outbound message, function "${decoded.name}", result`, JSON.stringify(decoded.value));
-                        break;
-                    case MessageBodyType.Event:
-                        console.log(`External outbound message, event "${decoded.name}", parameters`, JSON.stringify(decoded.value));
-                        break;
+                    const {msg_type, id, src, dst, boc} = params.result;
+                    log_.push(`msg_type: ${msg_type}, msg_id ${id}`)
+                    log_.push(`src: ${src}, dst ${dst}`)
+                    if (src==giverAddress){
+                        log_.push("Top-up message from giver")
+                    }
+                    else {
+                        const decoded = (await client.abi.decode_message({
+                            abi: abiContract(HelloEventsContract.abi),
+                            message: boc,
+                        }));
+                        switch (decoded.body_type) {
+                        case MessageBodyType.Input:
+                            log_.push(`External inbound message, function "${decoded.name}", fields: ${JSON.stringify(decoded.value)}` );
+                            break;
+                        case MessageBodyType.Output:
+                            log_.push(`External outbound message (return) of function "${decoded.name}", fields: ${JSON.stringify(decoded.value)}`);
+                            break;
+                        case MessageBodyType.Event:
+                            log_.push(`External outbound message (event) "${decoded.name}", fields: ${JSON.stringify(decoded.value)}`);
+                            break;
+                        }
                     }
                 }
             } catch (err) {
-                console.log('>>>', err);
+                log_.push(`>>> ${JSON.stringify(err)}`);
             }
+            for (const line of log_){console.log(line)};
         });
 
-        await setHelloText(address, signer, "Hello there!");
+        // deploy
+        await deployNew("Hello World!", signer);
+        console.log(`Initial hello text is "${await getHelloText(address)}"`);
+
+        await setHelloText(address, signer, "Hello there1!");
         console.log(`Updated hello text is ${await getHelloText(address)}`);
 
-        /** Free up all internal resources associated with wallets. */
-        await TonClient.default.net.unsubscribe(accountSubscription);
-        await TonClient.default.net.unsubscribe(messageSubscription);
+        /** 
+         * We add timeout before we unsubscribe so that we receive all messages.
+         * In the real network increase this timeout or add a message counter 
+         */
+        await new Promise(r => setTimeout(r, 2000));
+        await client.net.unsubscribe(messageSubscription);
+
     } catch (error) {
         console.error(error);
+        client.close();
+        process.exit(1)
     }
-    TonClient.default.close();
+    client.close();
 })();

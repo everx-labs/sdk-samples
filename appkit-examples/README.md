@@ -1,4 +1,4 @@
-# TON Labs AppKit SDK samples
+# EverX AppKit SDK samples
 
 `appkit_examples` folder contains samples that use [AppKit - Everscale Javascript Application Kit](https://github.com/tonlabs/appkit-js) - package that is built over the [@eversdk/core](https://tonlabs.github.io/ever-sdk-js/) package and purposed to simplify writing applications on Everscale
 

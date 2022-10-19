@@ -26,10 +26,7 @@ const GIVER_ADDRESS = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc68569
 TonClient.useBinaryLibrary(libNode);
 const client = new TonClient({
     network: {
-        endpoints: ENDPOINTS,
-        // for a query, this is the period of time during which
-        // the query waits for its condition to be fulfilled
-        wait_for_timeout: 180000,
+        endpoints: ENDPOINTS
     },
 });
 
