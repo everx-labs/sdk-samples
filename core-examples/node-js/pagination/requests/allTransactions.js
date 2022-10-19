@@ -6,7 +6,9 @@ const { getLastMasterBlockSeqNoByTime } = require('./getLastMasterBlockSeqNoByTi
 
 const TITLE = 'All transactions'
 
-// This API has additional consistency checks to ensure consistent pagination, which can lead to additional delay
+// This API has eventual consistency so to ensure consistent pagination it has a delay of several seconds.
+// If you do not need consistency, specify allow_latest_inconsistent_data = true parameter
+
 const query = `query MyQuery($cursor: String, $count: Int, $seq_no: Int) {
     blockchain {
         transactions(
