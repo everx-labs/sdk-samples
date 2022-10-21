@@ -63,12 +63,12 @@ async function main(client) {
 (async () => {
     const client = new TonClient({
         network: {
-            // Local Evernode SE instance URL here
+            // Local Evernode-SE instance URL here
             endpoints: ["http://localhost"]
         }
     });
     try {
-        console.log("Hello localhost TON!");
+        console.log("Hello localhost!");
         await main(client);
         process.exit(0);
     } catch (error) {
