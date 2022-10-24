@@ -51,7 +51,7 @@ async function sendMoney(acc, toAddress, amount) {
     try {
         const wallet1 = await deployContract(client);
 
-        // Query data from accounts collection https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
+        // Query data from accounts collection https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query
         const balance1 = (await wallet1.getAccount()).balance;
         console.log(`Account 1 balance is ${balance1}`);
 

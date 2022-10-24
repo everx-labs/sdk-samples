@@ -194,23 +194,27 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
 
         // Query the GraphQL API version.
         console.log(">> query without params sample");
-        result = (await client.net.query({ "query": "{info{version}}" })).result;
+        let {result} = await client.net.query({ "query": "{info{version}}" });
         console.log("GraphQL API version is " + result.data.info.version + '\n');
 
         // In the following we query a collection. We get balance of the first wallet.
-        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
-        console.log(">> query_collection sample");
-        result = (await client.net.query_collection({
-            collection: 'accounts',
-            filter: {
-                id: {
-                    eq: wallet1Address
-                }
-            },
-            result: 'balance'
-        })).result;
+        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query
+        console.log(">> query with param");
 
-        console.log(`Account 1 balance is ${parseInt(result[0].balance)}\n`);
+        const variables = {address: wallet1Address}
+        const query = `
+            query myQuery($address: String!) {
+              blockchain {
+                account(address: $address) {
+                  info {
+                    balance
+                  }
+                }
+              }
+            }`;
+
+        result = (await client.net.query({query, variables})).result;
+        console.log(`Account 1 balance is ${result.data.blockchain.account.info.balance}\n`);
 
         // You can do multiple queries in a single fetch request with the help of `batch_query`.
         // In the following query we get balance of both wallets at the same time.
@@ -261,7 +265,7 @@ async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
         });
 
         await sendMoney(wallet1keys, wallet1Address, wallet2Address, 5_000_000_000);
-        result =(await waitForCollection).result;
+        result = (await waitForCollection).result;
         console.log("Got message with ID = " + result.id + '\n');
 
         // If you need to do an aggregation for a certain collection you can use aggregate_collection

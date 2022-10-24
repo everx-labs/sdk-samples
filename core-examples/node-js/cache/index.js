@@ -14,23 +14,33 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
 
 async function main(client) {
     // Download account BOC
-    const account = (await client.net.query_collection({
-        collection: "accounts",
-        filter: { id: { eq: address } },
-        result: "boc",
-    })).result[0];
+    const query = `
+        query {
+          blockchain {
+            account(
+              address: "${address}"
+            ) {
+               info {
+                boc
+              }
+            }
+          }
+        }`
+
+    let {result} = await client.net.query({query});
+    const {boc} = result.data.blockchain.account.info
     
     // Save account BOC into cache to use in local calls. Pin the BOC with some name to prevent 
     // replacing it by another BOCs
     const bocRef = (await client.boc.cache_set({
-        boc: account.boc,
+        boc,
         cache_type: bocCacheTypePinned('testPin')
     })).boc_ref;
 
     console.log('Cached account BOC reference', bocRef);
 
     // Use received BOC reference in local call
-    const result = await client.tvm.run_tvm({
+    result = await client.tvm.run_tvm({
         abi,
         account: bocRef,
         message: (await client.abi.encode_message({

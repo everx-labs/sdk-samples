@@ -46,16 +46,23 @@ async function main(client) {
     console.log("Contract reacted to your getTimestamp:", response.decoded.output)
 
     // Get account balance. 
-    const { result }  = await client.net.query_collection({
-        collection: "accounts",
-        filter: { id: { eq: address } },
-        result: "balance(format: DEC)",
-    })
+    const query = `
+        query {
+          blockchain {
+            account(
+              address: "${address}"
+            ) {
+               info {
+                balance(format: DEC)
+              }
+            }
+          }
+        }`
+    const {result}  = await client.net.query({query})
 
     // Big numbers are returned as a string in hexadecimal or decimal representation,
     // in this query we choose decimal representation (format: DEC).
-    const balanceAsDecString = result[0].balance
-
+    const balanceAsDecString = result.data.blockchain.account.info.balance
     // The result can be parsed as a number using parseInt() or BigInt() functions
     console.log("Hello wallet balance is", parseInt(balanceAsDecString, 10))
 

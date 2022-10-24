@@ -21,7 +21,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
 
 (async () => {
     try {
-        const tonClient = new TonClient({
+        const client = new TonClient({
             network: {
                 //Read more about NetworkConfig https://docs.everos.dev/ever-sdk/guides/installation/configure_sdk
                 endpoints: [ HTTPS_DEVNET_ENDPOINT ],
@@ -35,7 +35,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
 
         // Here we create deployMessage simply to get account address and check its balance
         // if you know your wallet address, you do not need this step.
-        const { address } = await tonClient.abi.encode_message({
+        const { address } = await client.abi.encode_message({
             abi: SafeMultisigContract.abi,
             deploy_set: {
                 tvc: SafeMultisigContract.tvc,
@@ -61,22 +61,27 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         // Let's check if the account is deployed and check its balance
         // See more about GraphQL API documentation here https://docs.everos.dev/ever-sdk/samples/graphql-samples/quick-start#api-documentation
         /** @type {{ acc_type: number, balance: string, code: string}[]} */
-        const result = (await tonClient.net.query_collection({
-            collection: "accounts",
-            filter: {
-                id: {
-                    eq: address,
-                },
-            },
-            result: "acc_type balance code",
-        })).result;
+        const {info} = (await client.net.query({
+            query: `
+                query {
+                  blockchain {
+                    account(
+                        address: "${address}"
+                    ) {
+                       info {
+                        acc_type balance code
+                      }
+                    }
+                  }
+                }`
+        })).result.data.blockchain.account;
 
-        if (result.length === 0) {
-            console.log(`You need to transfer at least 0.5 tokens to and use deploy.js to deploy the contract ${address}.`);
+        if (!info) {
+            console.log(`Accont doesn\'t exist. You need to transfer at least 0.5 tokens and use deploy.js to deploy the contract ${address}.`);
             process.exit(1);
         }
 
-        if (result[0].acc_type !== ACCOUNT_TYPE_ACTIVE) {
+        if (info.acc_type !== ACCOUNT_TYPE_ACTIVE) {
             console.log(`Contract ${address} is not deployed yet. Use deploy.js to deploy it.`);
             process.exit(1);
         }
@@ -85,22 +90,33 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         // We need to perform 3 steps: download the wallet's state, encode a message that will request data,
         // and execute it locally on the wallet's state to receive the data
 
-        const [account, message] = await Promise.all([
+        const [boc, message] = await Promise.all([
             // Download the latest state (so-called BOC)
             // See more info about query method here
-            // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
+            // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query
             // See more about BOC here https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/11b639
-            tonClient.net.query_collection({
-                collection: "accounts",
-                filter: { id: { eq: address } },
-                result: "boc",
-            })
-                .then(({ result }) => result[0].boc)
+            client.net
+                .query({
+                    query: `
+                    query {
+                      blockchain {
+                        account(
+                          address: "${address}"
+                        ) {
+                           info {
+                            boc
+                          }
+                        }
+                      }
+                    }`,
+                })
+                .then(({ result }) => result.data.blockchain.account.info.boc)
                 .catch(() => {
-                    throw Error(`Failed to fetch account data`);
+                    throw Error(`Failed to fetch account data`)
                 }),
+
             // Encode the message with `getCustodians` call
-            tonClient.abi.encode_message({
+            client.abi.encode_message({
                 abi: SafeMultisigContract.abi,
                 address,
                 call_set: {
@@ -115,9 +131,11 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         // See more info about run_tvm method here
         // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
         /** @type {{decoded:{output:{custodians:string[]}}}}*/
-        const response = await tonClient.tvm.run_tvm({
-            message, account, abi: SafeMultisigContract.abi,
-        });
+        const response = await client.tvm.run_tvm({
+            message,
+            account: boc,
+            abi: SafeMultisigContract.abi,
+        })
         // Print the custodians of the wallet
         console.log("Custodians list:", response.decoded.output.custodians);
 
@@ -154,7 +172,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
             },
         };
         // Call `submitTransaction` function
-        const sentTransactionInfo = await tonClient.processing.process_message(params);
+        const sentTransactionInfo = await client.processing.process_message(params);
 
         console.log(sentTransactionInfo);
         console.log("Transaction info:");
@@ -176,7 +194,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
 
         // Convert address to different types
         console.log("Multisig address in HEX:");
-        let convertedAddress = (await tonClient.utils.convert_address({
+        let convertedAddress = (await client.utils.convert_address({
             address,
             output_format: {
                 type: "Hex",
@@ -185,7 +203,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         console.log(convertedAddress);
 
         console.log("Multisig non-bounce address in Base64:");
-        convertedAddress = (await tonClient.utils.convert_address({
+        convertedAddress = (await client.utils.convert_address({
             address,
             output_format: {
                 type: "Base64",
@@ -197,7 +215,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         console.log(convertedAddress);
 
         console.log("Multisig bounce address in Base64:");
-        convertedAddress = (await tonClient.utils.convert_address({
+        convertedAddress = (await client.utils.convert_address({
             address,
             output_format: {
                 type: "Base64",
