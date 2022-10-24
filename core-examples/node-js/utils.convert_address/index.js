@@ -8,15 +8,24 @@ const address = "EQAwj_RolhwutAINo6aEMyPf81iCZxHQrVrySE5s0nQUFSXs";
 
 (async () => {
     try {
-        console.log(`Convert address: ${address} to different formats: \n`);
+        let initialAddressType = await client.utils.get_address_type({address});
+        console.log(`Convert address ${address} of type ${JSON.stringify(initialAddressType)} to different formats: \n`);
 
         let convertedAddress = (await client.utils.convert_address({
+            address,
+            output_format: {
+                type: "Hex"
+            },
+        })).address;
+        console.log(`Address in raw format: ${convertedAddress}`);
+
+        convertedAddress = (await client.utils.convert_address({
             address,
             output_format: {
                 type: "AccountId",
             },
         })).address;
-        console.log(`Multisig address in HEX: ${convertedAddress}`);
+        console.log(`Address in HEX: ${convertedAddress}`);
 
         convertedAddress = (await client.utils.convert_address({
             address,
@@ -27,7 +36,7 @@ const address = "EQAwj_RolhwutAINo6aEMyPf81iCZxHQrVrySE5s0nQUFSXs";
                 bounce: false,
             },
         })).address;
-        console.log(`Multisig non-bounce address in Base64: ${convertedAddress}`);
+        console.log(`Address in non-bounce Base64: ${convertedAddress}`);
 
         convertedAddress = (await client.utils.convert_address({
             address,
@@ -38,7 +47,8 @@ const address = "EQAwj_RolhwutAINo6aEMyPf81iCZxHQrVrySE5s0nQUFSXs";
                 bounce: true,
             },
         })).address;
-        console.log(`Multisig bounce address in Base64: ${convertedAddress}`);
+        console.log(`Address in bounce Base64: ${convertedAddress}`);
+
 
         process.exit(0);
 
