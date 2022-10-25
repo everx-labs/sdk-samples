@@ -65,19 +65,23 @@ async function sendMoney(acc, toAddress, amount) {
         console.log("GraphQL API version is " + result.data.info.version + "\n");
 
         // In the following we query a collection. We get balance of the first wallet.
-        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
-        console.log(">> query_collection sample");
-        result = (await client.net.query_collection({
-            collection: "accounts",
-            filter: {
-                id: {
-                    eq: await wallet1.getAddress(),
-                },
-            },
-            result: "balance",
-        })).result;
+        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query
+        console.log(">> query sample");
+        const query = `
+            query {
+              blockchain {
+                account(
+                  address: "${await wallet1.getAddress()}"
+                ) {
+                   info {
+                    balance
+                  }
+                }
+              }
+            }`
+        result  = (await client.net.query({query})).result
 
-        console.log(`Account 1 balance is ${parseInt(result[0].balance)}\n`);
+        console.log(`Account 1 balance is ${result.data.blockchain.account.info.balance}\n`);
 
         // You can do multiple queries in a single fetch request with the help of `batch_query`.
         // In the following query we get balance of both wallets at the same time.

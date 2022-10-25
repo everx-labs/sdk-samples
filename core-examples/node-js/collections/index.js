@@ -1,319 +1,154 @@
-const { abiContract, TonClient } = require("@eversdk/core");
+const { TonClient } = require("@eversdk/core");
 const { libNode } = require("@eversdk/lib-node");
-const fs = require('fs');
-const path = require('path');
-const giverKeyPairFileName = 'GiverV2.keys.json';
-const giverKeyPairFile = path.join(__dirname, giverKeyPairFileName);
-let client;
 
-const multisigContractPackage = {
-    // https://github.com/tonlabs/ton-labs-abi/blob/master/docs/ABI_2.0_spec.md
-    abi: require('./contracts/SafeMultisigWallet.abi.json'),
-    // Compiled smart contract file.
-    tvcInBase64: fs.readFileSync('./contracts/SafeMultisigWallet.tvc').toString('base64'),
-};
 
-// Address of giver on Evernode SE
-const giverAddress = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
-// Giver ABI on Evernode SE
-const giverAbi = abiContract({
-    'ABI version': 2,
-    header: ['time', 'expire'],
-    functions: [
-        {
-            name: 'sendTransaction',
-            inputs: [
-                { 'name': 'dest', 'type': 'address' },
-                { 'name': 'value', 'type': 'uint128' },
-                { 'name': 'bounce', 'type': 'bool' }
-            ],
-            outputs: []
-        },
-        {
-            name: 'getMessages',
-            inputs: [],
-            outputs: [
-                {
-                    components: [
-                        { name: 'hash', type: 'uint256' },
-                        { name: 'expireAt', type: 'uint64' }
-                    ],
-                    name: 'messages',
-                    type: 'tuple[]'
-                }
-            ]
-        },
-        {
-            name: 'upgrade',
-            inputs: [
-                { name: 'newcode', type: 'cell' }
-            ],
-            outputs: []
-        },
-        {
-            name: 'constructor',
-            inputs: [],
-            outputs: []
-        }
-    ],
-    data: [],
-    events: []
+// Link the platform-dependable ever-sdk binary with the target Application in Typescript
+// This is a Node.js project, so we link the application with `libNode` binary
+// from `@eversdk/lib-node` package
+// If you want to use this code on other platforms, such as Web or React-Native,
+// use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
+// (see README in  https://github.com/tonlabs/ever-sdk-js )
+TonClient.useBinaryLibrary(libNode);
+
+// Create a project on https://dashboard.evercloud.dev and
+// pass its Development Network HTTPS endpoint as an argument:
+const HTTPS_DEVNET_ENDPOINT = process.argv[2];
+
+if (HTTPS_DEVNET_ENDPOINT === undefined) {
+    throw new Error("HTTPS endpoint required");
+}
+
+const client = new TonClient({
+    network: {
+        endpoints: [HTTPS_DEVNET_ENDPOINT],
+    },
 });
 
-// Requesting 10 local test tokens from Evernode SE giver
-async function get_tokens_from_giver(account) {
-    if (!fs.existsSync(giverKeyPairFile)) {
-        console.log(`Please place ${giverKeyPairFileName} file in project root folder with Giver's keys`);
-        process.exit(1);
-    }
-
-    const giverKeyPair = JSON.parse(fs.readFileSync(giverKeyPairFile, 'utf8'));
-
-    const params = {
-        send_events: false,
-        message_encode_params: {
-            address: giverAddress,
-            abi: giverAbi,
-            call_set: {
-                function_name: 'sendTransaction',
-                input: {
-                    dest: account,
-                    value: 10_000_000_000,
-                    bounce: false
-                }
-            },
-            signer: {
-                type: 'Keys',
-                keys: giverKeyPair
-            },
-        },
-    }
-    await client.processing.process_message(params)
-}
-
-
-/**
- * Generate public and secret key pairs.
- */
-async function generateWalletKeys() {
-    return await client.crypto.generate_random_sign_keys();
-}
-
-async function deployContract(walletKeys) {
-    // We create a deploy message to calculate the future address of the contract
-    // and to send it with 'sendMessage' later - if we use Pattern 1 for deploy (see below).
-
-    const deployOptions = {
-        abi: {
-            type: 'Contract',
-            value: multisigContractPackage.abi
-        },
-        deploy_set: {
-            tvc: multisigContractPackage.tvcInBase64,
-            initial_data: {}
-        },
-        call_set: {
-            function_name: 'constructor',
-            input: {
-                owners: [`0x${walletKeys.public}`], // Multisig owner public key.
-                reqConfirms: 0,  // Multisig required confirmations zero means that
-                // no additional confirmation is neede to send a transaction.
-            }
-        },
-        signer: {
-            type: 'Keys',
-            keys: walletKeys
-        }
-    };
-
-    const { address } = await client.abi.encode_message(deployOptions);
-
-    // Requesting contract deployment funds form a local Evernode SE giver.
-    // Not suitable for other networks.
-    await get_tokens_from_giver(address);
-    await client.processing.process_message({
-        send_events: false,
-        message_encode_params: deployOptions
-    });
-
-    console.log(`Wallet contract was deployed at address: ${address}`);
-
-    return address;
-}
-
-async function sendMoney(senderKeys, fromAddress, toAddress, amount) {
-    const params = {
-        send_events: false,
-        message_encode_params: {
-            address: fromAddress,
-            abi: {
-                type: 'Contract',
-                value: multisigContractPackage.abi
-            },
-            call_set: {
-                function_name: 'sendTransaction',
-                input: {
-                    dest: toAddress,
-                    value: amount,
-                    bounce: false,
-                    flags: 0,
-                    payload: ''
-                },
-            },
-            signer: {
-                type: 'Keys',
-                keys: senderKeys
-            }
+async function main(client) {
+    {
+        // Show accounts with top 20 balances
+        const { result } = await client.net.query_collection({
+            collection: "accounts",
+            order: [{ path: "balance", direction: "DESC" }],
+            limit: 20,
+            result: "id balance",
+        });
+        console.log("Accounts with top 20 balances");
+        for (const elem of result) {
+            console.log(`${elem.id}\t${elem.balance}`);
         }
     }
-    await client.processing.process_message(params);
-}
 
-(async () => {
-    try {
-        // Link the platform-dependable ever-sdk binary with the target Application in Typescript
-        // This is a Node.js project, so we link the application with `libNode` binary 
-        // from `@eversdk/lib-node` package
-        // If you want to use this code on other platforms, such as Web or React-Native,
-        // use  `@eversdk/lib-web` and `@eversdk/lib-react-native` packages accordingly
-        // (see README in  https://github.com/tonlabs/ever-sdk-js )
-        TonClient.useBinaryLibrary(libNode);
-        client = new TonClient({
-            network: {
-                // Local node URL.
-                server_address: "http://localhost"
-            }
+    {
+        // Show last 10 blocks with transaction count > 50
+        console.log("\nFinding last 10 blocks with transaction count > 50, please wait ...");
+        const { result } = await client.net.query_collection({
+            collection: "blocks",
+            filter: { tr_count: { gt: 50 } },
+            order: [{ path: "gen_utime", direction: "DESC" }],
+            limit: 10,
+            result: "id tr_count",
+        });
+        for (const elem of result) {
+            console.log(`${elem.id}\t${elem.tr_count}`);
+        }
+    }
+    /*  CAN NOT BE FULFILLED, TOO SLOW  
+    {
+        // Show top 10 balance_delta transactions in last 7 days
+        const sevenDaysAgoInSeconds = Math.floor((Date.now() - 7 * 24 * 3600 * 1000) / 1000);
+        console.log(sevenDaysAgoInSeconds);
+        console.log(
+            "Top 10 balance_delta transactions in last 7 days (from %s)",
+            new Date(sevenDaysAgoInSeconds * 1000)
+        );
+        const { result } = await client.net.query_collection({
+            collection: "transactions",
+            filter: { now: { gt: sevenDaysAgoInSeconds } },
+            order: [{ path: "balance_delta", direction: "DESC" }],
+            limit: 10,
+            result: "id balance_delta",
         });
 
-        // Creating two wallets that will be used in the following examples.
-        const wallet1keys = await generateWalletKeys();
-        const wallet1Address = await deployContract(wallet1keys);
+        for (const elem of result) {
+            console.log(`${elem.id}\t${elem.balance_delta}`);
+        }
+    }
+    */
 
-        const wallet2keys = await generateWalletKeys();
-        const wallet2Address = await deployContract(wallet2keys);
+    // Aggregation queries
+    const arbitraryAddress = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13";
+    const arbitraryCodeHash = "e2b60b6b602c10ced7ea8ede4bdf96342c97570a3798066f3fb50a4b2b27a208";
 
-        // Query the GraphQL API version.
-        console.log(">> query without params sample");
-        result = (await client.net.query({ "query": "{info{version}}" })).result;
-        console.log("GraphQL API version is " + result.data.info.version + '\n');
-
-        // In the following we query a collection. We get balance of the first wallet.
-        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
-        console.log(">> query_collection sample");
-        result = (await client.net.query_collection({
-            collection: 'accounts',
-            filter: {
-                id: {
-                    eq: wallet1Address
-                }
-            },
-            result: 'balance'
-        })).result;
-
-        console.log(`Account 1 balance is ${parseInt(result[0].balance)}\n`);
-
-        // You can do multiple queries in a single fetch request with the help of `batch_query`.
-        // In the following query we get balance of both wallets at the same time.
-        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#batch_query
-        console.log(">>batch_query sample");
-        const batchQueryResult = (await client.net.batch_query({
-            "operations": [
-                {
-                    type: 'QueryCollection',
-                    collection: 'accounts',
-                    filter: {
-                        id: {
-                            eq: wallet1Address
-                        }
-                    },
-                    result: 'balance'
-                }, {
-                    type: 'QueryCollection',
-                    collection: 'accounts',
-                    filter: {
-                        id: {
-                            eq: wallet2Address
-                        }
-                    },
-                    result: 'balance'
-                }]
-        })).results;
-        console.log("Balance of wallet 1 is " + batchQueryResult[0][0].balance);
-        console.log("Balance of wallet 2 is " + batchQueryResult[1][0].balance + '\n');
-
-        // If you need to wait till a certain value appears in the networl, you can use the following code.
-        // Here we wait until a transaction from wallet 1 to wallet 2 appears.
-        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#wait_for_collection
-        console.log(">>wait_for_collection sample");
-
-        let waitForCollection = client.net.wait_for_collection({
-            collection: 'messages',
-            filter: {
-                src: {
-                    eq: wallet1Address
-                },
-                dst: {
-                    eq: wallet2Address
-                },
-            },
-            result: 'id',
-            timeout: 600000
-        });
-
-        await sendMoney(wallet1keys, wallet1Address, wallet2Address, 5_000_000_000);
-        result =(await waitForCollection).result;
-        console.log("Got message with ID = " + result.id + '\n');
-
-        // If you need to do an aggregation for a certain collection you can use aggregate_collection
-        // as in the example below. Please note that in a real network the query may take time because
-        // of the amount of data.
-        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#aggregate_collection
-        console.log(">> aggregation_functions example");
-        const aggregationFunctionsResults = result = (await client.net.aggregate_collection({
-            collection: 'accounts',
-
+    {
+        console.log("\nCalculating number of accounts with specified code_hash");
+        const { values } = await client.net.aggregate_collection({
+            collection: "accounts",
+            filter: { code_hash: { eq: arbitraryCodeHash } },
             fields: [
                 {
-                    field: "balance",
-                    fn: "MIN"
+                    field: "id",
+                    fn: "COUNT",
                 },
-                {
-                    field: "balance",
-                    fn: "MAX"
-                }, {
-                    field: "balance",
-                    fn: "AVERAGE"
-                }, {
-                    field: "balance",
-                    fn: "SUM"
-                },
-                {
-                    field: "balance",
-                    fn: "COUNT"
-                }
-            ]
-        })).values;
-        console.log("Minimum account balance: " + aggregationFunctionsResults[0]);
-        console.log("Maximum account balance: " + aggregationFunctionsResults[1]);
-        console.log("Average balance: " + aggregationFunctionsResults[2]);
-        console.log("Total balance of all accounts: " + aggregationFunctionsResults[3]);
-        console.log("Number of accounts: " + aggregationFunctionsResults[4] + '\n');
-
-
-        // To get ID of the last block in a specified account shard for a wallet 1 use the following code.
-        // See https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#find_last_shard_block
-        console.log(">> find_last_shard_block example");
-        const block_id1 = (await client.net.find_last_shard_block({
-            address: wallet1Address
-        })).block_id;
-        console.log(`Last Shard Block ID for address "${wallet1Address}" is "${block_id1}"\n`);
-
-        process.exit(0);
-    } catch (error) {
-        if (error.code === 504) {
-            console.error(`Network is inaccessible. You have to start Evernode SE using \`everdev se start\`.\n If you run SE on another port or ip, replace http://localhost endpoint with http://localhost:port or http://ip:port in index.js file.`);
-        } else {
-            console.error(error);
-        }
+            ],
+        });
+        console.log("Result is:", values[0]);
     }
-})();
+    {
+        console.log(
+            "\nCalculating number of transactions of an account and their total fees, please wait ..."
+        );
+        const { values } = await client.net.aggregate_collection({
+            collection: "transactions",
+            filter: { account_addr: { eq: arbitraryAddress } },
+            fields: [
+                {
+                    field: "id",
+                    fn: "COUNT",
+                },
+                {
+                    field: "total_fees",
+                    fn: "SUM",
+                },
+            ],
+        });
+        console.log("Results are:", values);
+    }
+
+    {
+        console.log("\nCalculating total value withdrawn from an account, please wait ...");
+        const { values } = await client.net.aggregate_collection({
+            collection: "messages",
+            filter: { src: { eq: arbitraryAddress } },
+            fields: [
+                {
+                    field: "value",
+                    fn: "SUM",
+                },
+            ],
+        });
+        console.log("Result is:", values[0]);
+    }
+
+    {
+        console.log("\nCalculating total value received by an account, please wait ...");
+        const { values } = await client.net.aggregate_collection({
+            collection: "messages",
+            filter: { dst: { eq: arbitraryAddress } },
+            fields: [
+                {
+                    field: "value",
+                    fn: "SUM",
+                },
+            ],
+        });
+        console.log("Result is:", values[0]);
+    }
+
+    client.close();
+}
+
+main(client).catch(err => {
+    console.error(err);
+    process.exit(1);
+});

@@ -198,16 +198,23 @@ async function waitForAccountUpdate(address, transLt) {
 
 
 async function getBalance(address) {
-    const { result }  = await client.net.query_collection({
-        collection: "accounts",
-        filter: { id: { eq: address } },
-        result: "balance(format: DEC)",
-    })
+    const query = `
+        query {
+          blockchain {
+            account(
+              address: "${address}"
+            ) {
+               info {
+                balance(format: DEC)
+              }
+            }
+          }
+        }`
+    const {result}  = await client.net.query({query})
 
     // Big numbers are returned as a string in hexadecimal or decimal representation,
     // in this query we choose decimal representation (format: DEC).
-    const balanceAsDecString = result[0].balance
-
+    const balanceAsDecString = result.data.blockchain.account.info.balance
     // The result can be parsed as a number using parseInt() or BigInt() functions
     return parseInt(balanceAsDecString, 10)
 }
