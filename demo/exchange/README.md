@@ -17,7 +17,7 @@ It covers such use-cases as:
 ## How to run the sample?
 
 To run this sample you need to have a multisig wallet with positive balance,
-already deployed to the [Developer Network](https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks). Specify its private key and address at the launch.
+already deployed to the [Developer Network](https://docs.everos.dev/ever-platform/reference/graphql-api/networks). Specify its private key and address at the launch.
 It will be used to pay for deploy operation. 
 
 If you already have Surf with tokens installed, you can use it. 
@@ -47,7 +47,7 @@ See example on how to deploy it here https://github.com/tonlabs/sdk-samples/tree
 **To migrate from Developer Network to Everscale you need to update the endpoints specified in TonClient configuration
 to Everscale endpoints.**
 
-See the list of supported networks and endpoints here https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks
+See the list of supported networks and endpoints here https://docs.everos.dev/ever-platform/reference/graphql-api
 
 ## Install packages & run:
 

@@ -7,7 +7,7 @@ const giverKeyPairFile = path.join(__dirname, giverKeyPairFileName);
 let client;
 
 const multisigContractPackage = {
-    // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
+    // https://github.com/tonlabs/ton-labs-abi/blob/master/docs/ABI_2.0_spec.md
     abi: require('./contracts/SafeMultisigWallet.abi.json'),
     // Compiled smart contract file.
     tvcInBase64: fs.readFileSync('./contracts/SafeMultisigWallet.tvc').toString('base64'),

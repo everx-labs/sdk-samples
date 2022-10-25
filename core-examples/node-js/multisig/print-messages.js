@@ -36,7 +36,7 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
                     // Multisig owners public key.
                     // We are going to use a single key.
                     // You can use any number of keys and custodians.
-                    // See https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli/t/242ea8
+                    // See https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#35-deploy-wallet-set-custodians
                     owners: [`0x${signer.keys.public}`],
                     // Number of custodians to require for confirm transaction.
                     // We use 0 for simplicity. Consider using 2+ for sufficient security.
@@ -49,7 +49,7 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
 
         // Let's read and print all withdraws from our account.
         // To do this we iterate internal outbound messages with positive value.
-        // See more about GraphQL API documentation here https://docs.everos.dev/ever-sdk/samples/graphql-samples/quick-start#api-documentation
+        // See more about GraphQL API documentation here https://docs.everos.dev/ever-platform/samples/graphql-samples/quick-start#api-documentation
         const filter = {
             src: { eq: address },
             msg_type: { eq: 0 },
