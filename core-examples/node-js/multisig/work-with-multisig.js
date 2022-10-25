@@ -47,7 +47,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
                     // Multisig owners public key.
                     // We are going to use a single key.
                     // You can use any number of keys and custodians.
-                    // See https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli/t/242ea8
+                    // See https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#35-deploy-wallet-set-custodians
                     owners: [`0x${signer.keys.public}`],
                     // Number of custodians to require for confirm transaction.
                     // We use 0 for simplicity. Consider using 2+ for sufficient security.
@@ -59,7 +59,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         console.log(address);
 
         // Let's check if the account is deployed and check its balance
-        // See more about GraphQL API documentation here https://docs.everos.dev/ever-sdk/samples/graphql-samples/quick-start#api-documentation
+        // See more about GraphQL API documentation here https://docs.everos.dev/ever-platform/samples/graphql-samples/quick-start#api-documentation
         /** @type {{ acc_type: number, balance: string, code: string}[]} */
         const {info} = (await client.net.query({
             query: `
@@ -94,7 +94,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
             // Download the latest state (so-called BOC)
             // See more info about query method here
             // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query
-            // See more about BOC here https://docs.ton.dev/86757ecb2/p/45e664-basics-of-free-ton-blockchain/t/11b639
+            // See more about BOC here https://everos.dev/faq/blockchain-basic
             client.net
                 .query({
                     query: `

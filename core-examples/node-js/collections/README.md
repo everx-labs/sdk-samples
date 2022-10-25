@@ -28,7 +28,6 @@ Read more about collections here: https://docs.everos.dev/ever-sdk/reference/eve
 -   Remember its Development Network HTTPS endpoint.
 -   Pass this endpoint as a parameter when running the example.
 
-
 ## Install packages & run:
 
 ```sh

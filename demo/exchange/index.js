@@ -16,7 +16,7 @@
  *
  * To migrate from Developer Network to Everscale you need to update the endpoints specified in TonClient configuration to Everscale endpoints.
  *
- * See the list of supported networks and endpoints here https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks
+ * See the list of supported networks and endpoints here https://docs.everos.dev/ever-platform/reference/graphql-api/networks
  * */
 
 const { libNode } = require("@eversdk/lib-node");

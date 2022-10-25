@@ -14,7 +14,7 @@ const transferAbi = require("./transfer.abi.json");
 const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13";
 
 const multisigContractPackage = {
-    // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
+    // https://github.com/tonlabs/ton-labs-abi/blob/master/docs/ABI_2.0_spec.md
     abi: require('./contracts/SafeMultisigWallet.abi.json'),
     // Compiled smart contract file
     tvcInBase64: fs.readFileSync('./contracts/SafeMultisigWallet.tvc').toString('base64'),

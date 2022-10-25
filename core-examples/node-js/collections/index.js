@@ -1,6 +1,7 @@
 const { TonClient } = require("@eversdk/core");
 const { libNode } = require("@eversdk/lib-node");
 
+
 // Link the platform-dependable ever-sdk binary with the target Application in Typescript
 // This is a Node.js project, so we link the application with `libNode` binary
 // from `@eversdk/lib-node` package

@@ -19,7 +19,7 @@ const inMsg = "9add67505ac1cb530414ad6c3979865475722f25506c364df3a9a5c71c93e5ec"
 const endpoints = [
     "http://localhost"
 ];
-// https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
+// https://github.com/tonlabs/ton-labs-abi/blob/master/docs/ABI_2.0_spec.md
 const msigAbiFileName = 'SafeMultisigWallet.abi.json'
 
 TonClient.useBinaryLibrary(libNode)
