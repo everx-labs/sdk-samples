@@ -22,10 +22,16 @@ Read more about collections here: https://docs.everos.dev/ever-sdk/reference/eve
 * Node.js >= [14.x installed](https://nodejs.org)
 * [Docker](https://docs.docker.com/desktop/#download-and-install)
 
+## Before running the example
+
+-   Create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev) if you don't have one.
+-   Remember its Development Network HTTPS endpoint.
+-   Pass this endpoint as a parameter when running the example.
+
 
 ## Install packages & run:
 
 ```sh
 npm install
-node index.jss
+node index.js <HTTPS_DEVNET_ENDPOINT>
 ```
