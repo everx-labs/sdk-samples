@@ -9,9 +9,10 @@ You will learn how to
   - show top 10 balance_delta transactions in last 7 days
 - perform aggregation query: 
   - number of accounts with specified code_hash
-  - number of transactions of my account
-  - total value withdrawn from my account
-  - total value received to my account
+  - number of transactions of an account
+  - total fee paid by an account
+  - total value withdrawn from an account
+  - total value received to an account
   
 Read more about collections here: https://docs.everos.dev/ever-sdk/reference/ever-os-api/query_language
 
