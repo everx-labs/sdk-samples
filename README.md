@@ -42,7 +42,7 @@ git submodule update
 * [SDK guides](https://docs.everos.dev/ever-sdk/guides/work_with_contracts)
 * [JavaScript API Reference](https://tonlabs.github.io/ever-sdk-js/)
 * [Local Blockchain Evernode SE](https://github.com/tonlabs/evernode-se)
-* [GraphQL API documentation](https://docs.everos.dev/ever-sdk/samples/graphql-samples/quick-start#api-documentation)
+* [GraphQL API documentation](https://docs.everos.dev/ever-platform/samples/graphql-samples/quick-start#api-documentation)
 
 ## Source code
 * [Javascript SDK](http://github.com/tonlabs/ever-sdk-js "JS common library")

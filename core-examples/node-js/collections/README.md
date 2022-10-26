@@ -1,36 +1,36 @@
 # NodeJS SDK Subscription example
 
-In this example we use multisig wallet contract to send tokens from one wallet to another. You will learn how to
-- query GraphQL API version
-- query account balance
-- wait for appearance of a message in blockchain
-- perform aggregation query
-- perform a batched query (multiple queries in one request)
+You will learn how to
+- query accounts with filters and ordering
+  - show accounts with top 20 balances
+- query blocks with filters and ordering:
+  - show last 10 blocks with transaction count > 50
+- query transactions with filters and ordering
+  - show top 10 balance_delta transactions in last 7 days
+- perform aggregation query: 
+  - number of accounts with specified code_hash
+  - number of transactions of an account
+  - total fee paid by an account
+  - total value withdrawn from an account
+  - total value received to an account
+  
+Read more about collections here: https://docs.everos.dev/ever-sdk/reference/ever-os-api/query_language
 
-In the example we use [Evernode SE](https://docs.everos.dev/evernode-platform/products/simple-emulator-se), local blockchain.
 
 ## Prerequisite
 
 * Node.js >= [14.x installed](https://nodejs.org)
 * [Docker](https://docs.docker.com/desktop/#download-and-install)
-* [EverDev CLI](https://docs.everos.dev/everdev/)
 
+## Before running the example
 
-## Preparation
-
-* [Run Evernode SE on your computer](https://docs.everos.dev/evernode-platform/products/simple-emulator-se)
-
-```sh
-everdev se start
-```
-
-You're all set! Check out the Evernode SE GraphQL web playground at http://0.0.0.0/graphql. For Windows, use http://127.0.0.1/graphql or http://localhost/graphql. Learn more about GraphQL API here.
-
-See other available [Evernode SE management options in EverDev](https://docs.everos.dev/everdev/command-line-interface/evernode-platform-startup-edition-se).
+-   Create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev) if you don't have one.
+-   Remember its Development Network HTTPS endpoint.
+-   Pass this endpoint as a parameter when running the example.
 
 ## Install packages & run:
 
 ```sh
 npm install
-node index.jss
+node index.js <HTTPS_DEVNET_ENDPOINT>
 ```

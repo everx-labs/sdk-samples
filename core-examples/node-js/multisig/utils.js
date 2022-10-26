@@ -6,7 +6,7 @@ const fs = require("fs");
 function loadContract(name) {
     const contractPath = path.resolve(__dirname, "contracts", name);
     return {
-        // https://docs.ton.dev/86757ecb2/p/40ba94-abi-specification-v2
+        // https://github.com/tonlabs/ton-labs-abi/blob/master/docs/ABI_2.0_spec.md
         abi: {
             type: "Contract",
             value: require(`${contractPath}.abi.json`),

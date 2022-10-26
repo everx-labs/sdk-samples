@@ -89,37 +89,48 @@ async function getTimestamp(client, address, abi) {
     // 1. Download the latest Account State (BOC)
     // 2. Encode message
     // 3. Execute the message locally on the downloaded state
-
     const [account, message] = await Promise.all([
         // Download the latest state (BOC)
         // See more info about query method here
-        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
-        client.net.query_collection({
-            collection: 'accounts',
-            filter: { id: { eq: address } },
-            result: 'boc'
-        })
-            .then(({ result }) => result[0].boc)
+        // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query
+        client.net
+            .query({
+                query: `
+                query {
+                  blockchain {
+                    account(
+                      address: "${address}"
+                    ) {
+                       info {
+                        boc
+                      }
+                    }
+                  }
+                }`,
+            })
+            .then(({ result }) => result.data.blockchain.account.info.boc)
             .catch(() => {
                 throw Error(`Failed to fetch account data`)
             }),
         // Encode the message with `getTimestamp` call
-        client.abi.encode_message({
-            abi,
-            address,
-            call_set: {
-                function_name: 'getTimestamp',
-                input: {}
-            },
-            signer: { type: 'None' }
-        }).then(({ message }) => message)
-    ]);
+        client.abi
+            .encode_message({
+                abi,
+                address,
+                call_set: {
+                    function_name: 'getTimestamp',
+                    input: {},
+                },
+                signer: { type: 'None' },
+            })
+            .then(({ message }) => message),
+    ])
+
 
     // Execute `getTimestamp` get method  (execute the message locally on TVM)
     // See more info about run_tvm method here
     // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
     response = await client.tvm.run_tvm({ message, account, abi });
-
     return response.decoded.output.value0;
 }
 

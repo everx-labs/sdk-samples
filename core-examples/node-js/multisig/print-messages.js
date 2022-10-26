@@ -14,7 +14,7 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
 
 (async () => {
     try {
-        const tonClient = new TonClient({
+        const client = new TonClient({
             network: {
                 endpoints: [ HTTPS_DEVNET_ENDPOINT ],
             },
@@ -24,7 +24,7 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
 
         // Here we create deployMessage simply to get account address and check its balance
         // if you know your wallet address, you do not need this step.
-        const { address } = await tonClient.abi.encode_message({
+        const { address } = await client.abi.encode_message({
             abi: SafeMultisigContract.abi,
             deploy_set: {
                 tvc: SafeMultisigContract.tvc,
@@ -36,7 +36,7 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
                     // Multisig owners public key.
                     // We are going to use a single key.
                     // You can use any number of keys and custodians.
-                    // See https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli/t/242ea8
+                    // See https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#35-deploy-wallet-set-custodians
                     owners: [`0x${signer.keys.public}`],
                     // Number of custodians to require for confirm transaction.
                     // We use 0 for simplicity. Consider using 2+ for sufficient security.
@@ -49,51 +49,39 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
 
         // Let's read and print all withdraws from our account.
         // To do this we iterate internal outbound messages with positive value.
-        // See more about GraphQL API documentation here https://docs.everos.dev/ever-sdk/samples/graphql-samples/quick-start#api-documentation
-        const filter = {
-            src: { eq: address },
-            msg_type: { eq: 0 },
-        };
-        let count = 0;
-        while (true) {
-            /** @type {{
-             *      id: string,
-             *      dst: string,
-             *      value: string,
-             *      created_at: number,
-             *      created_lt: number,
-             * }[]}
-             * */
-            const messages = (await tonClient.net.query_collection({
-                collection: "messages",
-                filter,
-                order: [
-                    { path: "created_at", direction: "ASC" },
-                    { path: "created_lt", direction: "ASC" },
-                ],
-                result: "id dst value(format:DEC) created_at created_lt",
-                limit: 50,
-            })).result;
+        // See more about GraphQL API documentation here https://docs.everos.dev/ever-platform/samples/graphql-samples/quick-start#api-documentation
 
-            if (messages.length === 0) {
-                break;
-            }
 
-            for (const message of messages) {
-                const at = new Date(message.created_at * 1000).toUTCString();
-                console.log(`Withdraw ${message.value} to ${message.dst} at ${at} (message id: ${message.id.substr(0, 4)})`);
+        const query = `query {
+          blockchain {
+            account(
+              address: "${address}"
+            ) {
+              messages(msg_type: IntOut, allow_latest_inconsistent_data: true) {
+                edges {
+                  node {
+                    dst
+                    value(format: DEC)
+                    created_at
+                  }
+                }
+              }
             }
-            count += messages.length;
-            const last = messages[messages.length - 1];
-            filter.created_at = { gt: last.created_at };
-            filter.OR = {
-                src: { eq: address },
-                msg_type: { eq: 0 },
-                created_at: { eq: last.created_at },
-                created_lt: { gt: last.created_lt },
-            };
+          }
+        }`
+
+        const {result}= await client.net.query({query})
+        const messages = result.data.blockchain.account.messages.edges
+        if (messages.length === 0) {
+            console.log(`Account ${address} does not have internal outbound messages`)
+            process.exit(1);
         }
-        console.log(`Total messages: ${count}`);
+
+        for (const {node: message} of messages) {
+            const at = new Date(message.created_at * 1000).toUTCString();
+            console.log(`Withdraw ${message.value} to ${message.dst} at ${at}`);
+        }
+        console.log(`Total messages: ${messages.length}`);
         process.exit(0);
     } catch (error) {
         console.error(error);

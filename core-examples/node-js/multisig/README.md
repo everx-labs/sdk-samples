@@ -15,7 +15,7 @@
 
 In this example we use [ever-sdk-js](https://github.com/tonlabs/ever-sdk-js) to deploy a [multisig contract](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/) into the [Developer Network](https://net.ton.live/) and work with it.
 
-You can update the scripts to [work with other networks](https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks), for example, with Everscale.
+You can update the scripts to [work with other networks](https://docs.everos.dev/ever-platform/reference/graphql-api/networks), for example, with Everscale.
 
 We will perform these steps:
 

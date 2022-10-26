@@ -24,7 +24,7 @@ change Evernode SE address in index.js line 9.
 
 ```sh
 npm install
-npm run web
+npm start
 ```
 
 Then open in browser address: http://localhost:4000

@@ -64,7 +64,7 @@ async function main(client) {
                 // Multisig owners public key.
                 // We are going to use a single key.
                 // You can use any number of keys and custodians.
-                // See https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli/t/242ea8
+                // See https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#35-deploy-wallet-set-custodians
                 owners: [`0x${multisigKeys.public}`, `0x${multisigKeys1.public}`],
                 // Number of custodians to require for confirm transaction.
                 // We use 0 for simplicity. Consider using 2+ for sufficient security.
@@ -126,7 +126,7 @@ async function main(client) {
         address,
         call_set: {
             function_name: 'submitTransaction',
-            input: { // read about multisig parameters here https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli/t/4829ad
+            input: { // read about multisig parameters here https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#46-create-transaction-online
                 dest: giverAddress,
                 value: 100_000_000,
                 bounce: false,

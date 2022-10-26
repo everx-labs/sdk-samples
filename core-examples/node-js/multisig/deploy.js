@@ -25,9 +25,11 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 (async () => {
     try {
         //Read more about NetworkConfig https://docs.everos.dev/ever-sdk/guides/installation/configure_sdk
-        const tonClient = new TonClient({
+        const client = new TonClient({
             network: {
                 endpoints: [ HTTPS_DEVNET_ENDPOINT ],
+                // Do not retry message sending in case of network issues
+                message_retries_count:0
             },
         });
 
@@ -35,7 +37,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
 
         // We create a deploy message to calculate the future address of the contract
         // and to send it with 'sendMessage' later - if we use Pattern 1 for deploy (see below)
-        const { address } = await tonClient.abi.encode_message({
+        const { address } = await client.abi.encode_message({
             abi: SafeMultisigContract.abi,
             deploy_set: {
                 tvc: SafeMultisigContract.tvc,
@@ -47,47 +49,56 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
                     // Multisig owners public key.
                     // We are going to use a single key.
                     // You can use any number of keys and custodians.
-                    // See https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli/t/242ea8
+                    // See https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#35-deploy-wallet-set-custodians
                     owners: [`0x${signer.keys.public}`],
                     // Number of custodians to require for confirm transaction.
                     // We use 0 for simplicity. Consider using 2+ for sufficient security.
                     reqConfirms: 0,
                 },
             },
-            signer,
-            processing_try_index: 1,
+            signer
         });
 
         // Query account type, balance and code to analyse if it is possible to deploy the contract
-        // See more info about query method here https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query_collection
+        // See more info about query method here https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query
         /** @type {{ acc_type: number, balance: string, code: string}[]} */
-        const result = (await tonClient.net.query_collection({
-            collection: "accounts",
-            filter: {
-                id: {
-                    eq: address,
-                },
-            },
-            result: "acc_type balance code",
-        })).result;
-        if (result.length === 0) {
+
+
+        const {info} = (await client.net.query({
+            query: `
+                query {
+                  blockchain {
+                    account(
+                        address: "${address}"
+                    ) {
+                       info {
+                        acc_type balance code
+                      }
+                    }
+                  }
+                }`
+        })).result.data.blockchain.account;
+
+        if (!info) {
             console.log(`You need to transfer at least 0.5 tokens for deploy to ${address} to DevNet.`);
             process.exit(1);
         }
 
-        if (result[0].acc_type === ACCOUNT_TYPE_ACTIVE) {
+        if (info.acc_type === ACCOUNT_TYPE_ACTIVE) {
             console.log(`Contract ${address} is already deployed`);
             process.exit(1);
         }
 
         // Balance is stored as HEX so we need to convert it.
-        if (result[0].acc_type === ACCOUNT_TYPE_UNINITIALIZED && BigInt(result[0].balance) <= BigInt(
+        if (info.acc_type === ACCOUNT_TYPE_UNINITIALIZED && BigInt(info.balance) <= BigInt(
             CONTRACT_REQUIRED_DEPLOY_TOKENS)) {
             console.log(`Balance of ${address} is too low for deploy to DevNet`);
             process.exit(1);
         }
 
-        const response = await tonClient.processing.process_message({
+        console.log("Everything is okay, deploying...")
+
+        const response = await client.processing.process_message({
             send_events: false,
             message_encode_params: {
                 abi: SafeMultisigContract.abi,
@@ -101,7 +112,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
                         // Multisig owners public key.
                         // We are going to use a single key.
                         // You can use any number of keys and custodians.
-                        // See https://docs.ton.dev/86757ecb2/p/94921e-multisignature-wallet-management-in-tonos-cli/t/242ea8
+                        // See https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#35-deploy-wallet-set-custodians
                         owners: [`0x${signer.keys.public}`],
                         // Number of custodians to require for confirm transaction.
                         // We use 0 for simplicity. Consider using 2+ for sufficient security.
