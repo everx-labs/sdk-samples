@@ -38,34 +38,41 @@ async function main(client) {
             console.log(`${elem.id}\t${elem.balance}`);
         }
     }
+    
+    const oneDayAgoInSeconds = Math.floor((Date.now() - 24 * 3600 * 1000) / 1000);
 
     {
-        // Show last 10 blocks with transaction count > 50
-        console.log("\nFinding last 10 blocks with transaction count > 50, please wait ...");
-        const { result } = await client.net.query_collection({
-            collection: "blocks",
-            filter: { tr_count: { gt: 50 } },
-            order: [{ path: "gen_utime", direction: "DESC" }],
-            limit: 10,
-            result: "id tr_count",
-        });
-        for (const elem of result) {
-            console.log(`${elem.id}\t${elem.tr_count}`);
-        }
-    }
-    /*  CAN NOT BE FULFILLED, TOO SLOW  
-    {
-        // Show top 10 balance_delta transactions in last 7 days
-        const sevenDaysAgoInSeconds = Math.floor((Date.now() - 7 * 24 * 3600 * 1000) / 1000);
-        console.log(sevenDaysAgoInSeconds);
         console.log(
-            "Top 10 balance_delta transactions in last 7 days (from %s)",
-            new Date(sevenDaysAgoInSeconds * 1000)
+            "Show the number of the generated blocks for the last 24 hours (from %s)",
+            new Date(oneDayAgoInSeconds * 1000)
+        );
+        // Show the number of the generated blocks for the last 24 hours
+        const { values } = await client.net.aggregate_collection({
+            collection: "blocks",
+            filter: { gen_utime: { gt: oneDayAgoInSeconds } },
+            fields: [
+                {
+                    field: "id",
+                    fn: "COUNT",
+                }
+            ],
+        });
+        console.log("Result is:", values[0]);
+    }
+    {
+        // Show top 10 balance_delta transactions over the last 24 hours
+
+        console.log(
+            "Top 10 balance_delta transactions over the last 24 hours (from %s)",
+            new Date(oneDayAgoInSeconds * 1000)
         );
         const { result } = await client.net.query_collection({
             collection: "transactions",
-            filter: { now: { gt: sevenDaysAgoInSeconds } },
-            order: [{ path: "balance_delta", direction: "DESC" }],
+            filter: { now: { gt: oneDayAgoInSeconds } },
+            order: [
+                { path: "balance_delta", direction: "DESC" },
+                { path: "now", direction: "ASC" }
+            ],
             limit: 10,
             result: "id balance_delta",
         });
@@ -74,7 +81,7 @@ async function main(client) {
             console.log(`${elem.id}\t${elem.balance_delta}`);
         }
     }
-    */
+    
 
     // Aggregation queries
     const arbitraryAddress = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13";
@@ -96,7 +103,7 @@ async function main(client) {
     }
     {
         console.log(
-            "\nCalculating number of transactions of an account and their total fees, please wait ..."
+            "\nCalculating number of transactions of an account, please wait ..."
         );
         const { values } = await client.net.aggregate_collection({
             collection: "transactions",
@@ -105,14 +112,10 @@ async function main(client) {
                 {
                     field: "id",
                     fn: "COUNT",
-                },
-                {
-                    field: "total_fees",
-                    fn: "SUM",
-                },
+                }
             ],
         });
-        console.log("Results are:", values);
+        console.log("Result is:", values[0]);
     }
 
     {
