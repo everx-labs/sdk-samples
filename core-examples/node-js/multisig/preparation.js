@@ -20,17 +20,17 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
 
 (async () => {
     try {
-        const tonClient = new TonClient({
+        const client = new TonClient({
             network: {
                 endpoints: [ HTTPS_DEVNET_ENDPOINT ],
             },
         });
 
-        const signer = await prepareSignerWithRandomKeys(tonClient);
+        const signer = await prepareSignerWithRandomKeys(client);
 
         // Generate future address of the contract. It is unique and the same per key pair and contract to be deployed.
         // Encode deploy message
-        const { address } = await tonClient.abi.encode_message({
+        const { address } = await client.abi.encode_message({
             abi: SafeMultisigContract.abi,
             deploy_set: {
                 tvc: SafeMultisigContract.tvc,
@@ -53,7 +53,18 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
             processing_try_index: 1,
         });
         console.log("Your keys have been saved in the file './keyPair.json' and will be used later to work with your multisig wallet.");
-        console.log(`Here is the future address of your contract ${address}, please top-up this account`);
+        console.log(`Here is the future address of your contract, please top-up this account:`);
+        console.log(`Raw address: ${address}`);
+        convertedAddress = (await client.utils.convert_address({
+            address,
+            output_format: {
+                type: "Base64",
+                url: false,
+                test: false,
+                bounce: false,
+            },
+        })).address;
+        console.log(`Address in non-bounce Base64: ${convertedAddress}`);
         process.exit(0);
     } catch (error) {
         console.error(error);

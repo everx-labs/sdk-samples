@@ -28,6 +28,8 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
         const client = new TonClient({
             network: {
                 endpoints: [ HTTPS_DEVNET_ENDPOINT ],
+                // Do not retry message sending in case of network issues
+                message_retries_count:0
             },
         });
 
@@ -54,8 +56,7 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
                     reqConfirms: 0,
                 },
             },
-            signer,
-            processing_try_index: 1,
+            signer
         });
 
         // Query account type, balance and code to analyse if it is possible to deploy the contract
@@ -94,6 +95,8 @@ const CONTRACT_REQUIRED_DEPLOY_TOKENS = 500_000_000;
             console.log(`Balance of ${address} is too low for deploy to DevNet`);
             process.exit(1);
         }
+
+        console.log("Everything is okay, deploying...")
 
         const response = await client.processing.process_message({
             send_events: false,
