@@ -41,19 +41,6 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
                 tvc: SafeMultisigContract.tvc,
                 initial_data: {},
             },
-            call_set: {
-                function_name: "constructor",
-                input: {
-                    // Multisig owners public key.
-                    // We are going to use a single key.
-                    // You can use any number of keys and custodians.
-                    // See https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#35-deploy-wallet-set-custodians
-                    owners: [`0x${signer.keys.public}`],
-                    // Number of custodians to require for confirm transaction.
-                    // We use 0 for simplicity. Consider using 2+ for sufficient security.
-                    reqConfirms: 0,
-                },
-            },
             signer,
         });
         console.log(address);
@@ -158,7 +145,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         };
 
         // Create run message
-        console.log("Call `submitTransaction` function");
+        console.log("Making a transfer (call `submitTransaction`)...");
         const params = {
             send_events: false,
             message_encode_params: {
@@ -174,58 +161,8 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         // Call `submitTransaction` function
         const sentTransactionInfo = await client.processing.process_message(params);
 
-        console.log(sentTransactionInfo);
         console.log("Transaction info:");
-
-        console.log("Id:");
-        console.log(sentTransactionInfo.transaction.id);
-
-        console.log("Account address:");
-        console.log(sentTransactionInfo.transaction.account_addr);
-
-        console.log("Logical time:");
-        console.log(sentTransactionInfo.transaction.lt);
-
-        console.log("Transaction inbound message ID:");
-        console.log(sentTransactionInfo.transaction.in_msg);
-
-        console.log("Transaction outbound message IDs:");
-        console.log(sentTransactionInfo.transaction.out_msgs);
-
-        // Convert address to different types
-        console.log("Multisig address in HEX:");
-        let convertedAddress = (await client.utils.convert_address({
-            address,
-            output_format: {
-                type: "Hex",
-            },
-        })).address;
-        console.log(convertedAddress);
-
-        console.log("Multisig non-bounce address in Base64:");
-        convertedAddress = (await client.utils.convert_address({
-            address,
-            output_format: {
-                type: "Base64",
-                url: false,
-                test: false,
-                bounce: false,
-            },
-        })).address;
-        console.log(convertedAddress);
-
-        console.log("Multisig bounce address in Base64:");
-        convertedAddress = (await client.utils.convert_address({
-            address,
-            output_format: {
-                type: "Base64",
-                url: false,
-                test: false,
-                bounce: true,
-            },
-        })).address;
-        console.log(convertedAddress);
-
+        console.log(sentTransactionInfo);
 
         process.exit(0);
     } catch (error) {
