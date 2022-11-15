@@ -35,29 +35,27 @@ async function main(client) {
     await helloAcc.deploy({ useGiver: true });
     console.log(`Hello contract was deployed at address: ${address}`);
 
-    // Call `touch` function
+    // Call `touch` function on-chain
+    // On-chain execution can be done with `run` function. 
     let response = await helloAcc.run("touch", {});
-    console.log(`Contract run transaction with output ${response.decoded.output}, ${response.transaction.id}`);
+    console.log(`touch execution transaction is  ${response.transaction.id}`);
 
     // Read local variable `timestamp` with a get method `getTimestamp`
     // This can be done with `runLocal` function. The execution of runLocal is performed off-chain and does not 
     // cost any gas.
     response = await helloAcc.runLocal("getTimestamp", {});
-    console.log("Contract reacted to your getTimestamp:", response.decoded.output)
+    console.log("getTimestamp value:", response.decoded.output)
 
     // Send some money to the random address
     const randomAddress = 
         "0:" + 
-        Buffer.from(
-            (await client.crypto.generate_random_bytes({length: 32})).bytes,
-            "base64"
-        ).toString("hex");
+        Buffer.from((await client.crypto.generate_random_bytes({length: 32})).bytes, "base64").toString("hex");
     response = await helloAcc.run("sendValue", {
         dest: randomAddress,
         amount: 100_000_000, // 0.1 token
-        bounce: true,
+        bounce: true, // delivery will fail and money will be returned back because the random account does not exist.
     });
-    console.log("Contract reacted to your sendValue, target address will recieve:", response.fees.total_output);
+    console.log(`The tokens were sent, but soon they will come back because bounce = true and destination address does not exist`);
 }
 
 (async () => {
