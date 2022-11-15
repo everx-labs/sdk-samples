@@ -43,22 +43,28 @@ const client = new TonClient({
 
         await deployWallet(walletKeys);
 
-        // Get account balance. 
-        const walletBalance = await getBalance(walletAddress);
-        console.log("Hello wallet balance is", walletBalance)
+        // Get wallet's account info and print balance
+        const accountState = await getAccount(walletAddress);
+        console.log("Hello wallet balance is", accountState.balance)
 
+        // Run account's get method `getTimestamp`
+        let walletTimestamp = await runGetMethod('getTimestamp', walletAddress, accountState.boc );
+        console.log("`timestamp` value is", walletTimestamp)
+
+        // Perform 2 seconds sleep, so that we receive an updated timestamp
+        await new Promise(r => setTimeout(r, 2000));
         // Execute `touch` method for newly deployed Hello wallet contract
         // Remember the logical time of the generated transaction
-        let transLt = await touchWallet(walletAddress);
+        let transLt = await runOnChain(walletAddress, "touch");
 
-        // You can run contract's get methods locally
-        await executeGetTimeLocally(walletAddress, transLt);
+        // Run contract's get method locally after account is updated
+        walletTimestamp = await runGetMethodAfterLt('getTimestamp', walletAddress, transLt);
+        console.log("Updated `timestamp` value is", walletTimestamp)
 
         // Send some tokens from Hello wallet to a random account
         // Remember the logical time of the generated transaction
         const destAddress = await genRandomAddress();
         transLt = await sendValue(walletAddress, destAddress, 100_000_000, walletKeys);
-        await waitForAccountUpdate(destAddress, transLt);
 
         console.log('Normal exit');
         process.exit(0);
@@ -149,8 +155,8 @@ async function deployWallet(walletKeys) {
     console.log('Success. Contract was deployed\n');
 }
 
-async function touchWallet(address) {
-    // Encode the message with `touch` function call
+async function runOnChain(address, methodName) {
+    // Encode the message with external call
     const params = {
         send_events: false,
         message_encode_params: {
@@ -160,13 +166,13 @@ async function touchWallet(address) {
                 value: HelloWallet.abi,
             },
             call_set: {
-                function_name: 'touch',
+                function_name: methodName,
                 input: {},
             },
             signer: signerNone(),
         },
     };
-    console.log('Calling `touch` function');
+    console.log(`Calling ${methodName} function`);
     const response = await client.processing.process_message(params);
     const { id, lt } = response.transaction;
     console.log('Success. TransactionId is: %s\n', id);
@@ -197,7 +203,10 @@ async function waitForAccountUpdate(address, transLt) {
 }
 
 
-async function getBalance(address) {
+async function getAccount(address) {
+
+    // `boc` or bag of cells - native blockchain data layout. Account's boc contains full account state (code and data) that
+    // we will  need to execute get methods.
     const query = `
         query {
           blockchain {
@@ -206,30 +215,21 @@ async function getBalance(address) {
             ) {
                info {
                 balance(format: DEC)
+                boc
               }
             }
           }
         }`
     const {result}  = await client.net.query({query})
-
-    // Big numbers are returned as a string in hexadecimal or decimal representation,
-    // in this query we choose decimal representation (format: DEC).
-    const balanceAsDecString = result.data.blockchain.account.info.balance
-    // The result can be parsed as a number using parseInt() or BigInt() functions
-    return parseInt(balanceAsDecString, 10)
+    const info = result.data.blockchain.account.info
+    return info
 }
-
-async function executeGetTimeLocally(address, transLt) {
+async function runGetMethod(methodName, address, accountState) {
     // Execute the get method `getTimestamp` on the latest account's state
     // This can be managed in 3 steps:
     // 1. Download the latest Account State (BOC) 
     // 2. Encode message
     // 3. Execute the message locally on the downloaded state
-
-    // Download the latest state (BOC)
-    // See more info about wait_for_collection method here:
-    // https://docs.everos.dev/ever-sdk/reference/types-and-methods/mod_net#wait_for_collection
-    const account = await waitForAccountUpdate(address, transLt).then(({ result }) => result.boc);
 
     // Encode the message with `getTimestamp` call
     const { message } = await client.abi.encode_message({
@@ -242,7 +242,7 @@ async function executeGetTimeLocally(address, transLt) {
         },
         address,
         call_set: {
-            function_name: 'getTimestamp',
+            function_name: methodName,
             input: {},
         },
         signer: { type: 'None' },
@@ -251,16 +251,25 @@ async function executeGetTimeLocally(address, transLt) {
     // Execute `getTimestamp` get method  (execute the message locally on TVM)
     // See more info about run_tvm method here:
     // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
-    console.log('Run `getTimestamp` function locally');
+    console.log('Run `getTimestamp` get method');
     const response = await client.tvm.run_tvm({
         message,
-        account,
+        account: accountState,
         abi: {
             type: 'Contract',
             value: HelloWallet.abi,
         },
     });
-    console.log('Success. Output is: %o\n', response.decoded.output);
+    return response.decoded.output
+}
+
+
+async function runGetMethodAfterLt(methodName, address, transLt) {
+    // Wait for the account state to be more or equal the spesified logical time
+    const accountState = await waitForAccountUpdate(address, transLt).then(({ result }) => result.boc);
+    const result = await runGetMethod(methodName, address, accountState);
+    return result;
+    
 }
 
 async function sendValue(address, dest, amount, keys) {
