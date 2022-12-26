@@ -17,7 +17,7 @@ const GIVER_KEYS = readKeysFromFile('GiverV2.keys.json');
  const ENDPOINTS = ['http://localhost'];
  const GIVER_ADDRESS = '0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5';
 
- const walletAddress = "0:52cfb9b4cabf147aa28853d443e2d8aa76bb5eea5cf47042595c7112a447b827";
+ const walletAddress = "0:c23c5f9aff717783989e70359d7e93f925795a891478029d90e060ab0f9c0665";
 
  // Link the platform-dependable ever-sdk binary with the target Application in Typescript
 // This is a Node.js project, so we link the application with `libNode` binary

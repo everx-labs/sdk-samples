@@ -1,0 +1,23 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "module": "CommonJS",
+        "target": "ES2020",
+        "lib": [
+            "ES2020",
+            "ESNEXT"
+        ],
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "sourceMap": true,
+        "outDir": "./dist",
+        "baseUrl": "./src",
+        "incremental": true
+    },
+    "include": ["./**/*.ts"],
+    "exclude": ["node_modules", "dist", "dep"]
+}
