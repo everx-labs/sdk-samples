@@ -1,8 +1,0 @@
-docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 \
-     -v /Users/ekaterinapantaz/Github/sdk-samples/core-examples/node-js/func/log_cfg.yml:/ton-node/log_cfg.yml \
-     tonlabs/local-node
-
-
-docker exec local-node cat /ton-node/log/tvm.log > ~/tvm.log
-
-
