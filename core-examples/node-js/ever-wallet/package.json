@@ -1,0 +1,20 @@
+{
+    "name": "ever-wallet",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@eversdk/appkit": "^0",
+        "@eversdk/core": "^1",
+        "@eversdk/lib-node": "^1"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.31"
+    }
+}
