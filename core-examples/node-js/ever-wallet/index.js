@@ -80,7 +80,7 @@ const client = new TonClient({
         await getTokensFromGiver(walletAddress, 1_000_000_000);
 
         // Deploy wallet
-        await makeFirstTransferWithDeploy(WALLET_KEYS);
+        await makeFirstTransferWithDeploy(stateInit);
 
         // Get wallet's account info and print balance
         const accountState = await getAccount(walletAddress);
@@ -151,11 +151,20 @@ async function getTokensFromGiver(dest, value) {
     console.log('Success. Tokens were transfered\n');
 }
 
-async function makeFirstTransferWithDeploy(stateInit, walletKeys) {
-    // Deploy `Hello wallet` contract
-    // See more info about `process_message` here:
-    // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#process_message
+async function makeFirstTransferWithDeploy(stateInit) {
+    // Make the first transfer with deploy
     console.log('Deploy and make the first transfer');
+
+    const msgBody = await client.abi.encode_message_body({
+        //
+    });
+    const extMsgWithDeployAndTransfer = await client.boc.encode_external_in_message({
+        //...
+    });
+
+    const sendResult = await client.processing.send_message(extMsgWithDeployAndTransfer);
+    await client.processing.wait_for_transaction(extMsgWithDeployAndTransfer, sendResult);
+    
     const FirstTransferParams = {
         abi: {
             type: 'Contract',
@@ -169,40 +178,20 @@ async function makeFirstTransferWithDeploy(stateInit, walletKeys) {
             input: {
                 dest: `0:ece57bcc6c530283becbbd8a3b24d3c5987cdddc3c8b7b33be6e4a6312490415`,
                 value: `1000000000`,
-                bounce: 
+                bounce: false,
+                flags: 3,
+                payload:''
             },
         },
         signer: {
             type: 'Keys',
-            keys,
+            keys: WALLET_KEYS,
         },
     };
 
-
-    "inputs": [
-        {
-          "name": "dest",
-          "type": "address"
-        },
-        {
-          "name": "value",
-          "type": "uint128"
-        },
-        {
-          "name": "bounce",
-          "type": "bool"
-        },
-        {
-          "name": "flags",
-          "type": "uint8"
-        },
-        {
-          "name": "payload",
-          "type": "cell"
-        }
     await client.processing.process_message({
         send_events: false,
-        message_encode_params: buildDeployOptions(walletKeys),
+        message_encode_params: FirstTransferParams,
     });
     console.log('Success. Contract was deployed\n');
 }
