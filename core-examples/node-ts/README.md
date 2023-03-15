@@ -16,7 +16,7 @@ export GQLURL=https://{network}.evercloud.dev/{API_TOKEN}
 ```
 
 We recommend using `devnet` (one of testnets in Everscale) to test the following examples.
-Also you can explore [evercloud palform documentation](https://docs.evercloud.dev/).
+Also you can explore [evercloud docs](https://docs.evercloud.dev/).
 
 ## Run it and test
 
