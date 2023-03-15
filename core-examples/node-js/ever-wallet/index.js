@@ -156,14 +156,14 @@ async function makeFirstTransferWithDeploy(stateInit) {
     console.log('Deploy and make the first transfer');
 
     const msgBody = await client.abi.encode_message_body({
-        //
+        // не забыть задать expire
     });
     const extMsgWithDeployAndTransfer = await client.boc.encode_external_in_message({
         //...
     });
 
     const sendResult = await client.processing.send_message(extMsgWithDeployAndTransfer);
-    await client.processing.wait_for_transaction(extMsgWithDeployAndTransfer, sendResult);
+    await client.processing.wait_for_transaction(WALLET_ABI, extMsgWithDeployAndTransfer, sendResult);
     
     const FirstTransferParams = {
         abi: {
