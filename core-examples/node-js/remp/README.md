@@ -38,5 +38,6 @@ Sending messsage and waiting for REMP events.
 	REMP event type: RempIncludedIntoAcceptedBlock, kind: IncludedIntoAcceptedBlock
 	^^^ this message is highly likely to be processed successfully
 The message has been processed.
+13 REMP events received
 Transaction id: effed4849898e08d1fe5759532d34f23dbec061c5fd666604f817be82732cfb9, status finalized
 ```

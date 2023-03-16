@@ -26,6 +26,8 @@ const client = new TonClient({
     },
 });
 
+let rempEventCnt = 0;
+
 (async () => {
     try {
         console.log('Sending messsage and waiting for REMP events.');
@@ -45,7 +47,11 @@ const client = new TonClient({
         );
 
         console.log(
-            `The message has been processed.\nTransaction id: ${transaction.id}, status ${transaction.status_name}`,
+            [
+                `The message has been processed.`,
+                `${rempEventCnt} REMP events received`,
+                `Transaction id: ${transaction.id}, status ${transaction.status_name}`,
+            ].join('\n'),
         );
         client.close();
     } catch (error) {
@@ -69,6 +75,7 @@ function responseHandler(params, responseType) {
             assert.ok(type, 'Event always has type');
 
             if (type.startsWith('Remp')) {
+                rempEventCnt++;
                 // All REMP event types starts with `Remp`
                 // https://docs.everos.dev/ever-sdk/reference/types-and-methods/mod_processing#processingevent
                 assert.ok(json || error, 'All REMP event has `json` or `error` property');
