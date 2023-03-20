@@ -1,0 +1,10 @@
+[package]
+name = "message-monitor-example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ton_client = { git = 'https://github.com/tonlabs/ever-sdk.git', tag = '1.42.0' }
+tokio = "^1"
+serde_json = "^1"
+clap = { version = "4.1.8", features = ["derive"] }
