@@ -106,6 +106,8 @@ async fn main() {
             "172af540e43a524763dd53b26a066d472a97c4de37d5498170564510608250c3".to_owned(),
         ),
     };
+    // The secret key is actually the concatenation of secret and public keys (128 symbols hex
+    // string) by design of [NaCL](http://nacl.cr.yp.to/sign.html).
     giver_keys.secret.truncate(64);
 
     let mut messages = Vec::with_capacity(args.message_count as usize);
@@ -194,8 +196,6 @@ async fn main() {
             for item in fetch_res.results {
                 fetched_results.push(item);
             }
-
-            sleep(Duration::from_secs(LOOP_SLEEP_IN_SECONDS)).await;
         }
         dbg!(fetched_results);
     }
