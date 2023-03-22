@@ -5,7 +5,7 @@ async fn main() {
     let context = Arc::new(
         ton_client::ClientContext::new(ton_client::ClientConfig {
             network: ton_client::net::NetworkConfig {
-                endpoints: Some(vec!["http://localhost:4000/graphql".to_owned()]),
+                endpoints: Some(vec!["http://localhost/graphql".to_owned()]),
                 ..Default::default()
             },
             ..Default::default()

@@ -11,7 +11,7 @@ use ton_client::{
     crypto::{nacl_sign_keypair_from_secret_key, KeyPair, ParamsOfNaclSignKeyPairFromSecret},
     net::NetworkConfig,
     processing::{
-        fetch_next_monitor_results, get_monitor_info, send_messages, MessageSendingParams, MonitorFetchWait, ParamsOfFetchNextMonitorResults,
+        fetch_next_monitor_results, get_monitor_info, send_messages, MessageSendingParams, MonitorFetchWaitMode, ParamsOfFetchNextMonitorResults,
         ParamsOfGetMonitorInfo, ParamsOfSendMessages,
     },
     ClientConfig, ClientContext,
@@ -70,7 +70,7 @@ async fn main() {
 
     let network = match env::var("TON_NETWORK_ADDRESS") {
         Ok(val) => val,
-        Err(_) => "http://localhost:4000/graphql".to_owned(), // gateway endpoint
+        Err(_) => "http://localhost/graphql".to_owned(),
     };
     let address = match env::var("TON_GIVER_ADDRESS") {
         Ok(val) => val,
@@ -161,7 +161,7 @@ async fn main() {
             context.clone(),
             ParamsOfFetchNextMonitorResults {
                 queue: QUEUE.to_owned(),
-                wait: Some(MonitorFetchWait::All),
+                wait_mode: Some(MonitorFetchWaitMode::All),
                 ..Default::default()
             },
         )
@@ -179,7 +179,7 @@ async fn main() {
                 context.clone(),
                 ParamsOfFetchNextMonitorResults {
                     queue: QUEUE.to_owned(),
-                    wait: Some(MonitorFetchWait::AtLeastOne),
+                    wait_mode: Some(MonitorFetchWaitMode::AtLeastOne),
                     ..Default::default()
                 },
             )
@@ -188,13 +188,12 @@ async fn main() {
 
             dbg!(fetch_res.results.len());
 
-            // If monitor return empty results this indicates that all messages resolved and fetched
-            if fetch_res.results.len() == 0 {
-                break;
-            }
-
             for item in fetch_res.results {
                 fetched_results.push(item);
+            }
+
+            if fetched_results.len() == args.message_count as usize {
+                break;
             }
         }
         dbg!(fetched_results);
@@ -208,7 +207,7 @@ async fn main() {
                 context.clone(),
                 ParamsOfFetchNextMonitorResults {
                     queue: QUEUE.to_owned(),
-                    wait: Some(MonitorFetchWait::NoWait),
+                    wait_mode: Some(MonitorFetchWaitMode::NoWait),
                     ..Default::default()
                 },
             )
