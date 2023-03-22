@@ -19,7 +19,7 @@ node index.js <HTTPS_DEVNET_ENDPOINT>
 ## Expected output
 
 ```
-node index.js https://n01.fld.dapp.tonlabs.io
+node index.js https://devnet.evercloud.dev/your-project-id/graphql
 
 Sending messsage and waiting for REMP events.
 	REMP event type: RempOther, kind: PutIntoQueue
