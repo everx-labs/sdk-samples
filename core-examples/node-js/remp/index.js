@@ -48,7 +48,7 @@ let rempEventCnt = 0;
 
         console.log(
             [
-                `The message has been processed.`,
+                `The message ${transaction.in_msg} has been processed.`,
                 `${rempEventCnt} REMP events received`,
                 `Transaction id: ${transaction.id}, status ${transaction.status_name}`,
             ].join('\n'),
