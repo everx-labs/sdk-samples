@@ -1,0 +1,10 @@
+[package]
+authors = [ 'Alexey Vavilin <mnogoborec@mail.ru>' ]
+edition = '2018'
+name = 'subscribe-collection-example'
+version = '0.1.0'
+
+[dependencies]
+serde_json = '1.0.41'
+tokio = { features = [ 'rt-multi-thread', 'macros', 'sync' ], version = '1' }
+ton_client = { git = 'https://github.com/tonlabs/ever-sdk.git', tag = '1.41.1' }
