@@ -2,13 +2,12 @@
 
 ## Prerequisites
 
-Create a project at https://dashboard.evercloud.dev and specify API endpoint:
-
+Create a project at https://dashboard.evercloud.dev and export the API endpoint as an environment variable:
 ```
 export ENDPOINT=https://devnet.evercloud.dev/<your_project_id>/graphql
 ```
 
-## List of examles
+## List of examples
 1.  [Work with wallet](#1-work-with-wallet)
 2.  [List all transactions in workchain 0](#2-list-all-transactions-in-workchain-0)
 3.  [Subscribe to transactions of several accounts](#3-subscribe-to-transactions-of-several-accounts)
