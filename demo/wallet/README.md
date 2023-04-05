@@ -8,7 +8,12 @@ Create a project at https://dashboard.evercloud.dev and specify API endpoint:
 export ENDPOINT=https://devnet.evercloud.dev/<your_project_id>/graphql
 ```
 
-## Work with wallet
+## List of examles
+1.  [Work with wallet](#1-work-with-wallet)
+2.  [List all transactions in workchain 0](#2-list-all-transactions-in-workchain-0)
+3.  [Subscribe to transactions of several accounts](#3-subscribe-to-transactions-of-several-accounts)
+
+## 1. Work with wallet
 
 This script:
 -   Generates a key pair for the wallet to be deployed.
@@ -45,7 +50,7 @@ Transaction id: transaction/0b7675a425ec02b119d215fde78f28d88351e816b1de41725412
 Transaction id: transaction/5e844dfa6c3d0b580eeb5b8827d32f0b0b0e7ffeeffacdf907cb1f2657990c62
 ```
 
-## List all transactions in workchain 0 
+## 2. List all transactions in workchain 0 
 
 This script paginates all transactions in wc 0 from beginning.
 
@@ -63,7 +68,7 @@ Transaction id: transaction/b391dffce1534b445d86e089a5cf9bece2c5f756870157f41342
 ---%<---
 ```
 
-## Subscribe to transactions of several accounts
+## 3. Subscribe to transactions of several accounts
 
 This script subscribes to transactions of several accounts (hardcoded) and prints \ 
 their properties (id, account_addr, balance_delta)
