@@ -7,12 +7,7 @@ Create a project at https://dashboard.evercloud.dev and export the API endpoint 
 export ENDPOINT=https://devnet.evercloud.dev/<your_project_id>/graphql
 ```
 
-## List of examples
-1.  [Work with wallet](#1-work-with-wallet)
-2.  [List all transactions in workchain 0](#2-list-all-transactions-in-workchain-0)
-3.  [Subscribe to transactions of several accounts](#3-subscribe-to-transactions-of-several-accounts)
-
-## 1. Work with wallet
+## Work with wallet
 
 This script:
 -   Generates a key pair for the wallet to be deployed.
@@ -47,52 +42,4 @@ Transfer completed. Transaction id 5e844dfa6c3d0b580eeb5b8827d32f0b0b0e7ffeeffac
 Transaction id: transaction/ed500bae44b4441e3aa5bb6da1a07339d9d70adbd0c04a603ad16ab19b583727
 Transaction id: transaction/0b7675a425ec02b119d215fde78f28d88351e816b1de4172541277b22d5b7990
 Transaction id: transaction/5e844dfa6c3d0b580eeb5b8827d32f0b0b0e7ffeeffacdf907cb1f2657990c62
-```
-
-## 2. List all transactions in workchain 0 
-
-This script paginates all transactions in wc 0 from beginning.
-
-### Run this script
-
-```
-$ npm run list-tr
-```
-### Example output
-```
-Getting all transactions in workchain 0 from the beginning/
-Most likely this process will never end, so press CTRL+C to interrupt it
-Transaction id: transaction/bb04cdb68f4ef8b3ca9afe93e2eac063bd8fc341d38775a3bbb5fbe6c4eb32ba
-Transaction id: transaction/b391dffce1534b445d86e089a5cf9bece2c5f756870157f413426d47cd5c5663
----%<---
-```
-
-## 3. Subscribe to transactions of several accounts
-
-This script subscribes to transactions of several accounts (hardcoded) and prints \ 
-their properties (id, account_addr, balance_delta)
-
-### Run this script
-```
-npm run subscribe-tr
-```
-### Example output
-```
-Subscribed to transactions of accounts: ["-1:3333333333333333333333333333333333333333333333333333333333333333","0:40e593373fd9c972162812878ea1976ebaffe2bff030c637df2c08826cf1583b"]
-Press CTRL+C to interrupt it
-{
-  transactions: {
-    id: 'ef2e9c850e699e7821d3dd617b350b95843130e0ca524aaab05e205304f0041d',
-    account_addr: '-1:3333333333333333333333333333333333333333333333333333333333333333',
-    balance_delta: '0x0'
-  }
-}
-{
-  transactions: {
-    id: '1c6b023b0fb72a877e3c32ad0f55d5ad321f8c979b22b50c59970e68dd4aaaea',
-    account_addr: '-1:3333333333333333333333333333333333333333333333333333333333333333',
-    balance_delta: '0xafd56d80'
-  }
-}
-----%<-----------------
 ```
