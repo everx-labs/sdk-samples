@@ -3,7 +3,7 @@
         "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
         "eslint": "eslint \"**/*.ts\"",
         "eslint-fix": "eslint \"**/*.ts\" --fix",
-        "wallet": "npx ts-node src/wallet.ts",
+        "msig-wallet": "npx ts-node src/wallet.ts",
         "list-tr": "npx ts-node src/listTransactions.ts",
         "subscribe-tr": "npx ts-node src/subscription.ts"
     },

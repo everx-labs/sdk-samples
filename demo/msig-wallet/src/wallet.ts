@@ -103,7 +103,7 @@ async function main(client: TonClient) {
         },
         send_events: false,
     })
-    console.log('Contract deployed. Transaction id', result.transaction?.id)
+    console.log('Contract deployed. Transaction hash', result.transaction?.id)
     assert.equal(result.transaction?.status, 3)
     assert.equal(result.transaction?.status_name, "finalized")
 
@@ -112,7 +112,7 @@ async function main(client: TonClient) {
     // 
     // We send 0.5 tokens. Value is written in nanotokens
     const amount = 0.5e9
-    const dest = "-1:3333333333333333333333333333333333333333333333333333333333333333"
+    const dest = "-1:7777777777777777777777777777777777777777777777777777777777777777"
 
     console.log('Sending 0.5 token to', dest)
 
@@ -133,7 +133,7 @@ async function main(client: TonClient) {
         },
         send_events: false, // do not send intermidate events
     })
-    console.log('Transfer completed. Transaction id', result.transaction?.id)
+    console.log('Transfer completed. Transaction hash', result.transaction?.id)
     assert.equal(result.transaction?.status, 3)
     assert.equal(result.transaction?.status_name, "finalized")
 
@@ -150,7 +150,7 @@ async function main(client: TonClient) {
                         allow_latest_inconsistent_data: true
                     ) {
                         edges {
-                            node { id }
+                            node { hash }
                         }
                         pageInfo { 
                             endCursor
@@ -179,7 +179,7 @@ async function main(client: TonClient) {
         const transactions = queryResult.result.data.blockchain.account.transactions;
 
         for (const edge of transactions.edges) {
-            console.log("Transaction id:", edge.node.id);
+            console.log("Transaction hash:", edge.node.hash);
         }
         if (transactions.pageInfo.hasNextPage === false) {
             break;

@@ -29,7 +29,7 @@ You can topup your wallet from dashboard at https://dashboard.evercloud.dev
 
 ```
 npm i
-npm run wallet
+npm run msig-wallet
 ```
 ### Example output
 ```
