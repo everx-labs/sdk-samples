@@ -5,7 +5,7 @@ const Events = Object.freeze({
     ERROR: "error",
     SUBSCRIBED: "subscribed",
     UNSUBSCRIBED: "unsubscribed",
-    RECONNECTED: "reconnnected",
+    RECONNECTED: "reconnected",
 })
 
 class Subscriber extends EventEmitter {
