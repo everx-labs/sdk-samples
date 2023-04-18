@@ -1,0 +1,25 @@
+{
+    "scripts": {
+        "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
+        "eslint": "eslint \"**/*.ts\"",
+        "eslint-fix": "eslint \"**/*.ts\" --fix",
+        "ever-wallet": "npx ts-node src/wallet.ts",
+        "list-tr": "npx ts-node src/listTransactions.ts",
+        "subscribe-tr": "npx ts-node src/subscription.ts"
+    },
+    "dependencies": {
+        "@eversdk/core": "^1.41.1",
+        "@eversdk/lib-node": "^1.41.1",
+        "ts-node": "^10.9.1"
+    },
+    "devDependencies": {
+        "@types/node": "^16.0.1",
+        "@typescript-eslint/eslint-plugin": "^5.57.1",
+        "@typescript-eslint/parser": "^5.57.1",
+        "eslint": "^7.30.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "prettier": "^2.3.2",
+        "typescript": "^4.6.3"
+    }
+}
