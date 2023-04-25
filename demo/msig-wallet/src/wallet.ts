@@ -56,26 +56,29 @@ async function main(client: TonClient) {
     // It is assumed that at this time you go to dashboard.evercloud.dev
     // and replenish this account.
     let balance: number
+    let accType: number
     for (; ;) {
         // The idiomatic way to send a request is to specify 
         // query and variables as separate properties.
-        const getBalanceQuery = `
+        const getInfoQuery = `
                 query getBalance($address: String!) {
                     blockchain {
                     account(address: $address) {
                             info {
                             balance
+                            acc_type
                         }
                     }
                 }
             }
             `
         const resultOfQuery: ResultOfQuery = await client.net.query({
-            query: getBalanceQuery,
+            query: getInfoQuery,
             variables: { address: msigAddress }
         })
 
         const nanotokens = parseInt(resultOfQuery.result.data.blockchain.account.info?.balance, 16)
+        accType = resultOfQuery.result.data.blockchain.account.info?.acc_type;
         if (nanotokens > MINIMAL_BALANCE * 1e9) {
             balance = nanotokens / 1e9
             break
@@ -83,7 +86,7 @@ async function main(client: TonClient) {
         // TODO: rate limiting
         await sleep(1000)
     }
-    console.log(`Account balance is: ${balance.toString(10)} tokens`)
+    console.log(`Account balance is: ${balance.toString(10)} tokens. Account type is ${accType}`)
 
     console.log(`Deploying wallet contract to address: ${msigAddress} and waiting for transaction...`)
 
