@@ -27,14 +27,14 @@ npm run message-monitor https:///devnet.evercloud.dev/<your_project_id>/graphql
 ```
 
 2023-05-15T13:07:10.724Z Starting use case #1
-2023-05-15T13:07:12.050Z 10 messages of 100 was sent
-2023-05-15T13:07:13.215Z 20 messages of 100 was sent
+2023-05-15T13:07:12.050Z 10 messages of 100 were sent
+2023-05-15T13:07:13.215Z 20 messages of 100 were sent
 ----%<--------
 2023-05-15T13:07:19.201Z Result: message processed in 7696 ms. Status: Finalized
 2023-05-15T13:07:19.201Z Result: message processed in 7711 ms. Status: Finalized
 2023-05-15T13:07:19.202Z Result: message processed in 7728 ms. Status: Finalized
 ----%<--------
-2023-05-15T13:07:22.549Z 100 messages of 100 was sent
+2023-05-15T13:07:22.549Z 100 messages of 100 were sent
 ----%<--------
 2023-05-15T13:07:31.133Z Result: message processed in 8692 ms. Status: Finalized
 2023-05-15T13:07:31.133Z Result: message processed in 8697 ms. Status: Finalized
@@ -43,10 +43,10 @@ npm run message-monitor https:///devnet.evercloud.dev/<your_project_id>/graphql
 2023-05-15T13:07:31.133Z End of use case #1, all results received
 
 2023-05-15T13:07:31.133Z Starting use case #2
-2023-05-15T13:07:31.275Z 10 messages of 100 was sent
-2023-05-15T13:07:32.409Z 20 messages of 100 was sent
+2023-05-15T13:07:31.275Z 10 messages of 100 were sent
+2023-05-15T13:07:32.409Z 20 messages of 100 were sent
 ----%<--------
-2023-05-15T13:07:41.569Z 100 messages of 100 was sent
+2023-05-15T13:07:41.569Z 100 messages of 100 were sent
 2023-05-15T13:07:48.847Z Result: message processed in 17709 ms. Status: Finalized
 ----%<--------
 2023-05-15T13:07:48.852Z Result: message processed in 7378 ms. Status: Finalized

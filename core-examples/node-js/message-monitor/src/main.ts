@@ -109,7 +109,7 @@ async function sendMessages(queueName: string, sentMessagesCounter = 0) {
         })
         sentMessagesCounter += BATCH_SIZE
         log(
-            `${sentMessagesCounter} messages of ${TOTAL_NUMBER_OF_MESSAGES} was sent`,
+            `${sentMessagesCounter} messages of ${TOTAL_NUMBER_OF_MESSAGES} were sent`,
         )
     } catch (err) {
         log(err)
