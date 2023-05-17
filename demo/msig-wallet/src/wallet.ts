@@ -99,8 +99,8 @@ async function main(client: TonClient) {
                 function_name: 'constructor',
                 input: {
                     owners: [`0x${keypair.public}`],
-                    reqConfirms: 0,
-                    lifetime: 0
+                    reqConfirms: 1,
+                    lifetime: 3600
                 }
             },
         },
