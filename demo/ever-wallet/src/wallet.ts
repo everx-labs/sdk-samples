@@ -46,10 +46,10 @@ async function main(client: TonClient) {
         console.log('Init data', initData);
     
 
-    const stateInit = (await client.boc.encode_tvc({
+    const stateInit = (await client.boc.encode_state_init({
         code:everWalletCode,
         data:initData
-    })).tvc;
+    })).state_init;
 
     const everWalletAddress = `0:`+(await client.boc.get_boc_hash({boc: stateInit})).hash;
     console.log('Address: ', everWalletAddress);
