@@ -169,7 +169,7 @@ async function main(client: TonClient) {
         });
     
         sendRequestResult = await client.processing.send_message({
-            message: deployAndTransferMsg.message,
+            message: transferMsg.message,
             send_events: false
         });
     
