@@ -14,7 +14,7 @@ This script:
 -   Generates a key pair for the wallet to be deployed.
 -   Calculates future wallet address.
 -   Waits for account replenishment.
--   Deploys multisig wallet.
+-   Deploys ever-wallet wallet.
 -   Transfers 0.5 tokens from the wallet to some account.
 -   Lists all made transactions.
 
