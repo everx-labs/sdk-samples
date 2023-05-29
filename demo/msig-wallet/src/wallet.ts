@@ -40,8 +40,7 @@ async function main(client: TonClient) {
     const messageParams: ParamsOfEncodeMessage = {
         abi: { type: 'Json', value: msigABI },
         deploy_set: { tvc: msigTVC, initial_data: {} },
-        signer: { type: 'Keys', keys: keypair },
-        processing_try_index: 1
+        signer: { type: 'Keys', keys: keypair }
     }
 
     const encoded: ResultOfEncodeMessage = await client.abi.encode_message(messageParams)
