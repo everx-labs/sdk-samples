@@ -17,7 +17,7 @@ const MINIMAL_BALANCE = 1
 
 async function main(client: TonClient) {
     // 
-    // 1. ------------------ Deploy multisig wallet --------------------------------
+    // 1. ------------------ Deploy ever-wallet --------------------------------
     // 
     // Generate a key pair for the wallet to be deployed
     const keypair = await client.crypto.generate_random_sign_keys();
