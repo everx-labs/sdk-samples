@@ -96,13 +96,8 @@ async function main(client: TonClient) {
 
 
     console.log(`Making first transfer+deploy from ever-wallet contract to address: -1:7777777777777777777777777777777777777777777777777777777777777777 and waiting for transaction...`)
-// Here we need to construct body by ABI and then the external message using native encoding (boc.encode_external_in_message)
-// because client.processing.encode_message uses some ABI specifics for contract deploy data encoding
-// and in case of this func contract it will not work. It is only ABI compatible for transfers
-// but not for deploy. This is why we encode body by ABI, but still need to encode stateInit and
-// the result deploy message natively.
-// This is needed only for the deploy message. For transfers you can encode message using
-// `client.abi.encode_message`, providing the same paramerers as in `encode_message_body` below. 
+// Here we construct body by ABI
+// and then add state init to the message for deploy
   
     let body = (await client.abi.encode_message_body({
         address: everWalletAddress,
@@ -145,7 +140,53 @@ async function main(client: TonClient) {
     assert.equal(transaction.status_name, "finalized")
 
     //
-    // 3.----------------- Read all wallet transactions -----------------------
+    // 3.----------------- Make simple transfer -----------------------
+    // 
+
+    console.log(`Making simple transfer from ever-wallet contract to address: -1:7777777777777777777777777777777777777777777777777777777777777777 and waiting for transaction...`)
+      
+        // encode message body by ever-wallet ABI
+         body = (await client.abi.encode_message_body({
+            address: everWalletAddress,
+            abi: { type: 'Json', value: everWalletABI },
+            call_set: {      
+                function_name: 'sendTransaction',
+                input: {
+                    dest: '-1:7777777777777777777777777777777777777777777777777777777777777777',
+                    value: '1000000000', // amount in units (nano)
+                    bounce: false,
+                    flags: 3,
+                    payload: ''
+                }
+            },
+            is_internal:false,
+            signer:{type: 'Keys', keys: keypair}
+        })).body;
+    
+        let transferMsg =  await client.boc.encode_external_in_message({
+            dst: everWalletAddress,
+            body: body
+        });
+    
+        sendRequestResult = await client.processing.send_message({
+            message: deployAndTransferMsg.message,
+            send_events: false
+        });
+    
+        transaction = (await client.processing.wait_for_transaction({
+            abi: { type: 'Json', value: everWalletABI },
+            message: transferMsg.message,
+            shard_block_id: sendRequestResult.shard_block_id,
+            send_events: false
+        })).transaction;
+    
+    
+        console.log('Contract deployed. Transaction hash', transaction.id)
+        assert.equal(transaction.status, 3)
+        assert.equal(transaction.status_name, "finalized")
+
+    //
+    // 4.----------------- Read all wallet transactions -----------------------
     // 
     const accountQuery = `
         query getTransactions($address: String!, $cursor: String, $count: Int) {
