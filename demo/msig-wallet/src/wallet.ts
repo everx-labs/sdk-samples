@@ -159,7 +159,20 @@ async function main(client: TonClient) {
 
     console.log('Sending 0.5 token to', dest)
 
-    // Encode the body with constructor call
+    // encode payload with comment
+
+    const comment = (await client.abi.encode_boc({
+        params: [
+            { name: "op", type: "uint32" }, // operation
+            { name: "comment", type: "bytes" }
+        ],
+        data: {
+            "op": 0, // operation = 0 means comment
+            "comment": Buffer.from("My comment").toString("hex"),
+        }
+    })).boc;
+
+    // Encode the body with sendTransaction call and comment
     body = (await client.abi.encode_message_body({
         address: msigAddress,
         abi: { type: 'Json', value: msigABI },
@@ -170,7 +183,7 @@ async function main(client: TonClient) {
                 value: amount,
                 bounce: false,
                 flags: 64,
-                payload: ''
+                payload: comment
             }
         },
         is_internal:false,
