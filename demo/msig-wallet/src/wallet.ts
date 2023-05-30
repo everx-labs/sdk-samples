@@ -26,17 +26,21 @@ async function main(client: TonClient) {
     console.log('Generated wallet keys:', JSON.stringify(keypair))
     console.log('Do not forget to save the keys!')
 
-    // To deploy a wallet we need its code and ABI files
-    const msigStateInit: string =
-        readFileSync(path.resolve(__dirname, "../contract/SetcodeMultisig.tvc")).toString("base64")
+
     const msigABI: string =
         readFileSync(path.resolve(__dirname, "../contract/SetcodeMultisig.abi.json")).toString("utf8")
-    const msigCode: string = 
-        (await client.boc.decode_state_init({state_init: msigStateInit})).code;
+
+        const msigCode: string =
+        readFileSync(path.resolve(__dirname, "../contract/SetcodeMultisig.code.boc")).toString("base64")
 
     // We need to know the future address of the wallet account,
     // because its balance must be positive for the contract to be deployed
+    //
     // Future address can be calculated from code and data of the contract
+    //
+    // For solidity contracts of version up to ***
+    // initial data consists of pubkey + all static contract variables
+    // and can be packed like this:
 
     const initData = (await client.abi.encode_boc({
         params: [
@@ -45,17 +49,21 @@ async function main(client: TonClient) {
         data: {
             "data": {
                 0: `0x`+keypair.public
+            //  1: 1st-static-variable-value
+            //  2: 2nd-static-variable-value
             },
         }
     })).boc;
 
     console.log('Init data', initData);
 
+    // Lets construct the initial state of the contract
     const stateInit = (await client.boc.encode_state_init({
         code:msigCode,
         data:initData
     })).state_init;
 
+    // Address is the TVM hash of the initial state + workchain id (we work in 0 workchain)
     const msigAddress = `0:`+(await client.boc.get_boc_hash({boc: stateInit})).hash;
     console.log('Address: ', msigAddress);
 
