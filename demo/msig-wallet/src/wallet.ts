@@ -101,7 +101,7 @@ async function main(client: TonClient) {
 
         const nanotokens = parseInt(accountInfo.balance, 16)
         accType = accountInfo.acc_type;
-        if (nanotokens > MINIMAL_BALANCE * 1e9) {
+        if (nanotokens >= MINIMAL_BALANCE * 1e9) {
             balance = nanotokens / 1e9
             break
         }
