@@ -159,7 +159,7 @@ async function main(client: TonClient) {
 
     console.log('Sending 0.5 token to', dest)
 
-    // encode payload with comment
+    // If you want to add a comment to your transfer, create payload with it:
 
     const comment = (await client.abi.encode_boc({
         params: [
@@ -183,7 +183,7 @@ async function main(client: TonClient) {
                 value: amount,
                 bounce: false,
                 flags: 64,
-                payload: comment
+                payload: comment // specify "" if no payload is provided
             }
         },
         is_internal:false,
