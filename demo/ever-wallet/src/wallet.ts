@@ -84,7 +84,7 @@ async function main(client: TonClient) {
         })
 
         const nanotokens = parseInt(resultOfQuery.result.data.blockchain.account.info?.balance, 16)
-        if (nanotokens > MINIMAL_BALANCE * 1e9) {
+        if (nanotokens >= MINIMAL_BALANCE * 1e9) {
             balance = nanotokens / 1e9
             break
         }
@@ -167,7 +167,7 @@ async function main(client: TonClient) {
                 function_name: 'sendTransaction',
                 input: {
                     dest: '-1:7777777777777777777777777777777777777777777777777777777777777777',
-                    value: '1000000000', // amount in units (nano)
+                    value: '500000000', // amount in units (nano)
                     bounce: false,
                     flags: 3,
                     payload: comment // specify "" if no payload is provided
