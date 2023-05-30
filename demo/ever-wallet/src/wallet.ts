@@ -145,6 +145,20 @@ async function main(client: TonClient) {
 
     console.log(`Making simple transfer from ever-wallet contract to address: -1:7777777777777777777777777777777777777777777777777777777777777777 and waiting for transaction...`)
       
+    // If you want to add a comment to your transfer, create payload with it:
+
+        const comment = (await client.abi.encode_boc({
+            params: [
+                { name: "op", type: "uint32" }, // operation
+                { name: "comment", type: "bytes" }
+            ],
+            data: {
+                "op": 0, // operation = 0 means comment
+                "comment": Buffer.from("My comment").toString("hex"),
+            }
+        })).boc;
+
+
         // encode message body by ever-wallet ABI
          body = (await client.abi.encode_message_body({
             address: everWalletAddress,
@@ -156,7 +170,7 @@ async function main(client: TonClient) {
                     value: '1000000000', // amount in units (nano)
                     bounce: false,
                     flags: 3,
-                    payload: ''
+                    payload: comment // specify "" if no payload is provided
                 }
             },
             is_internal:false,
