@@ -1,6 +1,6 @@
 // This sample shows how to deploy and run contracts in 3 steps:
 // using `encode_message`, `send_message` and `wait_for_transaction` functions.
-// Also it demonstrates how to catch intermediate events during message processing and log them
+// Also, it demonstrates how to catch intermediate events during message processing and log them
 
 const { Account } = require("@eversdk/appkit");
 const { libNode } = require("@eversdk/lib-node");
@@ -24,7 +24,7 @@ async function logEvents(params, response_type) {
  * @returns {Promise<void>}
  */
 async function main(client) {
-    // Generate an ed25519 key pair for new account
+    // Generate an ed25519 key pair for the new account
     const helloAcc = new Account(HelloWallet, {
         signer: signerKeys(await client.crypto.generate_random_sign_keys()),
         client
@@ -39,7 +39,7 @@ async function main(client) {
     await giver.sendTo(address, 10_000_000_000);
     console.log(`Grams were transferred from giver to ${address}`);
 
-    // Send deploy message to the network
+    // Send a deploying message to the network
     // See more info about `send_message` here
     // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#send_message
     const deployMessage = await client.abi.encode_message(await helloAcc.getParamsOfDeployMessage());
@@ -76,17 +76,17 @@ async function main(client) {
             function_name: "touch",
             input: {},
         },
-        // There is no pubkey key check in the contract
+        // There is no pubkey key check in the contract,
         // so we can leave it empty. Never use this approach in production
         // because anyone can call this function
         signer: { type: "None" },
     };
 
-    // Create external inbound message with `touch` function call
+    // Create an external inbound message with `touch` function call
     const encode_touch_result = await client.abi.encode_message(params);
     console.log(`Encoded successfully`);
 
-    // Send `touch` call message to the network
+    // Send a `touch` call message to the network
     // See more info about `send_message` here
     // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_processing.md#send_message
     shard_block_id = (await client.processing.send_message({
@@ -111,7 +111,7 @@ async function main(client) {
     console.log(`Touch transaction: ${JSON.stringify(touch_processing_result.transaction, null, 2)}`);
     console.log(`Touch fees: ${JSON.stringify(touch_processing_result.fees, null, 2)}`);
 
-    // Execute `getTimestamp` get method  (execute the message locally on TVM)
+    // Execute `getTimestamp` get method (execute the message locally on TVM)
     // See more info about run_tvm method here
     // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_tvm.md#run_tvm
     const response = await helloAcc.runLocal("getTimestamp", {});
