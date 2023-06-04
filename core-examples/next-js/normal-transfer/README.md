@@ -1,6 +1,33 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Next Js Token Transfer Example
+
+In this example we demonstrate how to transfer tokens from one contract to another.
+This guide will walk you through the installation process, handling the WebAssembly (WASM) file, and transferring tokens between wallets.
+
+The Everscale SDK is a comprehensive library designed for DApp development on TVM-based blockchains. This includes chains such as Everscale, TON, Venom Blockchain, Gosh, and others.
+
+## Features
+
+- Transfer tokens from one contract to another.
+- Generate a wallet address using the public key.
+- Generate a new keypair.
+
+## Before running the example
+
+- Create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev/register) if you don't have one.
+
+- Remember, you'll need an endpoint to run the code. You can create a new endpoint or use an existing one for a particular blockchain. This endpoint must be passed in `pages/index.tsx` `line no 18` when running the example.
+
+- To transfer tokens from one wallet to another, you will need a `keypair`. You can either generate a new one or export it from your wallet.
 
 ## Getting Started
+
+### 1. Installation
+
+```bash
+npm install
+# or
+yarn install
+```
 
 First, run the development server:
 
@@ -9,30 +36,46 @@ npm run dev
 # or
 yarn dev
 # or
-pnpm dev
+pnpm d
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Handling the WASM file
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+The WASM file is a crucial part for the client side. Each time you install or update your node modules using `npm i` or `yarn install`, perform the following steps:
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+- Navigate to your `node_modules/@eversdk/lib-web` directory.
+- Find the `eversdk.wasm` file.
+- Copy this file.
+- Paste it into the public directory of your project.
+- This process ensures that the `WASM` file is always up-to-date. It is necessary to follow this process only when you run npm i; otherwise, the SDK will function properly with the existing WASM file.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### 4. Configuring the Next.js Configuration File
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+In order to ensure that the Everscale SDK works smoothly with your Next.js project, you need to configure your Next.js settings appropriately.
 
-## Learn More
+Here is an example of how your next.config.js file should look:
 
-To learn more about Next.js, take a look at the following resources:
+```js
+/** @type {import("next").NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  transpilePackages: ['@eversdk/lib-web'],
+  webpack(config) {
+    config.output.webassemblyModuleFilename = './public/eversdk.wasm';
+    config.experiments = { asyncWebAssembly: true };
+    return config;
+  },
+};
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+module.exports = nextConfig;
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### 3. Transferring Tokens
 
-## Deploy on Vercel
+With everSDK, you can transfer tokens between wallets seamlessly.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## TechStack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [EverSDK/Core](https://www.npmjs.com/package/@eversdk/core)
+- [EverSDK/lib-web](https://www.npmjs.com/package/@eversdk/lib-web)
+- [EverScale Standalone](https://www.npmjs.com/package/everscale-standalone-client)
