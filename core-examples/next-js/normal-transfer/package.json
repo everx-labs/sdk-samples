@@ -9,12 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@eversdk/core": "^1.43.1",
+    "@eversdk/lib-web": "^1.43.1",
     "@types/node": "20.2.5",
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.4",
     "autoprefixer": "10.4.14",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
+    "everscale-inpage-provider": "^0.3.61",
+    "everscale-standalone-client": "^2.1.19",
     "next": "13.4.4",
     "postcss": "8.4.24",
     "react": "18.2.0",
