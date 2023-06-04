@@ -1,118 +1,211 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-
-const inter = Inter({ subsets: ['latin'] })
+import { useState } from 'react';
+import { TonClient, abiContract } from '@eversdk/core';
+import { libWeb, libWebSetup } from '@eversdk/lib-web';
+import { EverWalletAccount } from 'everscale-standalone-client';
 
 export default function Home() {
+  const [address, setAddress] = useState('');
+  const [amount, setAmount] = useState(100000000); // initial value is 0.1 EVER || VENOM
+  const [hash, setHash] = useState('');
+
+  // TonClient
+  libWebSetup({
+    disableSeparateWorker: true,
+  });
+  TonClient.useBinaryLibrary(libWeb as any);
+
+  const client = new TonClient({
+    network: { endpoints: ['https://gql-testnet.venom.foundation/graphql'] },
+  });
+
+  // ABI
+  const everWalletABI = {
+    'ABI version': 2,
+    version: '2.3',
+    header: ['pubkey', 'time', 'expire'],
+    functions: [
+      {
+        name: 'sendTransaction',
+        inputs: [
+          {
+            name: 'dest',
+            type: 'address',
+          },
+          {
+            name: 'value',
+            type: 'uint128',
+          },
+          {
+            name: 'bounce',
+            type: 'bool',
+          },
+          {
+            name: 'flags',
+            type: 'uint8',
+          },
+          {
+            name: 'payload',
+            type: 'cell',
+          },
+        ],
+        outputs: [],
+      },
+      {
+        name: 'sendTransactionRaw',
+        inputs: [
+          {
+            name: 'flags',
+            type: 'uint8',
+          },
+          {
+            name: 'message',
+            type: 'cell',
+          },
+        ],
+        outputs: [],
+      },
+    ],
+    data: [],
+    events: [],
+    fields: [
+      {
+        name: '_pubkey',
+        type: 'uint256',
+      },
+      {
+        name: '_timestamp',
+        type: 'uint64',
+      },
+    ],
+  };
+
+  // Get your wallet address using your public key
+  const genWalletAddress = async () => {
+    const publicKey =
+      'b303ef0dba533b0798eaa216c658cf975494331ebf0a999171be37f391c74d80';
+    const account = await EverWalletAccount.fromPubkey({
+      publicKey: publicKey,
+      workchain: 0,
+    });
+    console.log(account.address);
+  };
+
+  // Please provide the wallet address of key pair mentioned below:
+  // the token will transfer from this address to destination address
+  const everWalletAddress =
+    '0:4497ea5547b5bf7ef6a2f1407a53bc9655630496d790601f39f26fe58b5f006d';
+
+  // Key pair or above wallet address.
+  const keypair = {
+    public: 'b303ef0dba533b0798eaa216c658cf975494331ebf0a999171be37f391c74d80', // YOUR_PUBLIC_KEY
+    secret: '1891ef3a16e80e30d5eab93933a06d074764819651f3be9c460db4cb2754f73a', // YOUR_PRIVATE_KEY
+  };
+
+  //          or
+  //      Generate using this new key pair
+
+  // Generate an ed25519 key pair
+  const genKeyPair = async () => {
+    const walletKeys = await client.crypto.generate_random_sign_keys();
+    console.log(walletKeys);
+  };
+
+  // encode message body by ever-wallet ABI
+  const transfer = async () => {
+    const body = (
+      await client.abi.encode_message_body({
+        address: everWalletAddress,
+        abi: abiContract(everWalletABI),
+        call_set: {
+          function_name: 'sendTransaction',
+          input: {
+            dest: address, // destination wallet address fund will transfer to this wallet
+            value: amount, // amount in units (nano) 1000000000 = 1 EVER | TON | VENOM
+            bounce: false,
+            flags: 3,
+            payload: '',
+          },
+        },
+        is_internal: false,
+        signer: {
+          type: 'Keys',
+          keys: keypair,
+        },
+      })
+    ).body;
+
+    let transferMsg = await client.boc.encode_external_in_message({
+      dst: everWalletAddress,
+      body: body,
+    });
+
+    const sendRequestResult = await client.processing.send_message({
+      message: transferMsg.message,
+      send_events: false,
+    });
+
+    // Transaction will trigger
+    const transaction = (
+      await client.processing.wait_for_transaction(
+        {
+          abi: abiContract(everWalletABI),
+          message: transferMsg.message,
+          shard_block_id: sendRequestResult.shard_block_id,
+          send_events: true,
+        }
+        // (tx_detail) => console.log(tx_detail)
+      )
+    ).transaction;
+    setHash(transaction.id);
+    console.log('Transaction hash', transaction.id);
+  };
+
   return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    >
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">pages/index.tsx</code>
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <div className="z-10 w-full max-w-5xl items-center justify-center font-mono text-sm lg:flex">
+        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
+          Transfer-normal Client-Side
         </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+      </div>
+      <div className="flex flex-col items-center w-[588px] mt-[10%]">
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 bg-black text-white focus:outline-none  mb-8"
+          id="message"
+          type="text"
+          placeholder="Enter your destination address"
+          onChange={(e) => setAddress(e.target.value)}
+        />
+
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 bg-black text-white focus:outline-none  mb-8"
+          id="message"
+          type="text"
+          placeholder="Enter the amount"
+          // onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => setAmount(parseInt(e.target.value))}
+        />
+        <button
+          className="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          type="button"
+          onClick={transfer}
+        >
+          Transfer
+        </button>
+        <div className="mt-9">
+          {hash && (
+            <button
+              onClick={() =>
+                window.open(
+                  `https://testnet.venomscan.com/transactions/${hash}`,
+                  '_blank'
+                )
+              }
+            >
+              View on explorer
+            </button>
+          )}
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
     </main>
-  )
+  );
 }
