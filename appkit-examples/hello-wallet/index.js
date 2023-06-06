@@ -18,7 +18,7 @@ TonClient.useBinaryLibrary(libNode);
  * @returns {Promise<void>}
  */
 async function main(client) {
-    // Generate an ed25519 key pair for new account
+    // Generate an ed25519 key pair for the new account
     const keys = await TonClient.default.crypto.generate_random_sign_keys();
 
     const helloAcc = new Account(HelloWallet, {
@@ -29,7 +29,7 @@ async function main(client) {
     const address = await helloAcc.getAddress();
     console.log(`Future address of the contract will be: ${address}`);
 
-    // Request contract deployment funds form a local Evernode SE giver
+    // Request contract deployment funds from a local Evernode SE giver
     // not suitable for other networks.
     // Deploy `hello` contract.
     await helloAcc.deploy({ useGiver: true });
@@ -40,12 +40,12 @@ async function main(client) {
     console.log(`Contract run transaction with output ${response.decoded.output}, ${response.transaction.id}`);
 
     // Read local variable `timestamp` with a get method `getTimestamp`
-    // This can be done with `runLocal` function. The execution of runLocal is performed off-chain and does not 
+    // This can be done with `runLocal` function. The execution of runLocal is performed off-chain and does not
     // cost any gas.
     response = await helloAcc.runLocal("getTimestamp", {});
     console.log("Contract reacted to your getTimestamp:", response.decoded.output)
 
-    // Get account balance. 
+    // Get account balance.
     const query = `
         query {
           blockchain {
@@ -67,8 +67,8 @@ async function main(client) {
     console.log("Hello wallet balance is", parseInt(balanceAsDecString, 10))
 
     // Send some money to the random address
-    const randomAddress = 
-        "0:" + 
+    const randomAddress =
+        "0:" +
         Buffer.from(
             (await client.crypto.generate_random_bytes({length: 32})).bytes,
             "base64"
