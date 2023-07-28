@@ -135,19 +135,24 @@ module.exports = (client) => {
 
     // :: String -> Object | undefined
     const getOfferByAddress = async (address) => {
-        const offer = await client.net
-            .query_collection({
-                collection: 'accounts',
-                filter: {
-                    id: { eq: address },
-                },
-                result: 'id balance',
-            })
-            .then((x) => x.result[0])
+        const query = `
+            query {
+              blockchain {
+                account(
+                  address: "${address}"
+                ) {
+                   info {
+                    address
+                    balance(format: DEC)
+                  }
+                }
+              }
+            }`
+        const {offer}  = await client.net.query({query})
 
         if (offer) {
             const balance = parseInt(offer.balance)
-            const details = await getOfferState(offer.id)
+            const details = await getOfferState(offer.address)
             Object.assign(offer, { balance }, details)
             return offer
         }
@@ -194,7 +199,7 @@ module.exports = (client) => {
         } while (lastPaid)
 
         for (const offer of offers) {
-            const details = await getOfferState(offer.id)
+            const details = await getOfferState(offer.address)
             const balance = parseInt(offer.balance)
             Object.assign(offer, { balance }, details)
         }
