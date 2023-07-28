@@ -12,6 +12,8 @@ export ENDPOINT=https://devnet.evercloud.dev/<your_project_id>/graphql
 
 This script paginates all transactions in wc 0 from beginning.
 
+Note: `archive: true` flag is necessary in the query to get data older than 7 days.
+
 ### Run this script
 
 ```

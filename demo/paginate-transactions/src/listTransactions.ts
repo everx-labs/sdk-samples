@@ -23,6 +23,7 @@ async function main(client: TonClient) {
         query listTransactions($cursor: String, $count: Int) {
             blockchain {
                 transactions(
+                    archive: true
                     workchain: 0
                     first: $count
                     after: $cursor
