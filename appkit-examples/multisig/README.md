@@ -1,7 +1,7 @@
 # How to deploy your wallet and make a transfer
 In this example we use [AppKit package](https://github.com/tonlabs/appkit-js) to deploy a [multisig contract](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/) into [Developer Network](https://net.ton.live/) and then make a transfer from it.  
 
-You can update the scripts to [work with other networks](https://docs.everos.dev/ever-platform/reference/graphql-api/networks), for example, with Everscale.
+You can update the scripts to [work with other networks](https://docs.evercloud.dev/reference/graphql-api/networks), for example, with Everscale.
 
 ## Prerequisite
 

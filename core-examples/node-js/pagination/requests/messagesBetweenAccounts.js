@@ -1,5 +1,6 @@
 /*
  * Paginate all messages between two accounts starting from now and moving BACKWARD.
+ * archive:true flag is used to ensure historical data is retrieved.
  */
 const { print, sleep } = require('../utils')
 
@@ -14,6 +15,7 @@ const query = `query MyQuery($address1: String!, $address2: String!, $cursor: St
                 counterparties: [$address2]
                 last: $count
                 before: $cursor
+                archive: true
             ) {
                 edges {
                     node {

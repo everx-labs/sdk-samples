@@ -8,6 +8,7 @@
     "dependencies": {
         "@eversdk/core": "^1.41.1",
         "@eversdk/lib-node": "^1.41.1",
+        "https-proxy-agent": "^7.0.1",
         "ts-node": "^10.9.1"
     },
     "devDependencies": {

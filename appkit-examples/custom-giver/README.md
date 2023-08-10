@@ -13,7 +13,7 @@ with your own.
 
 ## Preparation
 
-* [Run Evernode SE on your computer](https://docs.everos.dev/evernode-platform/products/simple-emulator-se)
+* [Run Evernode SE on your computer](https://docs.evercloud.dev/products/simple-emulator-se)
 
 ```sh
 everdev se start

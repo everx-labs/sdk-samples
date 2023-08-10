@@ -15,7 +15,7 @@
 
 In this example we use [ever-sdk-js](https://github.com/tonlabs/ever-sdk-js) to deploy a [multisig contract](https://github.com/tonlabs/ton-labs-contracts/blob/master/solidity/safemultisig/) into the [Developer Network](https://net.ton.live/) and work with it.
 
-You can update the scripts to [work with other networks](https://docs.everos.dev/ever-platform/reference/graphql-api/networks), for example, with Everscale.
+You can update the scripts to [work with other networks](https://docs.evercloud.dev/reference/graphql-api/networks), for example, with Everscale.
 
 We will perform these steps:
 
@@ -78,4 +78,4 @@ You can find the source code in `print-messages.js`. In order to run it, use:
 node print-messages.js <HTTPS_DEVNET_ENDPOINT>
 ```
 
-In this step we read the wallet's withdraws (filter the account's internal outbound messages and paginate through them) and print them to the conlose.
+In this step we read the wallet's withdraws (filter the account's internal outbound messages and paginate through them) and print them to the console.

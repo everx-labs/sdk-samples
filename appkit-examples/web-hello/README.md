@@ -1,6 +1,6 @@
 # Hello Web – WebPack TON SDK example
 
-In this example we use [ever-sdk-js](https://github.com/tonlabs/ever-sdk-js) to deploy solidity contract Hello.sol to [Evernode SE](https://docs.everos.dev/evernode-platform/products/simple-emulator-se) (local blockchain).
+In this example we use [ever-sdk-js](https://github.com/tonlabs/ever-sdk-js) to deploy solidity contract Hello.sol to [Evernode SE](https://docs.evercloud.dev/products/simple-emulator-se) (local blockchain).
 
 ## Prerequisite
 

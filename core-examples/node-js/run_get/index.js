@@ -24,7 +24,7 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
         // Contract code https://github.com/ton-blockchain/ton/blob/master/crypto/smartcont/elector-code.fc
 
         // Get account BOC in `base64`
-        // See https://everos.dev/faq/blockchain-basic
+        // See https://docs.everscale.network/arch/basics
 
         const query = `
             query {

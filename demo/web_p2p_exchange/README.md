@@ -6,22 +6,22 @@ Novice blockchain developers, who prefer to learn by doing.
 
 ## Content Table
 
--   [Simple TON application](#simple-ton-application)
-    -   [Audience](#audience)
-    -   [Content Table](#content-table)
-    -   [What are we building?](#what-are-we-building)
-    -   [Setup](#setup)
-    -   [Run tests to check integrity](#run-tests-to-check-integrity)
-    -   [Blockchain net.ton.dev and Evernode SE](#blockchain-nettondev-and-TON-OS-SE)
-    -   [Tokens](#tokens)
-    -   [Run the App](#run-the-app)
-        -   [Rules](#rules)
-        -   [Sample deal](#sample-deal)
-    -   [Algorithm](#algorithm)
-    -   [Conslusion](#conslusion)
-    -   [Troubleshooting](#troubleshooting)
-    -   [Appendix A](#appendix-a)
-        -   [How to get a wallet with crystals](#how-to-get-a-wallet-with-crystals)
+- [Simple Everscale web application](#simple-everscale-web-application)
+  - [Audience](#audience)
+  - [Content Table](#content-table)
+  - [What are we building?](#what-are-we-building)
+  - [Setup](#setup)
+  - [Run tests to check integrity](#run-tests-to-check-integrity)
+  - [Blockchain net.ton.dev and Evernode SE](#blockchain-nettondev-and-evernode-se)
+  - [Tokens](#tokens)
+  - [Run the App](#run-the-app)
+    - [Rules](#rules)
+    - [Sample deal](#sample-deal)
+  - [Algorithm](#algorithm)
+  - [Conslusion](#conslusion)
+  - [Troubleshooting](#troubleshooting)
+  - [Appendix A](#appendix-a)
+    - [How to get a wallet with crystals](#how-to-get-a-wallet-with-crystals)
 
 ## What are we building?
 

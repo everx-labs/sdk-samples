@@ -3,7 +3,7 @@
 In this example we demonstrate how to eliminate passing your keys to the library
 by using `signingBox` interface.
 
-We deploy solidity contract `Hello.sol` to [Evernode SE](https://docs.everos.dev/evernode-platform/products/simple-emulator-se)
+We deploy solidity contract `Hello.sol` to [Evernode SE](https://docs.evercloud.dev/products/simple-emulator-se)
 (local blockchain) and interact with it using `signingBox` instead of a key pair.
 
 Notice `dummySigningBox` class that implements the required interface.
