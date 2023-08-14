@@ -16,7 +16,7 @@
  *
  * To migrate from Developer Network to Everscale you need to update the endpoints specified in TonClient configuration to Everscale endpoints.
  *
- * See the list of supported networks and endpoints here https://docs.everos.dev/ever-platform/reference/graphql-api/networks
+ * See the list of supported networks and endpoints here https://docs.evercloud.dev/reference/graphql-api/networks
  * */
 
 const { libNode } = require("@eversdk/lib-node");
@@ -52,7 +52,7 @@ async function main(client) {
     // The first step - initialize new account object with ABI,
     // target network (client) and previously generated key pair (signer) and 
     // calculate future wallet address so that we can sponsor it before deploy.
-    // Read more about deploy and other basic concepts here https://everos.dev/faq/blockchain-basic
+    // Read more about deploy and other basic concepts here https://docs.everscale.network/arch/basics
     const wallet = await getAccount(client, SafeMultisigContract, signerKeys(walletKeys));
 
     // Save last master block seq_no before we send the first transaction.

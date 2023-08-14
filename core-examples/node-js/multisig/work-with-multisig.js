@@ -46,7 +46,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
         console.log(address);
 
         // Let's check if the account is deployed and check its balance
-        // See more about GraphQL API documentation here https://docs.everos.dev/ever-platform/samples/graphql-samples/quick-start#api-documentation
+        // See more about GraphQL API documentation here https://docs.evercloud.dev/quick-start#api-documentation
         /** @type {{ acc_type: number, balance: string, code: string}[]} */
         const {info} = (await client.net.query({
             query: `
@@ -81,7 +81,7 @@ const recipient = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1e
             // Download the latest state (so-called BOC)
             // See more info about query method here
             // https://github.com/tonlabs/ever-sdk/blob/master/docs/reference/types-and-methods/mod_net.md#query
-            // See more about BOC here https://everos.dev/faq/blockchain-basic
+            // See more about BOC here https://docs.everscale.network/arch/basics
             client.net
                 .query({
                     query: `

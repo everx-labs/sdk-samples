@@ -6,7 +6,7 @@
 
 - **[web-hello](./web-hello/)** - In this example we learn how to do the same things in WEB.
 
-- **[multisig](./multisig/)** In this example you will learn how to deploy solidity [multisig contract `SafeMultisigWallet.sol`](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#multisignature-wallet) to [Developer Network](https://docs.everos.dev/ever-platform/reference/graphql-api/networks) and work with it.
+- **[multisig](./multisig/)** In this example you will learn how to deploy solidity [multisig contract `SafeMultisigWallet.sol`](https://github.com/tonlabs/ton-labs-contracts/tree/master/solidity/safemultisig#multisignature-wallet) to [Developer Network](https://docs.evercloud.dev/reference/graphql-api/networks) and work with it.
   
 - **[multisig-submit-tx](./multisig-submit-tx)** this is a simple sample of submitting transaction to multisig contract.
   

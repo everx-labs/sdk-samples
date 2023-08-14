@@ -14,7 +14,7 @@ You will learn how to
   - total value withdrawn from an account
   - total value received to an account
   
-Read more about collections here: https://docs.everos.dev/ever-sdk/reference/ever-os-api/query_language
+Read more about collections here: https://docs.evercloud.dev/reference/graphql-api/query_language
 
 **Note**: Query collections' primary use is recent statistics. These queries provide data for the past 7 days. If you need to retreieve older data, use [Blockchain API](https://docs.evercloud.dev/reference/graphql-api/blockchain) with `archive:true` flag in query filters.
 

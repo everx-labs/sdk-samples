@@ -49,7 +49,8 @@ if (HTTPS_DEVNET_ENDPOINT === undefined) {
 
         // Let's read and print all withdraws from our account.
         // To do this we iterate internal outbound messages with positive value.
-        // See more about GraphQL API documentation here https://docs.everos.dev/ever-platform/samples/graphql-samples/quick-start#api-documentation
+        // See more about GraphQL API documentation here https://docs.evercloud.dev/quick-start#api-documentation
+        // If data older than 7 days needs to be retrieved, use archive: true flag in fliters
 
 
         const query = `query {

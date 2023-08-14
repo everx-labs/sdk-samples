@@ -19,6 +19,7 @@ async function main(client: TonClient) {
 
     // The idiomatic way to send a request is to specify 
     // query and variables as separate properties.
+    // archive:true flag is used to ensure historical data is retrieved.
     const transactionsQuery = `
         query listTransactions($cursor: String, $count: Int) {
             blockchain {

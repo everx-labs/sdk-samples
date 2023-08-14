@@ -47,6 +47,8 @@ See how these variables are calculated:
 
 ### Notes
 
+If you need to access data older than 7 days (archive data) make sure to specify `archive:true` flag in query filers.
+
 Don't request the API too aggressively or you'll get an HTTP 429 status code.
 
 You can read more about cursor-based pagination here:

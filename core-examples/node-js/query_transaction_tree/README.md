@@ -4,7 +4,7 @@ In this example you will learn how to query the chain of transactions and messag
 
 We will pick one external inbound message to a multisig contract with 'sendTransaction' call and retrieve the transaction tree from it to make sure the internal message with value transfer was delivered.
 
-In the example we use [Evernode SE](https://docs.everos.dev/evernode-platform/products/simple-emulator-se), local blockchain,
+In the example we use [Evernode SE](https://docs.evercloud.dev/products/simple-emulator-se), local blockchain,
 if you want to use the developer network, create a project on [dashboard.evercloud.dev](https://dashboard.evercloud.dev) 
 and specify its Development Network HTTPS endpoint when initializing TONClient
 
@@ -17,13 +17,13 @@ and specify its Development Network HTTPS endpoint when initializing TONClient
 
 ## Preparation
 
-* [Run Evernode SE on your computer](https://docs.everos.dev/evernode-platform/products/simple-emulator-se)
+* [Run Evernode SE on your computer](https://docs.evercloud.dev/products/simple-emulator-se)
 
 ```sh
 everdev se start
 ```
 
-You're all set! Check out the Evernode SE GraphQL web playground at http://0.0.0.0/graphql. For Windows, use http://127.0.0.1/graphql or http://localhost/graphql. Learn more about GraphQL API [here](https://docs.everos.dev/ever-platform/reference/graphql-api).
+You're all set! Check out the Evernode SE GraphQL web playground at http://0.0.0.0/graphql. For Windows, use http://127.0.0.1/graphql or http://localhost/graphql. Learn more about GraphQL API [here](https://docs.evercloud.dev/reference/graphql-api).
 
 See other available [Evernode SE management options in EverDev](https://docs.everos.dev/everdev/command-line-interface/evernode-platform-startup-edition-se).
 

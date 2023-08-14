@@ -1,6 +1,7 @@
 /*
  * Paginate all account transactions starting from now
  * and moving BACKWARD, for example, to show wallet transaction history.
+ * archive:true flag is used to ensure historical data is retrieved.
  */
 const { print, sleep } = require('../utils')
 
@@ -12,6 +13,7 @@ const query = `query MyQuery($address: String!, $cursor: String, $count: Int) {
             transactions(
                 last: $count
                 before: $cursor
+                archive: true
             ){
                 edges{
                     node{ now hash }
