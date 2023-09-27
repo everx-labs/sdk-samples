@@ -1,4 +1,4 @@
-# Examples of working with multisig wallet, querying and subscribing.
+# Example of subscription to transactions for a list of addresses
 
 ## Prerequisites
 
