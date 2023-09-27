@@ -1,4 +1,4 @@
-# Examples of working with multisig wallet, querying and subscribing.
+# Example of pagination of blockchain transactions in workchain 0
 
 ## Prerequisites
 
